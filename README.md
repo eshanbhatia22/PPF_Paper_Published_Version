@@ -1,5 +1,5 @@
 # SPP_Perceptron
-README for SPP-Perceptron Project documentation
+README for SPP-Perceptron Project documentation and paper
 
 Steps:
 - git clone https://github.com/eshanbhatia22/spp_perceptron/
