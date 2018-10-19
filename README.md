@@ -5,7 +5,7 @@ Steps:
 - git clone https://github.com/eshanbhatia22/spp_perceptron/
 - git pull
 - vi paper_1.tex ## Edit
-- pdftex paper_1.tex ## Compile
+- pdflatex paper_1.tex ## Compile
 - open paper_1.pdf ## View
 - git add paper_1.tex
 - git status 
