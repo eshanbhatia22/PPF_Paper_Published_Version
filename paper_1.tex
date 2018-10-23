@@ -47,33 +47,67 @@
 
 \begin{abstract}
 
-Hardware prefetching has been introduced in modern processors as a way to reduce compulsory cache misses. An efficient prefetcher should be able to identify complex memory access patterns. This enables it to fetch a block ahead of its demand access. 
+Hardware prefetching has been introduced in modern processors as a way to reduce compulsory cache misses. 
+An efficient prefetcher should be able to identify complex memory access patterns. 
+This enables it to fetch a block ahead of its demand access. 
 
-In this paper, we introduce perceptron learning to help make this prefetching decision efficiently. We have taken a state of the art prefetcher - Signature Path Prefetcher (SPP) as the underlying prefetch engine. The perceptron layer filters out the unnecessary prefetches recommended by SPP. We have also explored a range of features that can be used to train the perceptron layer. Our results show that SPP-Perc improves performance on SPEC 2017 Benchmark suite by 3.2\% on single-core and 5.5\% on 4-core simulation, as compared to just SPP.
+In this paper, we introduce perceptron learning to help make this prefetching decision efficiently. 
+We have taken a state of the art prefetcher - Signature Path Prefetcher (SPP) as the underlying prefetch engine. 
+The perceptron layer filters out the unnecessary prefetches recommended by SPP. 
+We have also explored a range of features that can be used to train the perceptron layer. 
+Our results show that SPP-Perc improves performance on SPEC 2017 Benchmark suite by 3.2\% on single-core and 5.5\% on 4-core simulation, as compared to just SPP.
 
 \end{abstract}
 
 \section{Introduction}
-Since past few decades, processor and memory scaling has been enabled with different philosophies in mind. While processor scaling focused on speed improvements, memory scaling was centred around increasing the storage capacity. The process technology reaching scaling limitations led to Memory Wall [cite] - the increasing performance gap between the processor speed and the memory speeds. Various techniques have been developed to combat this widening gap. Data prefetching is one such important technique. Data prefetching exploits the fact that most applications, data is accessed with some spatial or temporal locality.
+Since past few decades, processor and memory scaling has been enabled with different philosophies in mind. 
+While processor scaling focused on speed improvements, memory scaling was centred around increasing the storage capacity. 
+The process technology reaching scaling limitations led to Memory Wall [cite] - the increasing performance gap between the processor speed and the memory speeds. 
+Various techniques have been developed to combat this widening gap. 
+Data prefetching is one such important technique. 
+Data prefetching exploits the fact that most applications, data is accessed with some spatial or temporal locality.
 
-An ideal prefetching scheme involves capturing the memory access patterns to predict future prefetches in a timely manner. Other important decisions faced by the prefetcher are when to bring in the prefetch block of data, which level of cache hierarchy to place the block in and finally, what block to evict to accommodate the incoming block. Memory accesses patterns can be as simple as fetching the next cache line or a complex but predictable pattern, like in pointer chasing applications. Predicting this often requires a trade-off between coverage and accuracy. For a prefetcher to capture highly irregular access patterns, it needs to be highly aggressive (high coverage). That also means the prefetcher would end up recommending a lot of useless prefetches, leading to cache pollution (low accuracy). This effect would get even more pronounced in multi-core scenario where the last level cache is a shared resource. Conversely, a conservative prefetcher would be highly accurate but might not make enough useful predictions.
+An ideal prefetching scheme involves capturing the memory access patterns to predict future prefetches in a timely manner. 
+Other important decisions faced by the prefetcher are when to bring in the prefetch block of data, which level of cache hierarchy to place the block in and finally, what block to evict to accommodate the incoming block. 
+Memory accesses patterns can be as simple as fetching the next cache line or a complex but predictable pattern, like in pointer chasing applications. 
+Predicting this often requires a trade-off between coverage and accuracy. 
+For a prefetcher to capture highly irregular access patterns, it needs to be highly aggressive (high coverage). 
+That also means the prefetcher would end up recommending a lot of useless prefetches, leading to cache pollution (low accuracy). 
+This effect would get even more pronounced in multi-core scenario where the last level cache is a shared resource. 
+Conversely, a conservative prefetcher would be highly accurate but might not make enough useful predictions.
 
-To this effect we propose <come up with a catchy name> <SPP-Perc>. It's an enhancement to the existing state of the art prefetcher and overcomes the coverage vs accuracy trade-off in a robust manner. The idea is to modify SPP design to make it as aggressive as it can get. This enables SPP to capture complex memory access patterns hence leading to increased coverage. The prefetch suggestions recommended by SPP pass through the perceptron based throttler. Over time, perceptron layer learns to correlate the prefetches recommended by SPP with various available features and eliminate useless prefetches. This leads to an overall increased accuracy of the prefetch scheme and reduction in DRAM traffic.
+To this effect we propose <come up with a catchy name> <SPP-Perc>. 
+It's an enhancement to the existing state of the art prefetcher and overcomes the coverage vs accuracy trade-off in a robust manner. 
+The idea is to modify SPP design to make it as aggressive as it can get. 
+This enables SPP to capture complex memory access patterns hence leading to increased coverage. 
+The prefetch suggestions recommended by SPP pass through the perceptron based throttler. 
+Over time, perceptron layer learns to correlate the prefetches recommended by SPP with various available features and eliminate useless prefetches. 
+This leads to an overall increased accuracy of the prefetch scheme and reduction in DRAM traffic.
 
-\vspace{1ex}This paper talks about SPP-Perc, its merits, analysis and future scope for expansion. The contributions made by this paper are:
+\vspace{1ex}This paper talks about SPP-Perc, its merits, analysis and future scope for expansion. 
+The contributions made by this paper are:
 
 \begin{itemize}
-\item This is the first time where a truly on-line learning neural network based model has been used when it comes to prefetching. The prior works in this area either relied on program semantics [cite] or were application specific [cite] or could not yield a significant improvement over the baseline prefetcher used. [cite]
+\item This is the first time where a truly on-line learning neural network based model has been used when it comes to prefetching. 
+The prior works in this area either relied on program semantics [cite] or were application specific [cite] or could not yield a significant improvement over the baseline prefetcher used. [cite]
 
 \item Coming up with a robust and accurate prefetching mechanism which can yield increased accuracy as compared to the other state of the art prefetchers
 
-\item Designing the prefetcher keeping SPEC 2017 benchmark suite in mind. We have used SPEC 2017 to compare SPP-Perc against the highest performing prefetchers. We have also used our prefetcher to characterize memory intensive benchmarks of the SPEC 2017 suite, with respect to prefetching.
+\item Designing the prefetcher keeping SPEC 2017 benchmark suite in mind. 
+We have used SPEC 2017 to compare SPP-Perc against the highest performing prefetchers. 
+We have also used our prefetcher to characterize memory intensive benchmarks of the SPEC 2017 suite, with respect to prefetching.
 
-\item We came up with an efficient model to use the perceptron output as a representation of the prefetch confidence using an on-line histogram technique. We show how the simple sum can replace the existing mechanism which was essentially based on counting the number of hits for a particular entry in SPP.
+\item We came up with an efficient model to use the perceptron output as a representation of the prefetch confidence using an on-line histogram technique. 
+We show how the simple sum can replace the existing mechanism which was essentially based on counting the number of hits for a particular entry in SPP.
 
 \end{itemize}
 
-We tested SPP-Perc on Champsim, an open source simulator which models an Out-of-Order CPU using. For evaluation, we used SPEC 2017 benchmarks. On a single core configuration, SPP-Perc increases performance of the system by XX\% as compared to the baseline with no prefetching. This outperforms SPP by 3.2\%. On a 4-core system running a mix of memory intensive subset of the SPEC 2017 traces, SPP-Perc saw an improvement of XX\% over the baseline. This was ahead of SPP by 5.5\%. 
+We tested SPP-Perc on Champsim, an open source simulator which models an Out-of-Order CPU using. 
+For evaluation, we used SPEC 2017 benchmarks. 
+On a single core configuration, SPP-Perc increases performance of the system by XX\% as compared to the baseline with no prefetching. 
+This outperforms SPP by 3.2\%. 
+On a 4-core system running a mix of memory intensive subset of the SPEC 2017 traces, SPP-Perc saw an improvement of XX\% over the baseline. 
+This was ahead of SPP by 5.5\%. 
 <Allude to 8 core results>
 <Write about other workloads like Cloudsuite, MLPack>
 
@@ -89,7 +123,9 @@ We tested SPP-Perc on Champsim, an open source simulator which models an Out-of-
 
 \section{Background Work and Motivation}
 
-In this section, we compare the existing work done in the domain of prefetching. We also discuss about some of the interesting memory access patterns seen in the workloads in SPEC 2017 benchmark. The second half of this section deals with a background of Signature Path Prefetcher architecture.
+In this section, we compare the existing work done in the domain of prefetching. 
+We also discuss about some of the interesting memory access patterns seen in the workloads in SPEC 2017 benchmark. 
+The second half of this section deals with a background of Signature Path Prefetcher architecture.
 
 \subsection{Motivation}
 Some of the earliest data prefetchers developed to leverage this locality were stride based [cite:\newline
@@ -115,7 +151,8 @@ With time newer and more intricate prefetchers were introduced. [Cite:\newline
 - Sandbox Prefetching: Safe run-time evaluation of aggressive prefetchers\newline
 ]\newline
 
-Prefetchers often tend to correlate predictions with the past memory access addresses [cite: Making Address-Correlated Prefetching Practical (2010)].  A whole class of streaming prefetchers developed on the lines of Spatial / Temporal Memory Streaming
+Prefetchers often tend to correlate predictions with the past memory access addresses [cite: Making Address-Correlated Prefetching Practical (2010)]. 
+ A whole class of streaming prefetchers developed on the lines of Spatial / Temporal Memory Streaming
 [ Cite:\newline
 - Accurate and Complexity-Effective Spatial Pattern Prediction (2004)\newline
 - Spatial Memory Streaming (2006)\newline
@@ -141,69 +178,163 @@ A related line of work also explored cache replacement: insertion policies and d
 
 \subsection{Perceptron Learning in Architecture}
 
-Perceptron learning for computer architecture design has been around for a while. It was popularized by [cite initial branch prediction paper]. In it's original implementation, the Program Counter of the instruction looking for a branch prediction would index into a given table of perceptron weights. The retrieved weights would then be multiplied with the history of branch outcomes stored in the History Register (which is a feature) in a dot product fashion. The sum obtained is thresholded at 0 \textit{i.e.}, if the prediction y\textsubscript{out} >= 0, the sum is assumed to indicate a  high confidence taken branch \textit{true}. Else the confidence for branch taken is not high enough and the prediction is made as \textit{false}.
+Perceptron learning for computer architecture design has been around for a while. 
+It was popularized by [cite initial branch prediction paper]. 
+In it's original implementation, the Program Counter of the instruction looking for a branch prediction would index into a given table of perceptron weights. 
+The retrieved weights would then be multiplied with the history of branch outcomes stored in the History Register (which is a feature) in a dot product fashion. 
+The sum obtained is thresholded at 0 \textit{i.e.}, if the prediction y\textsubscript{out} >= 0, the sum is assumed to indicate a  high confidence taken branch \textit{true}. 
+Else the confidence for branch taken is not high enough and the prediction is made as \textit{false}.
 
-The structure that we use is derived from the model introduced in [cite piecewise linear branch prediction]. Here the feature itself is used to index into a hash of perceptron weights. This form of indexing makes sure that the hyper-plane learned by the perceptron weights is able to differentiate between linearly inseparable outcomes. <Is it true? Not sure>
+The structure that we use is derived from the model introduced in [cite piecewise linear branch prediction]. 
+Here the feature itself is used to index into a hash of perceptron weights. 
+This form of indexing makes sure that the hyper-plane learned by the perceptron weights is able to differentiate between linearly inseparable outcomes. 
+<Is it true? Not sure>
 
-Perceptron Learning for Reuse Prediction [cite] extended the hash perceptron architecture to perform prediction in context of cache replacement. Perceptron layer can learn to correlate the cache replacement behaviour with a variety of features. Each feature has its dedicated table of perceptron weights which it indexes into. Hence number of tables equals the number of features. Once the perceptron weights from all the tables are obtained, they're summed and thresholded based on a pre-decided value. This led to a prediction mechanism that is highly accurate, has quick learning rate and is adaptable to changing program behaviour. The features introduced in that paper were derived from Program Counters of the current and the last few instructions and the memory address of the current access. Even with such basic features, high level of correlation could be established by perceptrons. 
+Perceptron Learning for Reuse Prediction [cite] extended the hash perceptron architecture to perform prediction in context of cache replacement. 
+Perceptron layer can learn to correlate the cache replacement behaviour with a variety of features. 
+Each feature has its dedicated table of perceptron weights which it indexes into. 
+Hence number of tables equals the number of features. 
+Once the perceptron weights from all the tables are obtained, they're summed and thresholded based on a pre-decided value. 
+This led to a prediction mechanism that is highly accurate, has quick learning rate and is adaptable to changing program behaviour. 
+The features introduced in that paper were derived from Program Counters of the current and the last few instructions and the memory address of the current access. 
+Even with such basic features, high level of correlation could be established by perceptrons. 
 
-The work was further extended by Multiperspective Reuse Prediction[cite], which introduced a varied set of parametric features. Although design space exploration for feature and parameter selection was a non-trivial task, once fixed, it could give a cache replacement predictor highly suitable for the given set of applications.
+The work was further extended by Multiperspective Reuse Prediction[cite], which introduced a varied set of parametric features. 
+Although design space exploration for feature and parameter selection was a non-trivial task, once fixed, it could give a cache replacement predictor highly suitable for the given set of applications.
 \newline
 \newline
-\textit{Deviations From Actual Perceptrons:} Traditionally, a perceptron prediction involves multiplying the vector of input features: F\textsubscript{1xN}, with the corresponding weight vector: W\textsubscript{Nx1} in a dot product fashion to obtain the sum y\textsubscript{out}. Here what we use is a perceptron-like structure. The feature is used to hash into the weight of perceptrons and the retrieved weights are added straight away. This can be seen a dot product of $\vec{1}$\textsubscript{1xN} with W\textsubscript{Nx1}. This way, the perceptron algorithm doesn't introduce any multiplication operations in the inference or training process. Hence what we adapt in this work, is a perceptron-like learning algorithm as it involves the same principle involved in perceptron inferencing and training. For simplicity, we will call our implementation as perceptron implementation.
+\textit{Deviations From Actual Perceptrons:} Traditionally, a perceptron prediction involves multiplying the vector of input features: F\textsubscript{1xN}, with the corresponding weight vector: W\textsubscript{Nx1} in a dot product fashion to obtain the sum y\textsubscript{out}. 
+Here what we use is a perceptron-like structure. 
+The feature is used to hash into the weight of perceptrons and the retrieved weights are added straight away. 
+This can be seen a dot product of $\vec{1}$\textsubscript{1xN} with W\textsubscript{Nx1}. 
+This way, the perceptron algorithm doesn't introduce any multiplication operations in the inference or training process. 
+Hence what we adapt in this work, is a perceptron-like learning algorithm as it involves the same principle involved in perceptron inferencing and training. 
+For simplicity, we will call our implementation as perceptron implementation.
 \newline
 \newline
-\textit{Perceptron Update Rule:} In all the above implementations, a uniform perceptron update principle is being followed. The weights need to be updated if the prediction was wrong or the predicted sum does not cross a certain threshold. After a certain training period, these weights are proportional to the probability of the outcome being true. This training threshold makes sure that the perceptrons are trained till a certain level of confidence and yet they are not over-trained to the given set. Care is taken that the weights saturate at certain positive and negative values so that they remain confined to the bit-width. The same rules will be applied in the discussion done in section 3.2 on SPP-Perc learning algorithm.
+\textit{Perceptron Update Rule:} In all the above implementations, a uniform perceptron update principle is being followed. 
+The weights need to be updated if the prediction was wrong or the predicted sum does not cross a certain threshold. 
+After a certain training period, these weights are proportional to the probability of the outcome being true. 
+This training threshold makes sure that the perceptrons are trained till a certain level of confidence and yet they are not over-trained to the given set. 
+Care is taken that the weights saturate at certain positive and negative values so that they remain confined to the bit-width. 
+The same rules will be applied in the discussion done in section 3.2 on SPP-Perc learning algorithm.
 
 \subsection{Signature Path Prefetcher Architecture}
-Since the work we have done builds heavily on SPP[cite], we are presenting a brief recap of the ideas introduced in the original paper, especially with an eye towards their relevance in our work. Signature Path Prefetcher (SPP) is a lookahead prefetcher and consists of following structural components:
+Since the work we have done builds heavily on SPP[cite], we are presenting a brief recap of the ideas introduced in the original paper, especially with an eye towards their relevance in our work. 
+Signature Path Prefetcher (SPP) is a lookahead prefetcher and consists of following structural components:
 \newline
 \newline
-\textbf{Signature Table:} ST keeps track of 256 most recently accessed pages. It is meant to capture memory access patterns within a page boundary. SPP indexes into an entry of ST using the page number. For each entry corresponding to a page, ST stores the 'last block offset' and 'old signature'. Last block offset is the block offset of the last memory access of that given page. The block offset is calculated with respect to the page boundary. The signature is a 12-bit compressed representation of the past few memory accesses for that page. The signature is calculated as:
+\textbf{Signature Table:} ST keeps track of 256 most recently accessed pages. 
+It is meant to capture memory access patterns within a page boundary. 
+SPP indexes into an entry of ST using the page number. 
+For each entry corresponding to a page, ST stores the 'last block offset' and 'old signature'. 
+Last block offset is the block offset of the last memory access of that given page. 
+The block offset is calculated with respect to the page boundary. 
+The signature is a 12-bit compressed representation of the past few memory accesses for that page. 
+The signature is calculated as:
 $$New Signature = (\,Old Signature << 3 bits\,) \;\;XOR\;\; (\,Delta\,)$$ 
 In case a matching page entry is found, the stored signature in the corresponding entry is retrieved.
 \newline
 \newline
-Consider the case that incoming page number 10 with a block offset 3 finds a match in the ST. The retrieved pattern signature is 0x30 and the Last Offset is 1. Since now there is the Last Block Offset (1), Incoming Block Offset (3), Old Signature (0x30), and New Signature calculated as per above equation (0x182), SPP can infer non-speculatively that the given pattern of memory accesses (as captured in the Old Signature) leads to the particular Delta. In general, Delta is defined as the difference between the prefetch suggestion block and the initial block which triggered the prefetch. In this case, since SPP is in learning phase, it is defined as the difference between the Incoming Block Offset and the Last Block Offset (+2 in this case). This, in turn generates the new memory pattern (New Signature). This newly learned signature pattern and the delta is stored in the Pattern Table.
+Consider the case that incoming page number 10 with a block offset 3 finds a match in the ST. 
+The retrieved pattern signature is 0x30 and the Last Offset is 1. 
+Since now there is the Last Block Offset (1), Incoming Block Offset (3), Old Signature (0x30), and New Signature calculated as per above equation (0x182), SPP can infer non-speculatively that the given pattern of memory accesses (as captured in the Old Signature) leads to the particular Delta. 
+In general, Delta is defined as the difference between the prefetch suggestion block and the initial block which triggered the prefetch. 
+In this case, since SPP is in learning phase, it is defined as the difference between the Incoming Block Offset and the Last Block Offset (+2 in this case). 
+This, in turn generates the new memory pattern (New Signature). 
+This newly learned signature pattern and the delta is stored in the Pattern Table.
 \newline
 \newline
-\textbf{Pattern Table:} The PT is indexed by the signature generated from ST. PT holds predicted delta patterns and their confidence estimates. Each entry indexed by the signature holds up to 4 unique delta predictions. This is implemented by making PT as a 4-way associative table. To measure an estimate of a delta confidence, PT implements two counters: C\textsubscript{sig} for each entry indexed by the signature and C\textsubscript{delta} for each delta entry for a given signature. More details of this on-line score-keeping mechanism is described under Confidence Tracking discussion.
+\textbf{Pattern Table:} The PT is indexed by the signature generated from ST. 
+PT holds predicted delta patterns and their confidence estimates. 
+Each entry indexed by the signature holds up to 4 unique delta predictions. 
+This is implemented by making PT as a 4-way associative table. 
+To measure an estimate of a delta confidence, PT implements two counters: C\textsubscript{sig} for each entry indexed by the signature and C\textsubscript{delta} for each delta entry for a given signature. 
+More details of this on-line score-keeping mechanism is described under Confidence Tracking discussion.
 
-\textit{Lookahead Prefetching:} For each trigger to the prefetcher, the first time that the SPP indexes into the PT, it does so in the non-speculative manner. We call it non-speculative because the parameters which SPP uses to predict, like last block offset, incoming block offset and signature are well-defined. Assuming PT generates a valid delta prediction (rather, up to 4 valid deltas), SPP enters into the lookahead mode.
+\textit{Lookahead Prefetching:} For each trigger to the prefetcher, the first time that the SPP indexes into the PT, it does so in the non-speculative manner. 
+We call it non-speculative because the parameters which SPP uses to predict, like last block offset, incoming block offset and signature are well-defined. 
+Assuming PT generates a valid delta prediction (rather, up to 4 valid deltas), SPP enters into the lookahead mode.
 
-In the lookahead mode, SPP looks at the last generated delta(s), chooses the one with the highest confidence and speculatively generates the new effective address and the new confidence. Using these new parameters, it re-accesses the PT to generate further prefetches. SPP keeps on repeating this cycle of accessing PT and updating the signature based on highest confidence prefetch from the last iteration. These number of iterations are characterized by the 'depth' till which SPP manages to predict prefetch entries in the lookahead manner. While doing this, SPP also keeps compounding the confidence in each depth. Thus as depth increases, overall confidence keeps decreasing. This makes sense since we are going deeper into the speculation path. When the confidence falls below a pre-defined threshold, SPP stops further lookahead iterations
+In the lookahead mode, SPP looks at the last generated delta(s), chooses the one with the highest confidence and speculatively generates the new effective address and the new confidence. 
+Using these new parameters, it re-accesses the PT to generate further prefetches. 
+SPP keeps on repeating this cycle of accessing PT and updating the signature based on highest confidence prefetch from the last iteration. 
+These number of iterations are characterized by the 'depth' till which SPP manages to predict prefetch entries in the lookahead manner. 
+While doing this, SPP also keeps compounding the confidence in each depth. 
+Thus as depth increases, overall confidence keeps decreasing. 
+This makes sense since we are going deeper into the speculation path. 
+When the confidence falls below a pre-defined threshold, SPP stops further lookahead iterations
 \newline
 \newline
-\textbf{Global History Register:} One of the innovative ideas introduced in SPP was GHR, which bootstraps learning across page boundaries. GHR is a small 8-entry fully associative structure. 
+\textbf{Global History Register:} One of the innovative ideas introduced in SPP was GHR, which bootstraps learning across page boundaries. 
+\textbf{Global History Register:} One of the innovative ideas introduced in SPP was GHR, which bootstraps learning across page boundaries. 
+GHR is a small 8-entry fully associative structure. 
 
-Consider a scenario where the prefetch delta suggested by block offset 60 in page A is +6 and at that instant say the signature was 0x25. It means that the prefetch crosses page boundary. Instead of discarding this as a useless prefetch attempt, SPP stores the signature (0x25), last offset (60), delta (+6) and the confidence (say 0.72) in the GHR. This corresponds to block offset of 66 (=60 + 6). Since there are only 64 blocks per page, block 66 corresponds to 66 \% 64 = 2 \textit{i.e.}, block offset 2 in the new page. This new page can be any arbitrary new page which has not yet been caches in the Signature Table.
+Consider a scenario where the prefetch delta suggested by block offset 60 in page A is +6 and at that instant say the signature was 0x25. 
+It means that the prefetch crosses page boundary. 
+Instead of discarding this as a useless prefetch attempt, SPP stores the signature (0x25), last offset (60), delta (+6) and the confidence (say 0.72) in the GHR. 
+This corresponds to block offset of 66 (=60 + 6). 
+Since there are only 64 blocks per page, block 66 corresponds to 66 \% 64 = 2 \textit{i.e.}, block offset 2 in the new page. 
+This new page can be any arbitrary new page which has not yet been caches in the Signature Table.
 This is demonstrated in Fig. \_\_ <insert GHR Figure>
 
-Now suppose that after some arbitrary number of cycles, first prefetch request from block 2 in page B is initiated. This will lead to a miss in ST as no signature corresponding to page B exists in ST. Instead of not attempting any prefetch, SPP will search the GHR for a possible match. It does so by calculating the effective offset pointed by the last offset and the delta entries in the GHR. It sees that the signature 0x25 has the last offset of 60 and predicted delta as +6 and that corresponds to effective block offset of +2. Since this matches the block offset of page B that saw a miss in the ST, SPP will retrieve the corresponding signature (0x25) from the GHR and proceed to form the new signature: with 0x25 and +2 as the inputs \textit{i.e.}, 0x12A. SPP continues prefetching using this signature and also stores this in ST corresponding to page B. <Insert GHR image>
+Now suppose that after some arbitrary number of cycles, first prefetch request from block 2 in page B is initiated. 
+This will lead to a miss in ST as no signature corresponding to page B exists in ST. 
+Instead of not attempting any prefetch, SPP will search the GHR for a possible match. 
+It does so by calculating the effective offset pointed by the last offset and the delta entries in the GHR. 
+It sees that the signature 0x25 has the last offset of 60 and predicted delta as +6 and that corresponds to effective block offset of +2. 
+Since this matches the block offset of page B that saw a miss in the ST, SPP will retrieve the corresponding signature (0x25) from the GHR and proceed to form the new signature: with 0x25 and +2 as the inputs \textit{i.e.}, 0x12A. 
+SPP continues prefetching using this signature and also stores this in ST corresponding to page B. <Insert GHR image>
 \newline
 \newline
-\textbf{Prefetch Filter:} SPP also introduced the concept of Prefetch Filter - a 1024 entry 1-way associative table which keeps a record of last few entries prefetched by SPP. This proves useful for following reasons:
+\textbf{Prefetch Filter:} SPP also introduced the concept of Prefetch Filter - a 1024 entry 1-way associative table which keeps a record of last few entries prefetched by SPP. 
+This proves useful for following reasons:
 \begin{itemize}
     \item \textbf{Eliminating duplicate prefetches}\newline 
-    Any subsequent prefetches recommended by SPP mechanism is checked against the existing entries in Prefetch Filter. If a valid entry is found, it means that the particular cache line is already either in L2 Cache or being fetched. Hence there is no need to issue a duplicate prefetch.
+    Any subsequent prefetches recommended by SPP mechanism is checked against the existing entries in Prefetch Filter. 
+If a valid entry is found, it means that the particular cache line is already either in L2 Cache or being fetched. 
+Hence there is no need to issue a duplicate prefetch.
     
     \item \textbf{Updating prefetcher}\newline
-    If a subsequent demand access comes before eviction for a prefetch that was recommended by SPP, various components of SPP are updated to reflect that this was a good prefetch. Correspondingly, if a prefetched cache line is evicted without being demand hit even once, SPP learns that this was a useless prefetch and updates the various tables accordingly
+    If a subsequent demand access comes before eviction for a prefetch that was recommended by SPP, various components of SPP are updated to reflect that this was a good prefetch. 
+Correspondingly, if a prefetched cache line is evicted without being demand hit even once, SPP learns that this was a useless prefetch and updates the various tables accordingly
     
     \item \textbf{Tracking Global Accuracy}\newline
-    PF keeps a track of usefulness of the prefetches by introducing 2 counters: C\textsubscript{total} to track the total number of prefetches getting recorded in the PF and C\textsubscript{useful} to keep a track of which prefetches recorded in the PF led to a demand hit. The ratio C\textsubscript{useful} / C\textsubscript{total} is the global accuracy for the prefetching scheme. It is represented as $\alpha$ in the paper. The global accuracy acts a real-time throttler for the path confidence value as depicted in the following discussion.
+    PF keeps a track of usefulness of the prefetches by introducing 2 counters: C\textsubscript{total} to track the total number of prefetches getting recorded in the PF and C\textsubscript{useful} to keep a track of which prefetches recorded in the PF led to a demand hit. 
+The ratio C\textsubscript{useful} / C\textsubscript{total} is the global accuracy for the prefetching scheme. 
+It is represented as $\alpha$ in the paper. 
+The global accuracy acts a real-time throttler for the path confidence value as depicted in the following discussion.
 \end{itemize}
-\textbf{Confidence Tracking}: The PT keeps a track of hits to each signature through a counter C\textsubscript{sig}. The number of hits for a given delta per signature are tracked using a counter C\textsubscript{delta}. The confidence for a given delta is approximated through C\textsubscript{d} = C\textsubscript{delta} / C\textsubscript{sig}. When SPP enters into a lookahead mode, the path confidence P\textsubscript{d} is given as:
-$$P\textsubscript{d} \;=\; \alpha  \;.\;  C\textsubscript{d}  \;.\;  P\textsubscript{d-1}$$ where $\alpha$ is called the global accuracy and is calculated as shown in the Prefetch Filter section. The range of global accuracy is in [0,1]. The lower the value of $\alpha$ for a given trace or a program phase, the overall confidence is scaled down and this makes SPP less aggressive for the upcoming prefetches.
+\textbf{Confidence Tracking}: The PT keeps a track of hits to each signature through a counter C\textsubscript{sig}. 
+The number of hits for a given delta per signature are tracked using a counter C\textsubscript{delta}. 
+The confidence for a given delta is approximated through C\textsubscript{d} = C\textsubscript{delta} / C\textsubscript{sig}. 
+When SPP enters into a lookahead mode, the path confidence P\textsubscript{d} is given as:
+$$P\textsubscript{d} \;=\; \alpha  \;.\;  C\textsubscript{d}  \;.\;  P\textsubscript{d-1}$$ where $\alpha$ is called the global accuracy and is calculated as shown in the Prefetch Filter section. 
+The range of global accuracy is in [0,1]. 
+The lower the value of $\alpha$ for a given trace or a program phase, the overall confidence is scaled down and this makes SPP less aggressive for the upcoming prefetches.
 
-Here d is the lookahead depth. For d = 1, when SPP is in non-speculative mode, P\textsubscript{0} can be thought of as 1. Once SPP enters into speculative mode, it calculates the path confidence as a product of confidence of the individual prefetches encountered along that path, further scaled using $\alpha$. The final P\textsubscript{d} is thresholded against prefetching-threshold (T\textsubscript{p}) to decide whether to prefetch or not. If yes, then P\textsubscript{d} is thresholded against a numerically bigger fill-threshold (T\textsubscript{f}) to decide whether the prefetch should be sent to L2 Cache (high confidence prefetch) or Last Level Cache (low confidence prefetch)
+Here d is the lookahead depth. 
+For d = 1, when SPP is in non-speculative mode, P\textsubscript{0} can be thought of as 1. 
+Once SPP enters into speculative mode, it calculates the path confidence as a product of confidence of the individual prefetches encountered along that path, further scaled using $\alpha$. 
+The final P\textsubscript{d} is thresholded against prefetching-threshold (T\textsubscript{p}) to decide whether to prefetch or not. 
+If yes, then P\textsubscript{d} is thresholded against a numerically bigger fill-threshold (T\textsubscript{f}) to decide whether the prefetch should be sent to L2 Cache (high confidence prefetch) or Last Level Cache (low confidence prefetch)
 \newline<Insert a comprehensive figure about SPP structures>
 \newline<Insert another detailed picture about SPP data-path flow>
 
 \subsection{Case for an On-line Throttler}
-As compared to some of the other state of the art prefetchers [BOP], SPP is a far less aggressive prefetcher. In the single core environment, this gives BOP an edge as there is no resource contention among the different cores. Hence more aggressive prefetching is bound to prove beneficial. As we increase the core count, we observe that SPP starts outperforming rest of the prefetchers. This can be attributed to the fact that each prefetch suggested by SPP is a carefully calculated one and that prevents cache pollution. <Figure showing the variation of SPP vs BOP wrt core count>. For 4-core applications, SPP suggests XX\% fewer prefetches than BOP and yet leads to higher IPC.
+As compared to some of the other state of the art prefetchers [BOP], SPP is a far less aggressive prefetcher. 
+In the single core environment, this gives BOP an edge as there is no resource contention among the different cores. 
+Hence more aggressive prefetching is bound to prove beneficial. 
+As we increase the core count, we observe that SPP starts outperforming rest of the prefetchers. 
+This can be attributed to the fact that each prefetch suggested by SPP is a carefully calculated one and that prevents cache pollution. <Figure showing the variation of SPP vs BOP wrt core count>. 
+For 4-core applications, SPP suggests XX\% fewer prefetches than BOP and yet leads to higher IPC.
 
-The above analysis shows that with a more careful throttling mechanism, SPP can be tuned to become much more aggressive, leading to increased coverage. The onus of maintaining the accuracy now falls on the independent throttler. To test the hypothesis, we tuned down SPP to the minimum possible threshold. Only by doing this we managed to increase the SPP coverage by XX\%. Obviously this came at a cost of increased DRAM traffic and cache pollution. To that effect, we introduce an independent on-line learning perceptron based throttling mechanism.
+The above analysis shows that with a more careful throttling mechanism, SPP can be tuned to become much more aggressive, leading to increased coverage. 
+The onus of maintaining the accuracy now falls on the independent throttler. 
+To test the hypothesis, we tuned down SPP to the minimum possible threshold. 
+Only by doing this we managed to increase the SPP coverage by XX\%. 
+Obviously this came at a cost of increased DRAM traffic and cache pollution. 
+To that effect, we introduce an independent on-line learning perceptron based throttling mechanism.
 
 \section{SPP-Perc}
 
@@ -212,39 +343,84 @@ To modify the SPP Design to suit our scheme, the following changes were made:
 
 \begin{itemize}
 \item \textbf{FILL\_THRESHOLD  discarded}\newline
-In the original SPP design, internal confidence mechanism was developed. That confidence was compared against a preset FILL \textunderscore THRESHOLD (T\textsubscript{f}) to decide whether a prefetch should be sent to L2 Cache or Last Level Cache. Its value was 90 on the scale of 0 to 100. In SPP-Perc, the perceptron sum is used to make that decision. Hence FILL\_THRESHOLD was no longer needed
+In the original SPP design, internal confidence mechanism was developed. 
+That confidence was compared against a preset FILL \textunderscore THRESHOLD (T\textsubscript{f}) to decide whether a prefetch should be sent to L2 Cache or Last Level Cache. 
+Its value was 90 on the scale of 0 to 100. 
+In SPP-Perc, the perceptron sum is used to make that decision. 
+Hence FILL\_THRESHOLD was no longer needed
 
 \item \textbf{PF\_THRESHOLD reduced}\newline
-SPP design used this threshold to decide whether to do prefetch or not. This threshold (T\textsubscript{p}) was set to 25. Since the new perceptron mechanism is used to make this decision now, this was reduced all the way down to 1. It was not set to 0 for preventing non-throttled lookahead running. SPP confidence mechanism multiplies the confidence of each lookahead depth with the previous one to get the cumulative confidence - on the integer scale of 0 to 100. It was observed that once the lookahead depth falls below one, it essentially becomes 0 since we are limiting the multiplication to integer only. Confidence multiplication for subsequent lookahead depths still yield 0 and prefetching keeps happening. This causes a lot of unnecessary prefetches, leading to cache pollution. To mitigate this, the PF\_THRESHOLD was set to the next possible value i.e. 1. 
+SPP design used this threshold to decide whether to do prefetch or not. 
+This threshold (T\textsubscript{p}) was set to 25. 
+Since the new perceptron mechanism is used to make this decision now, this was reduced all the way down to 1. 
+It was not set to 0 for preventing non-throttled lookahead running. 
+SPP confidence mechanism multiplies the confidence of each lookahead depth with the previous one to get the cumulative confidence - on the integer scale of 0 to 100. 
+It was observed that once the lookahead depth falls below one, it essentially becomes 0 since we are limiting the multiplication to integer only. 
+Confidence multiplication for subsequent lookahead depths still yield 0 and prefetching keeps happening. 
+This causes a lot of unnecessary prefetches, leading to cache pollution. 
+To mitigate this, the PF\_THRESHOLD was set to the next possible value i.e. 1. 
 
 
 \item \textbf{Looking at L2 MSHR Queue while prefetching}\newline
-Original SPP would not consider the slots available in the L2 MSHR queue. It had an assumption that at no time can the number of prefetches suggested by SPP could exceed the capacity of the queue. While it was not proven in the paper, the internal confidence mechanism along with the thresholds made sure that the above assumption was maintained. In SPP-Perc since there can be no assumption on the degree of aggressiveness - because SPP is being tuned to its lowest thresholds, we had to explicitly make sure that at no point do the number of suggested prefetches exceed L2 MSHR queue.
+Original SPP would not consider the slots available in the L2 MSHR queue. 
+It had an assumption that at no time can the number of prefetches suggested by SPP could exceed the capacity of the queue. 
+While it was not proven in the paper, the internal confidence mechanism along with the thresholds made sure that the above assumption was maintained. 
+In SPP-Perc since there can be no assumption on the degree of aggressiveness - because SPP is being tuned to its lowest thresholds, we had to explicitly make sure that at no point do the number of suggested prefetches exceed L2 MSHR queue.
 
 \item \textbf{Enhanced Filter}\newline
-Original SPP introduces a concept of Prefetch Filter, which keeps a track of up to 1024 L2 Cache prefetches suggested by SPP. The Filter was modified to store meta-data like program counter, memory access address etc. This is needed to train the perceptron when the result of that particular prefetch gets available. At training time, this data is used to retrieve the state of the prefetcher when the prediction was made.
+Original SPP introduces a concept of Prefetch Filter, which keeps a track of up to 1024 L2 Cache prefetches suggested by SPP. 
+The Filter was modified to store meta-data like program counter, memory access address etc. 
+This is needed to train the perceptron when the result of that particular prefetch gets available. 
+At training time, this data is used to retrieve the state of the prefetcher when the prediction was made.
 
 \item \textbf{Reject Filter introduced}\newline
-The Prefetch Filter mentioned above keeps a track of the prefetches that actually happened in the L2 Cache. Correspondingly, we introduced a reject filter. It keeps a track of the prefetches that were suggested by the base SPP engine but were rejected by the perceptron. In case it is detected that a future demand fetch could have used this rejected prefetch, the perceptron weights are updated to reflect the same
+The Prefetch Filter mentioned above keeps a track of the prefetches that actually happened in the L2 Cache. 
+Correspondingly, we introduced a reject filter. 
+It keeps a track of the prefetches that were suggested by the base SPP engine but were rejected by the perceptron. 
+In case it is detected that a future demand fetch could have used this rejected prefetch, the perceptron weights are updated to reflect the same
 
 \end{itemize}
 
 \subsection{The Perceptron Layer}
-As discussed earlier, the perceptron layer was introduced to act as a throttler to the underlying SPP engine. This section explores the details of the perceptron layer and the range of features that are ultimately used by the perceptron for correlating the prefetches.
+As discussed earlier, the perceptron layer was introduced to act as a throttler to the underlying SPP engine. 
+This section explores the details of the perceptron layer and the range of features that are ultimately used by the perceptron for correlating the prefetches.
 
-The neural network weights are stored in a 12-bit indexed (4096 entries deep) table. A single entry in the table is a 5 bit counter - saturating at -16 or +15. Each feature gets its own dedicated table. Our proposed design uses 17 features. The design space exploration and the intuition behind these features is explained in section\_\_. Hence there are 4096 * 17 5-bit entries which hold the weights of the perceptron layer. As the program execution begins, all the weights are initialized to 0.
+The neural network weights are stored in a 12-bit indexed (4096 entries deep) table. 
+A single entry in the table is a 5 bit counter - saturating at -16 or +15. 
+Each feature gets its own dedicated table. 
+Our proposed design uses 17 features. 
+The design space exploration and the intuition behind these features is explained in section\_\_. 
+Hence there are 4096 * 17 5-bit entries which hold the weights of the perceptron layer. 
+As the program execution begins, all the weights are initialized to 0.
 \newline
 \newline
 \textbf{INFERENCING}\newline
-In the Champsim simulator, the prefetching method is triggered at L2 Cache demand access. At that point, the prefetcher has the option to do or not do prefetch - in case it does, then how many cache lines to prefetch. The suggested prefetches can be places either in L2 Cache or in Last Level Cache. The prefetcher gets to decide this, and is usually done based on an internal confidence mechanism.
+In the Champsim simulator, the prefetching method is triggered at L2 Cache demand access. 
+At that point, the prefetcher has the option to do or not do prefetch - in case it does, then how many cache lines to prefetch. 
+The suggested prefetches can be places either in L2 Cache or in Last Level Cache. 
+The prefetcher gets to decide this, and is usually done based on an internal confidence mechanism.
 
-When SPP gets triggered, it suggests up to 4 (=Associativity of the Pattern Table) candidates for prefetch based on the demand access address. In each subsequent lookahead depth, SPP suggests up to 4 more prefetch candidates, as explained in section\_\_. All these recommended prefetches are tested in the perceptron throttler before they can access the Prefetch Filter, as in the original SPP data-path.
+When SPP gets triggered, it suggests up to 4 (=Associativity of the Pattern Table) candidates for prefetch based on the demand access address. 
+In each subsequent lookahead depth, SPP suggests up to 4 more prefetch candidates, as explained in section\_\_. 
+All these recommended prefetches are tested in the perceptron throttler before they can access the Prefetch Filter, as in the original SPP data-path.
 
-The perceptron looks at the micro-architectural state, or 'features', at that instant. Each feature indexes into the hash of 4096 entry table dedicated to itself. Feature \#1 indexes into a particular entry in table \#1 and so on. The choice of each feature and the intuition behind them is discussed in section 4.5.
+The perceptron looks at the micro-architectural state, or 'features', at that instant. 
+Each feature indexes into the hash of 4096 entry table dedicated to itself. 
+Feature \#1 indexes into a particular entry in table \#1 and so on. 
+The choice of each feature and the intuition behind them is discussed in section 4.5.
 
-Once all the weights are retrieved, they are added together, much like the traditional perceptron dot product. On obtaining the overall sum, it is thresholded based on the preset threshold PERC\_THRESHOLD\_LO. Only the prefetch candidates with the perceptron sum higher that the threshold qualify for prefetching. The prefetches that qualified the perceptron throttler stage go through the PF stage, just as in SPP design. In SPP-Perc, all the meta-data that is required to recreate the features is also stored in the PF. At a later stage, when the feedback of the current prefetched line is available, the stored data can be used to train the perceptron. 
+Once all the weights are retrieved, they are added together, much like the traditional perceptron dot product. 
+On obtaining the overall sum, it is thresholded based on the preset threshold PERC\_THRESHOLD\_LO. 
+Only the prefetch candidates with the perceptron sum higher that the threshold qualify for prefetching. 
+The prefetches that qualified the perceptron throttler stage go through the PF stage, just as in SPP design. 
+In SPP-Perc, all the meta-data that is required to recreate the features is also stored in the PF. 
+At a later stage, when the feedback of the current prefetched line is available, the stored data can be used to train the perceptron. 
 
-In addition to the Prefetch Filter mentioned above, SPP-Perc also maintains a 'Reject Filter'. Reject filter is a 1024-entry deep 1-way associative table. In case that a prefetch suggestion is rejected by perceptron throttler, it instead gets logged into the 'Reject Filter'. RF keeps track of 1024 <can be reduced considerably> entries that were suggested by the Pattern Table but got rejected by the perceptron throttler. This can be used to train the perceptron to avoid false negatives \textit{i.e.}, cases where prediction was to reject the prefetch but the prefetch would have been useful.
+In addition to the Prefetch Filter mentioned above, SPP-Perc also maintains a 'Reject Filter'. 
+Reject filter is a 1024-entry deep 1-way associative table. 
+In case that a prefetch suggestion is rejected by perceptron throttler, it instead gets logged into the 'Reject Filter'. 
+RF keeps track of 1024 <can be reduced considerably> entries that were suggested by the Pattern Table but got rejected by the perceptron throttler. 
+This can be used to train the perceptron to avoid false negatives \textit{i.e.}, cases where prediction was to reject the prefetch but the prefetch would have been useful.
 \begin{table}[]
     \centering
     \begin{tabular}{|l|c|p{4.6cm}|}
@@ -268,25 +444,49 @@ In addition to the Prefetch Filter mentioned above, SPP-Perc also maintains a 'R
     \label{tab:PF_metadata}
 \end{table}
 
-The above generated perceptron sum is also used to decide L2 Cache vs Last Level Cache placement of the prefetch. A high confidence prefetch is represented by a higher perceptron sum; and vice-versa. We introduce another threshold - PERC\_THRESHOLD \_HI. Any prefetch with the perceptron sum higher than this threshold becomes a L2 Cache prefetch. Any prefetch with the perceptron sum lower than this threshold goes to Last Level Cache.
+The above generated perceptron sum is also used to decide L2 Cache vs Last Level Cache placement of the prefetch. 
+A high confidence prefetch is represented by a higher perceptron sum; and vice-versa. 
+We introduce another threshold - PERC\_THRESHOLD \_HI. 
+Any prefetch with the perceptron sum higher than this threshold becomes a L2 Cache prefetch. 
+Any prefetch with the perceptron sum lower than this threshold goes to Last Level Cache.
 
-The two thresholds: PERC\_THRESHOLD\_LO and PERC \_THRESHOLD\_HI were empirically set. It is ensured that numerically PERC\_ THRESHOLD\_HI is greater than or equal to PERC\_THRESHOLD\_Lo.
+The two thresholds: PERC\_THRESHOLD\_LO and PERC \_THRESHOLD\_HI were empirically set. 
+It is ensured that numerically PERC\_ THRESHOLD\_HI is greater than or equal to PERC\_THRESHOLD\_Lo.
 
-As previously stated, an enhancement to the original SPP design includes storing all the meta-data describing the program state at the instant of prefetching, in the Prefetch Filter. This information is useful when the perceptron needs to be updated subsequently. Table \ref{tab:PF_metadata} depicts the meta-data stored for each entry in the Prefetch Filter.\newline
+As previously stated, an enhancement to the original SPP design includes storing all the meta-data describing the program state at the instant of prefetching, in the Prefetch Filter. 
+This information is useful when the perceptron needs to be updated subsequently. 
+Table \ref{tab:PF_metadata} depicts the meta-data stored for each entry in the Prefetch Filter.\newline
 \newline
 \textbf{TRAINING}\newline
-In the prefetching environment, feedback of a prefetch is received whenever there is an eviction or a demand access from L2 Cache. This acts as a trigger to update all the baseline SPP entries and to also train the perceptron throttler. Training of the perceptron throttler involves restoring the meta-data that was stored in Prefetch Filter or the Reject Filter. This is done by indexing into the corresponding filters using the cache line address of the block being used to train. (10-bits indexing + 6-bits tag matching). Once the state of the program at the time of prefetching is available, it is used to index into the perceptron weights table. 
+In the prefetching environment, feedback of a prefetch is received whenever there is an eviction or a demand access from L2 Cache. 
+This acts as a trigger to update all the baseline SPP entries and to also train the perceptron throttler. 
+Training of the perceptron throttler involves restoring the meta-data that was stored in Prefetch Filter or the Reject Filter. 
+This is done by indexing into the corresponding filters using the cache line address of the block being used to train. (10-bits indexing + 6-bits tag matching). 
+Once the state of the program at the time of prefetching is available, it is used to index into the perceptron weights table. 
 
 
-If a demand access block which triggers the training  was tagged as a valid prefetch in the Prefetch Filter, it means that the earlier prefetch prediction was correct. In that case the perceptron weights are incremented by 1 if the predicted sum does not cross a pre-defined threshold.  In case it is a cache block eviction that led to training and the corresponding valid entry was found in the Prefetch Filter, it shows that the prediction made by the perceptron was wrong. Perceptron should have ideally rejected the prefetch suggestion as a low-confidence prefetch. Here the weights are decremented by 1 to reflect the same. In either case, weights are saturated at -16 or +15.
 
-A secondary training mechanism also kicks in during demand fetches. Before the demand access triggers the next set of prefetches, it checks the Reject Filter for the valid entry. In case it is a hit, that means that the corresponding cache line was initially suggested by the underlying SPP engine but rejected by the perceptron throttler. This means that perceptron should have been more confident about that particular prefetch. Once such a scenario is identified, the state of the execution at the time of prefetch is retrieved from the Reject Table. The retrieved data is used to index into the various weights tables of the perceptron and the corresponding values are updated by +1, saturating between and -16 and +15. This update reflects increased confidence for the prediction corresponding to that prefetch.  
+If a demand access block which triggers the training  was tagged as a valid prefetch in the Prefetch Filter, it means that the earlier prefetch prediction was correct. 
+In that case the perceptron weights are incremented by 1 if the predicted sum does not cross a pre-defined threshold. 
+ In case it is a cache block eviction that led to training and the corresponding valid entry was found in the Prefetch Filter, it shows that the prediction made by the perceptron was wrong. 
+Perceptron should have ideally rejected the prefetch suggestion as a low-confidence prefetch. 
+Here the weights are decremented by 1 to reflect the same. 
+In either case, weights are saturated at -16 or +15.
+
+A secondary training mechanism also kicks in during demand fetches. 
+Before the demand access triggers the next set of prefetches, it checks the Reject Filter for the valid entry. 
+In case it is a hit, that means that the corresponding cache line was initially suggested by the underlying SPP engine but rejected by the perceptron throttler. 
+This means that perceptron should have been more confident about that particular prefetch. 
+Once such a scenario is identified, the state of the execution at the time of prefetch is retrieved from the Reject Table. 
+The retrieved data is used to index into the various weights tables of the perceptron and the corresponding values are updated by +1, saturating between and -16 and +15. 
+This update reflects increased confidence for the prediction corresponding to that prefetch.  
 
 \subsection{Features used by Perceptron}
 
 Here we discuss the various features which help correlate some aspect of prefetching with the program behaviour
 \begin{itemize}
-\item Base address of the demand access which triggered the prefetch. Since prefetch especially tend to be triggered from the L2 demand access, they tend to be correlated with the triggering address.
+\item Base address of the demand access which triggered the prefetch. 
+Since prefetch especially tend to be triggered from the L2 demand access, they tend to be correlated with the triggering address.
 \item The cache line: It is derived from the base address as base\_addr >> LOG2\_BLOCK\_SIZE
 \item Page address : Calculated as base\_addr >> LOG2\_PAGE\_ SIZE
 \item Current Signature : The 12-bit signature used by SPP to index into the Pattern Table
@@ -294,7 +494,11 @@ Here we discuss the various features which help correlate some aspect of prefetc
 \item Delta : The signed version of the difference in the block address that triggers the prefetch and the block address of the data being prefetched.
 \item Last Signature : SPP keeps a track of per-page last signature from which it derives the current signature
 \item Program Counter of the Load instruction that triggers that particular prefetch
-\item Program Counter of the previous i instructions that access LLC, shifted right by an increasing number. This can be represented as: PC\textsubscript{i} >> i, i in \{1,2,3\}. The rational here is that shifted bits of the previous PCs allow the perceptron to have an approximate idea of the neighbourhood of the current instruction. By right shifting the PCs which look back further into the past, we can gain a wider perspective of the past events. Example: rather than correlating with PC\textsubscript{2}, this allows SPP-Perc to correlate program behaviour with the 4-byte region around PC\textsubscript{2}.
+\item Program Counter of the previous i instructions that access LLC, shifted right by an increasing number. 
+This can be represented as: PC\textsubscript{i} >> i, i in \{1,2,3\}. 
+The rational here is that shifted bits of the previous PCs allow the perceptron to have an approximate idea of the neighbourhood of the current instruction. 
+By right shifting the PCs which look back further into the past, we can gain a wider perspective of the past events. 
+Example: rather than correlating with PC\textsubscript{2}, this allows SPP-Perc to correlate program behaviour with the 4-byte region around PC\textsubscript{2}.
 \item PC\textsubscript{1} XOR PC\textsubscript{2} XOR PC\textsubscript{3}: This tells SPP-Perc about the path that led to the current demand access and helps capture and branching information of the current basic block.
 \item Base address XOR Delta : This feature captures if any particular delta is highly favoured by a given trigger address
 \item Cache line XOR Delta : This feature captures if any particular delta is highly favoured by a given cache line address
@@ -311,7 +515,9 @@ As noted above, each feature indexes into its independent entry of perceptron we
 
 \section{EVALUATION}
 \subsection{Performance Model}
-For testing and comparing SPP-Perc, we use Champsim[cite] simulator. Champsim is an enhanced version of the framework that was used for the 2nd Data Prefetch Championship[cite]. We model model a 1-core / 4-core / 8-core Out of Order machine with the following configuration:  
+For testing and comparing SPP-Perc, we use Champsim[cite] simulator. 
+Champsim is an enhanced version of the framework that was used for the 2nd Data Prefetch Championship[cite]. 
+We model model a 1-core / 4-core / 8-core Out of Order machine with the following configuration:  
 
 \begin{itemize}
     \item Cache block size: 64 KB
@@ -320,10 +526,17 @@ For testing and comparing SPP-Perc, we use Champsim[cite] simulator. Champsim is
     \item 16 way 2 MB / core shared Last Level Cache
     \item 4 GB Single Channel DRAM for single-core and 8 GB Double Channel DRAM for multi-core
 \end{itemize}
-Prefetching was only triggered at L2 Cache demand accesses but could be sent to L2 Cache or Last Level Cache. No L1 Data level prefetching was done. LRU replacement policy was used on all levels of cache hierarchies. Branch prediction was done using a gshare branch predictor <Try perceptron predictor here>. Page size was kept as 4KB. Champsim operates all the prefetchers strictly in the physical address space.
+Prefetching was only triggered at L2 Cache demand accesses but could be sent to L2 Cache or Last Level Cache. 
+No L1 Data level prefetching was done. 
+LRU replacement policy was used on all levels of cache hierarchies. 
+Branch prediction was done using a gshare branch predictor <Try perceptron predictor here>. 
+Page size was kept as 4KB. 
+Champsim operates all the prefetchers strictly in the physical address space.
 
 \subsection{Testing Under Additional Memory Constraints}
-The default single-core configuration simulates a 2MB LLC and a single channel DRAM with 12.8GB/s bandwidth. We extend the simulations to include memory constraints introduced in DPC-2. Specifically we look at the following two variations:
+The default single-core configuration simulates a 2MB LLC and a single channel DRAM with 12.8GB/s bandwidth. 
+We extend the simulations to include memory constraints introduced in DPC-2. 
+Specifically we look at the following two variations:
 \begin{itemize}
     \item \textit{Low Bandwidth DRAM}: Here the DRAM bandwidth is limited to 3.2 GB/s
     \item \textit{Small LLC}: In this scenario, LLC size is reduced to 512 KB
@@ -331,38 +544,79 @@ The default single-core configuration simulates a 2MB LLC and a single channel D
 All the multi-core simulations are only done in the default configuration.
 
 \subsection{Workloads}
-This is the first time that SPEC 2017 benchmark suite[cite] has been used to characterize and measure the prefetch performance. We use all the 20 workloads available in the SPEC 2017 Suite. Using Simpoint[cite] methodology, we identified program segments of 1 Billion instructions each.
+This is the first time that SPEC 2017 benchmark suite[cite] has been used to characterize and measure the prefetch performance. 
+We use all the 20 workloads available in the SPEC 2017 Suite. 
+Using Simpoint[cite] methodology, we identified program segments of 1 Billion instructions each.
 
-Besides SPEC 2017, we also used server level workloads from CouldSuite[cite]: <insert the workloads which should be tested>. <Insert mlpack?> In total, we had XX traces <95 currently> representing workloads across XX benchmarks. <20 currently>
+Besides SPEC 2017, we also used server level workloads from CouldSuite[cite]: <insert the workloads which should be tested>. 
+<Insert mlpack?> In total, we had XX traces <95 currently> representing workloads across XX benchmarks. 
+<20 currently>
 
-\textit{Single-core performance} For single-core simulations, we use 200 Million instructions to warm-up the microarchitectural structures and the next 1 Billion instructions to do detailed simulations and collect run-time statistics. We report the performance as speedup over baseline \textit{i.e.}, no prefetching. We take the Instruction Per Cycle (IPC) of the prefetcher and divide it with the IPC of baseline. The final number reported is the geometric mean of the speed-up attained on individual traces.
+\textit{Single-core performance} For single-core simulations, we use 200 Million instructions to warm-up the microarchitectural structures and the next 1 Billion instructions to do detailed simulations and collect run-time statistics. 
+We report the performance as speedup over baseline \textit{i.e.}, no prefetching. 
+We take the Instruction Per Cycle (IPC) of the prefetcher and divide it with the IPC of baseline. 
+The final number reported is the geometric mean of the speed-up attained on individual traces.
 
-\textit{Multi-core performance} For 4-core multi-programmed workloads, we generated 20 unique workloads comprising of a mix of memory intensive traces from SPEC 2017. For each workload, 200 Million instructions are used for warm-up and additional 1 Billion instruction simulated for collecting statistics. As different workloads have different baseline IPCs, not all of the 4 workloads reach the 1 Billion instruction count at the same time. In that case, the workloads get wrapped-over and are still simulated till the last core completes 1 Billion instructions after warm-up. For collecting IPC and other data, only the first billion instructions are considered as "region of interest". Here we report the weighted speedup normalized to baseline \textit{i.e.}, no prefetching. For each of the workloads running on a particular core of the 4-core 8 MB LLC system, we compute IPC\textsubscript{i}. We then find the IPC\_isolated\textsubscript{i} of the same workload running in isolated 1-core 8 MB LLC environment. Then we calculate the total weighted-IPC for a given workload mix as $\Sigma$ (IPC\textsubscript{i} / IPC\_isolated\textsubscript{i}). For each of the 20 workload-mix, the sub obtained is normalized to the weighted-IPC calculated similarly for baseline case \textit{i.e.}, no prefetching, to get the weighted-IPC-speedup. Finally the geometric mean of these 20 weighted-IPC-speedup is reported as the effective speedup obtained by the prefetching scheme.
+\textit{Multi-core performance} For 4-core multi-programmed workloads, we generated 20 unique workloads comprising of a mix of memory intensive traces from SPEC 2017. 
+For each workload, 200 Million instructions are used for warm-up and additional 1 Billion instruction simulated for collecting statistics. 
+As different workloads have different baseline IPCs, not all of the 4 workloads reach the 1 Billion instruction count at the same time. 
+In that case, the workloads get wrapped-over and are still simulated till the last core completes 1 Billion instructions after warm-up. 
+For collecting IPC and other data, only the first billion instructions are considered as "region of interest". 
+Here we report the weighted speedup normalized to baseline \textit{i.e.}, no prefetching. 
+For each of the workloads running on a particular core of the 4-core 8 MB LLC system, we compute IPC\textsubscript{i}. 
+We then find the IPC\_isolated\textsubscript{i} of the same workload running in isolated 1-core 8 MB LLC environment. 
+Then we calculate the total weighted-IPC for a given workload mix as $\Sigma$ (IPC\textsubscript{i} / IPC\_isolated\textsubscript{i}). 
+For each of the 20 workload-mix, the sub obtained is normalized to the weighted-IPC calculated similarly for baseline case \textit{i.e.}, no prefetching, to get the weighted-IPC-speedup. 
+Finally the geometric mean of these 20 weighted-IPC-speedup is reported as the effective speedup obtained by the prefetching scheme.
 
 \subsection{Preferchers Simulated}
-We compared SPP-Perc against three of the latest state of the art prefetchers: Best Offset Prefetcher (BOP)[cite], DRAM Aware - Access Map Pattern Matching (DA-AMPM) [cite] and Signature Path Prefecher (SPP)[cite]. BOP was the winner in 2nd Data Prefetching Championship[cite]. DA-AMPM is the enhanced version of AMPM[cite], modified to account for DRAM row buffer locality. SPP has been shown to outperform BOP on SPEC 2006 traces[cite]. For each of these, we compare their speedups taking no prefetching as the baseline.
+We compared SPP-Perc against three of the latest state of the art prefetchers: Best Offset Prefetcher (BOP)[cite], DRAM Aware - Access Map Pattern Matching (DA-AMPM) [cite] and Signature Path Prefecher (SPP)[cite]. 
+BOP was the winner in 2nd Data Prefetching Championship[cite]. 
+DA-AMPM is the enhanced version of AMPM[cite], modified to account for DRAM row buffer locality. 
+SPP has been shown to outperform BOP on SPEC 2006 traces[cite]. 
+For each of these, we compare their speedups taking no prefetching as the baseline.
 
 
 \subsection{Overhead for SPP-Perc}
-In this section, we analyze the hardware overhead required to implement SPP-Perc. The exiting structires from SPP - Signature Table, Pattern Table, Global History Register and the Prefetch Table occupy 44060 bits. The Prefetch Filter was enhanced to accommodate storing of meta-data for perceptron training. New Prefetch Filter now consumes 95232 bits. The Reject Filter occupies 89088 bits. The perceptron weights occupy 348160 bits. All in all, SPP-Perc occupies 568348 bits, which comes out to 69.3 KB. 
+In this section, we analyze the hardware overhead required to implement SPP-Perc. 
+The exiting structires from SPP - Signature Table, Pattern Table, Global History Register and the Prefetch Table occupy 44060 bits. 
+The Prefetch Filter was enhanced to accommodate storing of meta-data for perceptron training. 
+New Prefetch Filter now consumes 95232 bits. 
+The Reject Filter occupies 89088 bits. 
+The perceptron weights occupy 348160 bits. 
+All in all, SPP-Perc occupies 568348 bits, which comes out to 69.3 KB. 
+
 
 <Inset a neat table showing analysis of area overheads of individual components>
 
-The hardware budget for 2nd Data Prefetching championship was 32 KB. Keeping that in mind and the speedup SPP-Perc obtained over the winner, the extra hardware budget can be accounted for.
+The hardware budget for 2nd Data Prefetching championship was 32 KB. 
+Keeping that in mind and the speedup SPP-Perc obtained over the winner, the extra hardware budget can be accounted for.
 
 \subsection{Developing Features for SPP-Perc}
-This section describes the intuition and analysis that went behind finalizing the features.  
+This section describes the intuition and analysis that went behind finalizing the features. 
+ 
 
 
 \section{RESULTS}
-This section discusses the results obtained from running SPP-Perc, in terms of cache Misses Per Kilo Instructions (MPKI) and Instruction Per Cycle (IPC) metrics. First we present the results for single-threaded workloads then the results for multi-core workloads are presented.
+This section discusses the results obtained from running SPP-Perc, in terms of cache Misses Per Kilo Instructions (MPKI) and Instruction Per Cycle (IPC) metrics. 
+First we present the results for single-threaded workloads then the results for multi-core workloads are presented.
 
 \subsection{Single-core Results}
-Figure \_\_ shows the IPC speedup of the 4 prefetchers simulated. All the results have been normalized to baseline \textit{i.e.}, no prefetching. As can be seen, SPP-Perc yields a speedup of XX\% over the baseline. This is equivalent to XX\% over DA-AMPM, xx\% over BOP and XX\% over SPP. Out of the XX benchmarks, SPP-Perc nearly matches or outperforms most of the prefetchers on XX traces. 
+Figure \_\_ shows the IPC speedup of the 4 prefetchers simulated. 
+All the results have been normalized to baseline \textit{i.e.}, no prefetching. 
+As can be seen, SPP-Perc yields a speedup of XX\% over the baseline. 
+This is equivalent to XX\% over DA-AMPM, xx\% over BOP and XX\% over SPP. 
+Out of the XX benchmarks, SPP-Perc nearly matches or outperforms most of the prefetchers on XX traces. 
 
-At its peak, SPP-Perc manages to get the IPC speedup of a factor of over \textbf{3.4} on the trace \textit{602.gcc\_s-2226B}. This also corresponds to speedup gain of \textbf{22.4\%} over the next best prefetcher - SPP. In general, benchmarks \textit{602.gcc\_s, 603.bwaves\_s, 605.mcf\_s, 621.wrf\_s} and \textit{649.fotonik3d\_s} benefit the most from SPP-Perc, as compared to SPP only prefetching.
+At its peak, SPP-Perc manages to get the IPC speedup of a factor of over \textbf{3.4} on the trace \textit{602.gcc\_s-2226B}. 
+This also corresponds to speedup gain of \textbf{22.4\%} over the next best prefetcher - SPP. 
+In general, benchmarks \textit{602.gcc\_s, 603.bwaves\_s, 605.mcf\_s, 621.wrf\_s} and \textit{649.fotonik3d\_s} benefit the most from SPP-Perc, as compared to SPP only prefetching.
 
-Figure \_\_ shows the performance of SPP-Perc against the other prefetchers in tighter constraint environments. For sake of simplicity, we show 2 traces where SPP-Perc gives the most advantage over baseline, 2 traces where SPP-Perc doesn't perform as well as the best prefetcher *<-replace with the prefetcher name once results are available* and finally GeoMean across all the traces. <Hopefully BOP would degrade more here as it is super aggressive. By definition, SPP-Perc should be better than SPP as the throttler would better control the aggressiveness. In SPP paper DA-AMPM performs close enough to BOP. That should get replicated here too.>
+Figure \_\_ shows the performance of SPP-Perc against the other prefetchers in tighter constraint environments. 
+For sake of simplicity, we show 2 traces where SPP-Perc gives the most advantage over baseline, 2 traces where SPP-Perc doesn't perform as well as the best prefetcher *<-replace with the prefetcher name once results are available* and finally GeoMean across all the traces. 
+<Hopefully BOP would degrade more here as it is super aggressive. 
+By definition, SPP-Perc should be better than SPP as the throttler would better control the aggressiveness. 
+In SPP paper DA-AMPM performs close enough to BOP. That should get replicated here too.>
 
 <Discuss the extreme behaviour of \textit{623.xalancbmk\_s}: Improvement over SPP is as high as 31\% and even reduces to -1.5\% on traces of this benchmark>
 
@@ -381,16 +635,27 @@ Figure \_\_ shows the performance of SPP-Perc against the other prefetchers in t
 In this section, we demonstrate the improvement achieved by SPP-Perc for a mix of multi-programmed workloads. 
 \newline \newline
 \textit{4-core environment}
-Figure \_\_ shows a comparison of speedups obtained on workload mix of memory intensive subset of SPEC 2017. We plot all the 4 prefetchers, normalized to baseline. The workloads have been sorted in the increasing order of performance benefit, as measured in terms of normalized weighted speedup. As can be seen, SPP-Perc offers an IPC improvement by 33.5\% on these traces. This is 5.5\% over the next best prefetcher SPP; and XX\% and YY\% over BOP and DA-AMPM respectively.
+Figure \_\_ shows a comparison of speedups obtained on workload mix of memory intensive subset of SPEC 2017. 
+We plot all the 4 prefetchers, normalized to baseline. 
+The workloads have been sorted in the increasing order of performance benefit, as measured in terms of normalized weighted speedup. 
+As can be seen, SPP-Perc offers an IPC improvement by 33.5\% on these traces. 
+This is 5.5\% over the next best prefetcher SPP; and XX\% and YY\% over BOP and DA-AMPM respectively.
 
-This increased improvement by SPP-Perc on a 4-core machine is not surprising. Since SPP-Perc has an extremely intelligent throttler working to eliminate useless prefetches before they can create cache pollution. This further amplifies the edge that SPP had over BOP. With the advantage of an orthogonal prefetcher, SPP can be as aggressive as possible and leave the accuracy aspect to perceptron throttler.
+This increased improvement by SPP-Perc on a 4-core machine is not surprising. 
+Since SPP-Perc has an extremely intelligent throttler working to eliminate useless prefetches before they can create cache pollution. 
+This further amplifies the edge that SPP had over BOP. 
+With the advantage of an orthogonal prefetcher, SPP can be as aggressive as possible and leave the accuracy aspect to perceptron throttler.
 \newline \newline
 \textit{8-core environment}
-To test the effectiveness of SPP-Perc in a tighter constrained multi-core environment, we simulated an 8-core machine with 16 MB last Level Cache. Other parameters were kept same as the ones discussed in Methodology section.
+To test the effectiveness of SPP-Perc in a tighter constrained multi-core environment, we simulated an 8-core machine with 16 MB last Level Cache. 
+Other parameters were kept same as the ones discussed in Methodology section.
 
 
 \section{CONCLUSION}
-In this paper, we introduced perceptron based learning for data prefetching in the form of SPP-Perc. Perceptron acts an orthogonal throttler to the underlying prefetch engine. SPP-Perc improves performance by over XX\% over the baseline, which corresponds to YY\% over the next best performing prefetcher. We believe this paper can lead to interesting future work like generalizing SPP-Perc to work with any prefetcher with minimal knowledge of the underlying prefetcher architecture.
+In this paper, we introduced perceptron based learning for data prefetching in the form of SPP-Perc. 
+Perceptron acts an orthogonal throttler to the underlying prefetch engine. 
+SPP-Perc improves performance by over XX\% over the baseline, which corresponds to YY\% over the next best performing prefetcher. 
+We believe this paper can lead to interesting future work like generalizing SPP-Perc to work with any prefetcher with minimal knowledge of the underlying prefetcher architecture.
 
 %%%%%%% -- PAPER CONTENT ENDS -- %%%%%%%%
 
@@ -400,3 +665,4 @@ In this paper, we introduced perceptron based learning for data prefetching in t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
+
