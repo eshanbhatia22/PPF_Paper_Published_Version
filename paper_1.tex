@@ -64,7 +64,7 @@ We also demonstrate that the performance gained from using our efficient throttl
 \section{Introduction}
 Since past few decades, processor and memory scaling has been enabled with different philosophies in mind. 
 While processor scaling focused on speed improvements, memory scaling was centred around increasing the storage capacity. 
-The process technology reaching scaling limitations led to Memory Wall [cite] - the increasing performance gap between the processor speed and the memory speeds. 
+The process technology reaching scaling limitations led to Memory Wall\cite{MemWall} - the increasing performance gap between the processor speed and the memory speeds. 
 Various techniques have been developed to combat this widening gap. 
 Data prefetching is one such important technique. 
 Data prefetching exploits the fact that in most applications, memory accesses have a well-defined pattern.
@@ -92,7 +92,7 @@ The contributions made by this paper are:
 
 \begin{itemize}
 \item This is the first time where a truly on-line learning based neural network model has been used when it comes to hardware data prefetching. 
-The prior works in this area either relied on program semantics [cite] or were application specific [cite] or could not yield a significant improvement over the baseline prefetcher used. [cite]
+The prior works in this area either relied on program semantics\cite{Semantics} or were application specific\cite{Datacenter} or could not yield a significant improvement over the baseline prefetcher used\cite{BadPerc}.
 
 \item Implementing the pereptron throttler in a robust and accurate practical prefetching mechanism. 
 The overall scheme yields increased accuracy as compared to the other state of the art prefetchers.
@@ -142,66 +142,78 @@ We also discuss about some of the interesting memory access patterns seen in the
 The second half of this section deals with a background of Signature Path Prefetcher architecture.
 
 \subsection{Related Work}
-Some of the earliest data prefetchers developed to leverage this locality were stride based [cite:\newline
-- A. J. Smith. Sequential Program Prefetching in Memory Hierarchies (1978)\newline
-- J.-L. Baer and T.-F. Chen. An Effective On-Chip Preloading Scheme to Reduce Data Access Penalty (1991)\newline
-]\newline
 
-Major research in prefetching domain was based on stride length and depth prediction [cite:\newline
-- Decoupled Predictor-Directed Stream Prefetching
-Architecture (2003)\newline
-- Memory Prefetching Using Adaptive Stream Detection (2006)\newline
-]\newline
+The idea of prefetching has been around since Instruction Stream Buffers were proposed by Jouppi.
+\cite{ISB}
+Some of the earliest data prefetchers developed to try to identify memory access patterns with a constant stride pattern.
+\cite{Smith} 
+\cite{Baer}
+\cite{Stride}
+Major research was dedicated to stride distance and depth prediction.
+\cite{Decoupled}
+\cite{Adaptive}
+Newer prefetchers aimed at correlating predictions with the past memory access addresses.
+\cite{Address_Correlated} 
+\cite{AMPM}
 
-With time newer and more intricate prefetchers were introduced. [Cite:\newline
-- Temporal Streaming of Shared Memory (2005)\newline
-- Stealth Prefetching (2006)\newline
-- Feedback Directed Prefetching: Improving the Performance and Bandwidth-Efficiency of Hardware Prefetchers (2007)\newline
-- Coordinated Control of Multiple Prefetchers in Multi-Core Systems (2009)\newline
-- Techniques for Bandwidth-Efficient Prefetching of Linked Data Structures in Hybrid Prefetching Systems (2009)\newline
-- PACMan: PrefetchAware Cache Management for High Performance Caching (2011)\newline
-- TLB Improvements for Chip Multiprocessors: Inter-Core Cooperative Prefetchers and Shared Last-Level TLBs (2013)\newline
-- Linearizing Irregular Memory Accesses for Improved Correlated Prefetching (2013)\newline
-- Sandbox Prefetching: Safe run-time evaluation of aggressive prefetchers\newline
-]\newline
+With time newer and more intricate prefetchers were introduced.
+\cite{Wenisch_Temporal_Streaming}
+\cite{Stealth}
+\cite{Feedback_Directed}
+\cite{Coordinated}
+\cite{Bandwidth_Efficient}
+\cite{Pacman}
+\cite{TLB}
+\cite{Linearizing}
+\cite{Sandbox}
+\cite{VLDP}
+\cite{DoL}
+\cite{Domino}
+A whole class of streaming prefetchers developed on the lines of Spatial / Temporal Memory Streaming.
+\cite{Spatial_Pattern}
+\cite{SMS}
+\cite{Temporal_Instruction_Fetch}
+\cite{Off_Chip}
+\cite{STMS}
+\cite{SMS_JILP}
 
-Prefetchers often tend to correlate predictions with the past memory access addresses [cite: Making Address-Correlated Prefetching Practical (2010)]. 
- A whole class of streaming prefetchers developed on the lines of Spatial / Temporal Memory Streaming
-[ Cite:\newline
-- Accurate and Complexity-Effective Spatial Pattern Prediction (2004)\newline
-- Spatial Memory Streaming (2006)\newline
-- Temporal Instruction Fetch Streaming (2008)\newline
-- Practical Off-Chip Meta-Data for Temporal Memory Streaming (2009)\newline
-- Spatio-Temporal Memory Streaming (2009)\newline
-- Spatial Memory Streaming with Rotated Patterns (2009)\newline
-- Spatial Memory Streaming.” Journal of Instruction-Level Parallelism" (2011)\newline
-]\newline
+Most modern prefetchers aim at identifying complex memory access patterns in a given application. 
+This allows them to capture some of the irregular patterns seen in pointer chasing data-structures.
+Offset based prefetchers are a generalization of the next-line prefetcher.
+Some of the prominent prefetchers exploiting this idea are
+Sandbox Prefetcher \cite{Sandbox}
+and the Best Offset Prefetcher \cite{BOP}
+Another class of prefetchers is lookahead Prefetchers.
+Such prefetchers try to speculate deep into the application's memory access trail.
+These include Path Confidence based Lookahead Prefetching \cite{SPP}
+and Kill the Program Counter \cite{KPC}.
 
-More modern prefetchers are often offset based <cite BOP and other offset based> or lookahead based <cite SPP, KPC and a few more>.
+A related line of work also explores cache replacement - insertion policies and dead block prediction, with an eye towards prefetching. 
+\cite{DB_Pred}
+\cite{Cache_Burst}
+\cite{KPC}
+\cite{Harmony}
+Nori \textit{et.al.} introduced prefetching with  respect to runtime criticality.
+\cite{CATCH}
+\newline
 
-A related line of work also explored cache replacement: insertion policies and dead block prediction, with an eye towards prefetching. [Cite:\newline
-- Dead-Block Prediction and Dead-Block Correlating Prefetchers (2001)\newline
-- Cache Bursts: A New Approach for Eliminating Dead Blocks and Increasing Cache Efficiency (2008)\newline
-- KPC (2017)\newline
-- Rethinking Belady's Algorithm to Accommodate Prefetching (2018)\newline
-]
-
-There have been attempts at introducing Machine Learning based elements into prefetching. 
-The paper Semantic Locality and Context-based Prefetching Using Reinforcement Learning[cite] by Peled \textit{et.al.} introduces interesting ideas for on-line Reinforcement Learning and dynamically scaling the magnitude of feedback given to the baseline prefetcher. 
+\textit{Machine Learning and Prefetching:}
+Peled \textit{et.al.} introduce interesting ideas for on-line Reinforcement Learning and dynamically scaling the magnitude of feedback given to the baseline prefetcher.
+\cite{Semantics}
 The biggest challenge here is that it relies on compiler support for getting features to build the context.
 
-Another notable research in the domain was done by Liao \textit{et. al.} [cite Machine Learning-Based Prefetch Optimization for Data Center Applications].
-Their work focuses specifically on prefetching for data center applications. 
-They use offline Machine Learning Algorithms like Support Vector Machines, Logistic Regressions, and Tree-based Classification for parametric search for coming up with an optimal prefetcher configuration.
+The paper by Liao \textit{et. al.} focuses on prefetching for data center applications.
+\cite{Datacenter}
+They use offline Machine Learning Algorithms like SVMs and Logistic Regressions to do parametric search for an optimal prefetcher configuration.
 
-\textit{<Note: The below paper is literally the same idea as ours. But poor implementation and no good results. How much to bash this paper?>}
-Finally, the paper on Data Cache Prefetching with Perceptron Learning[cite] talks about the idea of two step prefetching.
-The first step is an existing prefetcher like Stride Prefetcher or a Markov Prefetcher while the second step is a perceptron based throttler.
+%% NOTE: The below paper is literally the same idea as ours. But poor implementation and no good results. How much to bash this paper?
+Finally, the paper on Data Cache Prefetching with Perceptron Learning\cite{BadPerc} talks about the idea of two step prefetching.
+The first step is an existing baseline prefetcher while the second step is a perceptron based throttler.
 The paper has lots of limitations in terms of design and implementation.
-That reflects in the fact that it did not lead to any significant performance gain over even the basic prefetchers like the Stride Prefetcher[cite] and the Markov Prefetcher[cite] 
+That reflects in the fact that it did not lead to any significant performance gain over even the basic prefetchers like the Stride Prefetcher\cite{Stride} and the Markov Prefetcher\cite{Markov}.
 
-
-
+et. al.
+ 
 \subsection{Prefetching with SPEC 2017}
 \textit{<Discuss SPEC 2017 traces here>
 <What are the possible graphs / analysis tools we can use for SPEC traces?>}
@@ -209,18 +221,18 @@ That reflects in the fact that it did not lead to any significant performance ga
 \subsection{Perceptron Learning in Architecture}
 
 Perceptron learning for computer architecture design has been around for a while. 
-It was popularized by [cite initial branch prediction paper]. 
+It was first popularized by Jimenez \textit{et. al.} in for doing branch prediction. \cite{Perc_Branch} 
 In it's original implementation, the Program Counter of the instruction looking for a branch prediction would index into a given table of perceptron weights. 
 The retrieved weights would then be multiplied with the history of branch outcomes stored in the History Register (which is a feature) in a dot product fashion. 
 The sum obtained is thresholded at 0 \textit{i.e.}, if the prediction y\textsubscript{out} >= 0, the prediction is made as \textit{true}, or branch taken.
 Else if the sum is < 0, the prediction is made as \textit{false}.
 
-The structure that we use is derived from the model introduced in [cite piecewise linear branch prediction]. 
+The structure that we use is derived from the model introduced in Piecewise Linear Branch Prediction\cite{Piece_Linear}. 
 Here the feature itself is used to index into a hash of perceptron weights. 
 This form of indexing makes sure that the hyper-plane learned by the perceptron weights is able to differentiate between linearly inseparable outcomes. 
 \textit{<Is it true? Not sure>}
 
-Perceptron Learning for Reuse Prediction [cite] extended the hash perceptron architecture to perform prediction in context of cache replacement. 
+Perceptron Learning for Reuse Prediction\cite{Perc_Reuse} extended the hash perceptron architecture to perform prediction in context of cache replacement. 
 Perceptron layer can learn to correlate the cache replacement behaviour with a variety of features. 
 Each feature has its dedicated table of perceptron weights which it indexes into. 
 Hence number of tables equals the number of features. 
@@ -229,7 +241,7 @@ This led to a prediction mechanism that is highly accurate, has quick learning r
 The features introduced in that paper were derived from Program Counters of the current and the last few instructions and the memory address of the current access. 
 Even with such basic features, high level of correlation could be established by perceptrons. 
 
-The work was further extended by Multiperspective Reuse Prediction[cite], which introduced a varied set of parametric features. 
+The work was further extended by Multiperspective Reuse Prediction\cite{Multiperspective}, which introduced a varied set of parametric features. 
 Although design space exploration for feature and parameter selection was a non-trivial task, once fixed, it could give a cache replacement predictor highly suitable for the given set of applications.
 \newline
 \newline
@@ -250,7 +262,7 @@ Care is taken that the weights saturate at certain positive and negative values 
 The same rules will be applied in the discussion done in section XX on SPP-Perc learning algorithm.
 
 \subsection{Signature Path Prefetcher Architecture}
-Since the work we have done builds heavily on SPP[cite], we are presenting a brief recap of the ideas introduced in the original paper, especially with an eye towards their relevance in our work. 
+Since the work we have done builds heavily on SPP\cite{SPP}, we are presenting a brief recap of the ideas introduced in the original paper, especially with an eye towards their relevance in our work. 
 Signature Path Prefetcher (SPP) is a lookahead prefetcher and consists of following structural components:
 \newline
 \newline
@@ -500,7 +512,7 @@ While the original confidence is not used directly for decision making, it can s
 Depth refers to the iteration count of the lookahead stages.
 In general, PC is not considered as a good basis for doing lookahead prefetching as all the prefetches with depth >= 1 gets aliased onto the same PC which won't be true in actual demand fetch case.
 This feature resolves a PC into a different value for each lookahead depth of SPP speculation, giving a more accurate correlation in lookahead cases.
-This is akin to the concept of Virtual Program Counters [cite] introduced by Kim \textit{et. al.} for indirect branch prediction.
+This is akin to the concept of Virtual Program Counters\cite{VPC} introduced by Kim \textit{et. al.} for indirect branch prediction.
 
 
 \item \textbf{PC\textsubscript{1} XOR PC\textsubscript{2}>>1 XOR PC\textsubscript{3}>>2}: Here $PC_i$ refers to the last $i^{th}$ PC before the instruction that triggered the current prefetch. 
@@ -535,8 +547,8 @@ Finally, as noted above, each feature indexes into its independent entry of perc
 
 \section{METHODOLOGY}
 \subsection{Performance Model}
-For testing and comparing SPP-Perc, we used ChampSim [cite] simulator. 
-ChampSim is an enhanced version of the framework that was used for the 2nd Data Prefetch Championship (DPC-2)[cite]. 
+For testing and comparing SPP-Perc, we used ChampSim\cite{Champsim} simulator. 
+ChampSim is an enhanced version of the framework that was used for the 2nd Data Prefetch Championship (DPC-2).\cite{DPC_2} 
 We model model a 1-core / 4-core / 8-core Out of Order machine. The details of the configuration parameters is summarized in Table  \ref{tab:Sim_params}.
 
 \begin{table}[]
@@ -558,7 +570,7 @@ We model model a 1-core / 4-core / 8-core Out of Order machine. The details of t
 The block size was fixed 64KB. Prefetching was only triggered at L2 Cache demand accesses but could be sent to L2 Cache or Last Level Cache. 
 No L1 Data level prefetching was done. 
 LRU replacement policy was used on all levels of cache hierarchies. 
-Branch prediction was done using the perceptron branch predictor [cite]. 
+Branch prediction was done using the perceptron branch predictor\cite{Perc_Branch}. 
 Page size was kept as 4KB. 
 Champsim operates all the prefetchers strictly in the physical address space.
 
@@ -573,13 +585,13 @@ Specifically we look at the following two variations:
 All the multi-core simulations are only done in the default configuration.
 
 \subsection{Workloads}
-This is the first time that SPEC 2017 benchmark suite[cite] has been used to characterize and measure the prefetch performance. 
+This is the first time that SPEC 2017 benchmark suite\cite{SPEC2017} has been used to characterize and measure the prefetch performance. 
 We use all the 20 workloads available in the SPEC 2017 Suite. 
-Using SimPoint[cite] methodology, we identified 95 different program segments of 1 Billion instructions each.
+Using SimPoint\cite{SimPoint} methodology, we identified 95 different program segments of 1 Billion instructions each.
 
-We performed cross-validation of our SPP-Perc model using SPEC 2006 and CloudSuite benchmarks.
+We performed cross-validation of our SPP-Perc model using SPEC 2006\cite{SPEC2006} and CloudSuite\cite{CloudSuite} benchmarks.
 For SPEC 2006, we developed 94 simpoints spread across the 29 applications.
-For CloudSuite, we used the traces made available for the 2nd Cache Replacement Competition (CRC-2) [cite].
+For CloudSuite, we used the traces made available for the 2nd Cache Replacement Competition (CRC-2)\cite{CRC_2}.
 The traces include 4 multi-core applications with 6 distinct phases per application. 
 In total, we used 285 traces representing workloads across 53 applications. 
 
@@ -604,10 +616,10 @@ We repeat the same process for 8-core workloads with the exception that 20 Milli
 This was done so as to keep the simulation run-time within reasonable limits as a single 8-core mix was taking up to 5 days to simulate 1 Billion instructions.
 
 \subsection{Preferchers Simulated}
-We compared SPP-Perc against three of the latest state of the art prefetchers: Best Offset Prefetcher (BOP)[cite], DRAM Aware - Access Map Pattern Matching (DA-AMPM) [cite] and Signature Path Prefecher (SPP)[cite]. 
-BOP was the winner in 2nd Data Prefetching Championship[cite]. 
-DA-AMPM is the enhanced version of AMPM[cite], modified to account for DRAM row buffer locality. 
-SPP has been shown to outperform BOP on SPEC 2006 traces[cite]. 
+We compared SPP-Perc against three of the latest state of the art prefetchers: Best Offset Prefetcher (BOP), DRAM Aware - Access Map Pattern Matching (DA-AMPM)\cite{DA_AMPM} and Signature Path Prefecher (SPP). 
+BOP was the winner of 2nd Data Prefetching Championship. 
+DA-AMPM is the enhanced version of AMPM, modified to account for DRAM row buffer locality. 
+SPP has been shown to outperform BOP on SPEC 2006 traces. 
 For each of these, we compare their speedups taking no prefetching as the baseline.
 
 
@@ -840,8 +852,8 @@ We believe this paper can lead to interesting future work like generalizing SPP-
 %%%%%%% -- PAPER CONTENT ENDS -- %%%%%%%%
 
 %%%%%%%%% -- BIB STYLE AND FILE -- %%%%%%%%
-%%\bibliographystyle{ieeetr}
-%%\bibliography{ref}
+\bibliographystyle{ieeetr}
+\bibliography{ref}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
