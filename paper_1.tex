@@ -125,15 +125,11 @@ On a multi-core system running a mix of memory intensive subset of the SPEC 2017
 In the results part in section XX, we show a detailed analysis of the speedup achieved.
 We also used SPEC 2006 and CloudSuite benchmarks for cross-validation of the prefetcher implementation.
 
-\vspace{1ex}The rest of the paper is organized as follows:
-
-\begin{itemize}
-\item Section 2 talks about background work and recaptures the SPP architecture
-\item Section 3 discusses enhancements made to the SPP design and the detailed implementation of the perceptron mechanism
-\item Section 4 consists of the methodology for evaluating SPP-Perc and exploring the feature space for perceptron learning
-\item Section 5 comprises results and evaluation in terms of IPC, MPKI, coverage and DRAM traffic, for a variety of benchmark suites
-\item Section 6 is the conclusion and future scope of expansion on this work
-\end{itemize}
+The rest of the paper is organized as follows.
+Section 2 talks about background work and recaptures the SPP architecture
+Section 3 discusses the detailed implementation of the perceptron mechanism and the features used.
+Section 4 consists of the evaluation methodology and explores the feature space for perceptron learning.
+Section 5 is the performance evaluation of our prefetcher and Section 6 concludes the paper.
 
 \section{Background Work and Motivation}
 
@@ -196,7 +192,7 @@ A related line of work also explores cache replacement - insertion policies and 
 Nori \textit{et.al.} introduced prefetching with  respect to runtime criticality.
 \cite{CATCH}
 \newline
-
+\newline
 \textit{Machine Learning and Prefetching:}
 Peled \textit{et.al.} introduce interesting ideas for on-line Reinforcement Learning and dynamically scaling the magnitude of feedback given to the baseline prefetcher.
 \cite{Semantics}
@@ -212,16 +208,11 @@ The first step is an existing baseline prefetcher while the second step is a per
 The paper has lots of limitations in terms of design and implementation.
 That reflects in the fact that it did not lead to any significant performance gain over even the basic prefetchers like the Stride Prefetcher\cite{Stride} and the Markov Prefetcher\cite{Markov}.
 
-et. al.
- 
-\subsection{Prefetching with SPEC 2017}
-\textit{<Discuss SPEC 2017 traces here>
-<What are the possible graphs / analysis tools we can use for SPEC traces?>}
 
 \subsection{Perceptron Learning in Architecture}
 
 Perceptron learning for computer architecture design has been around for a while. 
-It was first popularized by Jimenez \textit{et. al.} in for doing branch prediction. \cite{Perc_Branch} 
+It was first popularized by Jimenez \textit{et. al.} for doing branch prediction. \cite{Perc_Branch} 
 In it's original implementation, the Program Counter of the instruction looking for a branch prediction would index into a given table of perceptron weights. 
 The retrieved weights would then be multiplied with the history of branch outcomes stored in the History Register (which is a feature) in a dot product fashion. 
 The sum obtained is thresholded at 0 \textit{i.e.}, if the prediction y\textsubscript{out} >= 0, the prediction is made as \textit{true}, or branch taken.
@@ -260,6 +251,11 @@ After a certain training period, these weights are proportional to the probabili
 This training threshold makes sure that the perceptrons are trained till a certain level of confidence and yet they are not over-trained to the given set. 
 Care is taken that the weights saturate at certain positive and negative values so that they remain confined to the bit-width. 
 The same rules will be applied in the discussion done in section XX on SPP-Perc learning algorithm.
+
+ 
+\subsection{Prefetching with SPEC 2017}
+\textit{<Discuss SPEC 2017 traces here>
+<What are the possible graphs / analysis tools we can use for SPEC traces?>}
 
 \subsection{Signature Path Prefetcher Architecture}
 Since the work we have done builds heavily on SPP\cite{SPP}, we are presenting a brief recap of the ideas introduced in the original paper, especially with an eye towards their relevance in our work. 
@@ -491,14 +487,14 @@ This update reflects increased confidence for the prediction corresponding to th
 
 This mechanism allows us to solve the classical problem of exploiting `lost opportunity'. 
 In prior perceptron based implementations (and in general, prefetching algorithms), there is usually no way of knowing the result of not prefetch a particular line.
-Our two-step implementation allows us to overcome that issue in a simple manner.
+Our two-step SPP-Perc allows us to overcome that issue in a simple manner.
 
 \subsection{Features used by Perceptron}
 
 Here we discuss the various features which help correlate the prefetching decision with the program behaviour
 \begin{itemize}
 \item \textbf{Base address} of the demand access which triggered the prefetch. 
-Since prefetch especially tend to be triggered from the L2 demand access, they tend to be correlated with the triggering address.
+Since prefetch are triggered from the L2 demand access, they tend to be correlated with the triggering address.
 
 \item \textbf{Cache line} and \textbf{Page address}: These two separate features are derived from the base address which triggered the prefetch, as follows: base\_addr >> LOG2\_BLOCK \_SIZE and base\_addr >> LOG2\_PAGE\_ SIZE respectively.
 The idea behind using three different shifted versions of the same feature is that it allows us to look into a wider range of bits than with a single version.
@@ -594,13 +590,15 @@ For SPEC 2006, we developed 94 simpoints spread across the 29 applications.
 For CloudSuite, we used the traces made available for the 2nd Cache Replacement Competition (CRC-2)\cite{CRC_2}.
 The traces include 4 multi-core applications with 6 distinct phases per application. 
 In total, we used 285 traces representing workloads across 53 applications. 
-
-\textit{Single-core performance} For single-core simulations, we use 200 Million instructions to warm-up the microarchitectural structures and next 1 Billion instructions to do detailed simulations and collect run-time statistics. 
+\newline
+\newline
+\textit{Single-core performance:} For single-core simulations, we use 200 Million instructions to warm-up the microarchitectural structures and next 1 Billion instructions to do detailed simulations and collect run-time statistics. 
 We report the performance as speedup over baseline \textit{i.e.}, no prefetching. 
 We take the Instruction Per Cycle (IPC) of the prefetcher and divide it with the IPC of baseline. 
 The final number reported is the geometric mean of the speed-up attained on individual traces.
-
-\textit{Multi-core performance} For multi-application workloads, we generate 100 completely random mixes and another 100 mixes from the memory intensive subset of SPEC 2017.
+\newline
+\newline
+\textit{Multi-core performance:} For multi-application workloads, we generate 100 completely random mixes and another 100 mixes from the memory intensive subset of SPEC 2017.
 For 4-core workload, 200 Million instructions are used for warm-up and additional 1 Billion instruction simulated for collecting statistics. 
 Each CPU keeps executing its workload till the last CPU completes 1 Billion instructions after warm-up. 
 For collecting IPC and other data, only the first billion instructions are considered as the ``region of interest''. 
