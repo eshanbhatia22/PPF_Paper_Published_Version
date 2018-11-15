@@ -1,0 +1,21 @@
+\begin{abstract}
+  \textbf{Hardware prefetching has been introduced in modern
+    processors as a way to hide cache latencies.  An efficient
+    prefetcher should be able to identify complex memory access
+    patterns during a program execution.  This enables it to fetch a
+    block ahead of its demand access, potentially saving a cache miss.
+  }
+
+  \textbf{In this paper, we introduce perceptron learning to help make
+    this prefetching decision efficiently.  We have taken a state of
+    the art prefetcher - Signature Path Prefetcher (SPP) as the
+    underlying prefetch engine.  The perceptron layer acts as a
+    throttler to filter out the unnecessary prefetches recommended by
+    SPP.  We have also explored a range of features that can be used
+    to train the perceptron layer.  Our results show that SPP-Perc
+    improves performance on the memory intensive subset of the SPEC
+    2017 Benchmark suite by 6.84\% on single-core and by 11.9\% on
+    multi-core traces, as compared to just SPP.  We also demonstrate
+    that the performance gained from using our efficient throttler
+    scales better with increasing number of cores.  }
+\end{abstract}

@@ -1,0 +1,100 @@
+
+\section{RESULTS}
+This section discusses the results obtained from running SPP-Perc, in
+terms of cache Misses Per Kilo Instructions (MPKI) and Instruction Per
+Cycle (IPC) metrics.  For SPEC 2017 suite, first we present the
+results for single-threaded workloads then the results for multi-core
+workloads are presented.
+
+\subsection{Single-core Results}
+Figure \_\_ shows the IPC speedup of the 4 prefetchers simulated.  All
+the results have been normalized to baseline \textit{i.e.}, no
+prefetching.  As can be seen, SPP-Perc yields a speedup of XX\% over
+the baseline.  This is equivalent to XX\% over DA-AMPM, xx\% over BOP
+and XX\% over SPP.  Out of the XX benchmarks, SPP-Perc nearly matches
+or outperforms most of the prefetchers on XX traces.
+
+At its peak, SPP-Perc manages to get the IPC speedup of a factor of
+over \textbf{3.4} on the trace \textit{602.gcc\_s-2226B}.  This also
+corresponds to speedup gain of \textbf{22.4\%} over the next best
+prefetcher - SPP.  In general, benchmarks \textit{602.gcc\_s,
+  603.bwaves\_s, 605.mcf\_s, 621.wrf\_s} and \textit{649.fotonik3d\_s}
+benefit the most from SPP-Perc, as compared to SPP only prefetching.
+
+<Discuss the extreme behaviour of \textit{623.xalancbmk\_s}:
+Improvement over SPP is as high as 31\% and even reduces to -1.5\% on
+traces of this benchmark>
+
+<Discuss about coverage on all traces>
+
+<Discuss cases where coverage gets specially increased>
+
+<Discuss accuracy on all traces>
+
+<Discuss about compelling increase in accuracy - details of
+traces. Plot linear separability>
+
+<Any case where accuracy got reduced - go into the trace. See if
+linear separability is the issue. Other possible issues?>
+
+
+\subsection{Multi-core Results}
+In this section, we demonstrate the improvement achieved by SPP-Perc
+for a mix of multi-programmed workloads.
+
+\textit{4-core environment} Figure \_\_ shows a comparison of speedups
+obtained on workload mix of memory intensive subset of SPEC 2017.  We
+plot all the 4 prefetchers, normalized to baseline.  The workloads
+have been sorted in the increasing order of performance benefit, as
+measured in terms of normalized weighted speedup.  As can be seen,
+SPP-Perc offers an IPC improvement by 33.5\% on these traces.  This is
+5.5\% over the next best prefetcher SPP; and XX\% and YY\% over BOP
+and DA-AMPM respectively.
+
+This increased improvement by SPP-Perc on a 4-core machine is not
+surprising.  Since SPP-Perc has an extremely intelligent throttler
+working to eliminate useless prefetches before they can create cache
+pollution.  This further amplifies the edge that SPP had over BOP.
+With the advantage of an orthogonal prefetcher, SPP can be as
+aggressive as possible and leave the accuracy aspect to perceptron
+throttler.
+
+\textit{8-core environment} To test the effectiveness of SPP-Perc in a
+tighter constrained multi-core environment, we simulated an 8-core
+machine with 16 MB last Level Cache.  Other parameters were kept same
+as discussed under Methodology in Section XX.  <See if we can use
+speed-up over BOP as a measure here>
+
+\subsection{Additional Memory Constraints}
+Figure \_\_ shows the performance of SPP-Perc against the other
+prefetchers in tighter constraint environments.  For sake of
+simplicity, we show 2 traces where SPP-Perc gives the most advantage
+over baseline, 2 traces where SPP-Perc doesn't perform as well as the
+best prefetcher *<-replace with the prefetcher name once results are
+available* and finally GeoMean across all the traces.  <Hopefully BOP
+would degrade more here as it is super aggressive.  By definition,
+SPP-Perc should be better than SPP as the throttler would better
+control the aggressiveness.  In SPP paper DA-AMPM performs close
+enough to BOP. That should get replicated here too.>
+
+\subsection{Cross Validation}
+Here we try to demonstrate the robustness of SPP-Perc by testing it on
+completely unseen benchmarks, namely SPEC 2006 and CloudSuite.
+
+Fig \_\_ shows the speed-up achieved by BOP, SPP and SPP-Perc on
+selected traces of SPEC 2006, along with the overall geometric mean
+over whole of the benchmark and over memory-intensive subset of the
+SPEC 2006 benchmark.  As can be seen, SPP-Perc peovides a speed-up of
+44.4\% over baseline, on the memory intensive subset of SPEC 2006
+benchmark.  This corresponds to 6.84\% over SPP and XX\% over BOP.  On
+the whole of the SPEC 2006 suite, the speedup obtained is 22.4\%,
+which is 3.34\% ahead of SPP.
+
+The 4-core results for SPEC 2006 are \_\_.
+
+As can be seen, the performance is very consistent given no prior
+parameter tuning was done keeping SPEC 2006 in mind.  We attribute
+this to the inherent adaptability of the perceptron model.  In
+general, perceptron weights are able to adjust in real-time so as to
+find the best possible correlation between the output and the
+features.
