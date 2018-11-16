@@ -1,7 +1,9 @@
-
 \section{METHODOLOGY}
+\label{Method}
+
 \subsection{Performance Model}
-For testing and comparing SPP-Perc, we used ChampSim\cite{Champsim}
+\label{Method-Model}
+For testing and comparing NATCH, we used ChampSim\cite{Champsim}
 simulator.  ChampSim is an enhanced version of the framework that was
 used for the 2nd Data Prefetch Championship (DPC-2).\cite{DPC_2} We
 model model a 1-core / 4-core / 8-core Out of Order machine. The
@@ -33,6 +35,7 @@ size was kept as 4KB.  Champsim operates all the prefetchers strictly
 in the physical address space.
 
 \subsection{Testing Under Additional Memory Constraints}
+\label{Method-AdditionalMem}
 The default single-core configuration simulates a 2MB LLC and a single
 channel DRAM with 12.8GB/s bandwidth.  We extend the simulations to
 include memory constraints introduced in DPC-2.  Specifically we look
@@ -47,13 +50,14 @@ All the multi-core simulations are only done in the default
 configuration.
 
 \subsection{Workloads}
+\label{Method-Workloads}
 This is the first time that SPEC 2017 benchmark suite\cite{SPEC2017}
 has been used to characterize and measure the prefetch performance.
 We use all the 20 workloads available in the SPEC 2017 Suite.  Using
 SimPoint\cite{SimPoint} methodology, we identified 95 different
 program segments of 1 Billion instructions each.
 
-We performed cross-validation of our SPP-Perc model using SPEC
+We performed cross-validation of our NATCH model using SPEC
 2006\cite{SPEC2006} and CloudSuite\cite{CloudSuite} benchmarks.  For
 SPEC 2006, we developed 94 simpoints spread across the 29
 applications.  For CloudSuite, we used the traces made available for
@@ -101,8 +105,9 @@ within reasonable limits as a single 8-core mix was taking up to 5
 days to simulate 1 Billion instructions.
 
 \subsection{Preferchers Simulated}
-We compared SPP-Perc against three of the latest state of the art
-prefetchers: Best Offset Prefetcher (BOP), DRAM Aware - Access Map
+\label{Method-Prefetchers}
+We compared NATCH against three of the latest state of the art
+hardware-only prefetchers: Best Offset Prefetcher (BOP), DRAM Aware - Access Map
 Pattern Matching (DA-AMPM)\cite{DA_AMPM} and Signature Path Prefecher
 (SPP).  BOP was the winner of 2nd Data Prefetching Championship.
 DA-AMPM is the enhanced version of AMPM, modified to account for DRAM
@@ -111,7 +116,8 @@ row buffer locality.  SPP has been shown to outperform BOP on SPEC
 prefetching as the baseline.
 
 
-\subsection{Developing Features for SPP-Perc}
+\subsection{Developing Features for NATCH}
+\label{Method-Features}
 This section describes the intuition and analysis that went behind
 finalizing the features.  As noted earlier, we developed a set of 9
 features which allow the perceptron throttler to correlate prefetching
@@ -179,7 +185,7 @@ each of these features against others in a 23x23 matrix, we identified
 pairs of features with correlation factor > 0.9 in magnitude and
 carefully eliminated redundant features.  Using this approach, we
 managed to reduce the feature count to 9.  Thus, in the final
-implementation of SPP-Perc, no two features have a high correlation
+implementation of NATCH, no two features have a high correlation
 between them.  This way we can be sure that each feature is bringing
 in contribution that cannot be captured using other features.
 
@@ -197,7 +203,8 @@ was made possible only because we used on-line perceptron learning for
 prefetching and that enabled us to examine the weights in detail.
 
 
-\subsection{Overhead for SPP-Perc}
+\subsection{Overhead for NATCH}
+\label{Method-Overheads}
 
 \begin{table}[]
     \centering
@@ -269,20 +276,20 @@ prefetching and that enabled us to examine the weights in detail.
         \multicolumn{4}{|c|}{\textbf{Total: 371356 bits = 45.33 KB}}\\
     \hline
     \end{tabular}
-    \caption{SPP-Perc Storage Overhead}
-    \label{tab:SPPPerc_overhead}
+    \caption{NATCH Storage Overhead}
+    \label{tab:NATCH_overhead}
 \end{table}
 \footnotetext[1]{Components of Prefetch Filter can be found in Table \ref{tab:PF_metadata}}
 \footnotetext[2]{RF does not need to maintain the useful bit as that only applies for prefetches that ultimately made through}
 
 In this section, we analyze the hardware overhead required to
-implement SPP-Perc.  The Prefetch Filter was enhanced to accommodate
+implement NATCH.  The Prefetch Filter was enhanced to accommodate
 storing of meta-data for perceptron training.  Table
 \ref{tab:PF_metadata} depicts the meta-data stored for each entry in
-the Prefetch Filter.  Table \ref{tab:SPPPerc_overhead} shows the total
-storage overhead of SPP-Perc implementation.  The hardware budget for
-2nd Data Prefetching championship was 32 KB.  Keeping that in mind and
-the speedup SPP-Perc obtained over the winner, the extra hardware
+the Prefetch Filter.  Table \ref{tab:NATCH_overhead} shows the total
+storage overhead of NATCH implementation.  The hardware budget for
+2nd Data Prefetching championship was 32 KB.  Keeping that in mind 
+the considerable speedup NATCH obtained over the winner, the extra hardware
 budget can be accounted for.  The extra hardware also makes the
 overall scheme more scalable than SPP.  In the original SPP paper, it
 was demonstrated that adding extra hardware brings little advantage in
