@@ -3,9 +3,9 @@
 
 \subsection{Performance Model}
 \label{Method-Model}
-For testing and comparing NATCH, we used ChampSim\cite{Champsim}
+For testing and comparing NATCH, we used ChampSim~\cite{Champsim}
 simulator.  ChampSim is an enhanced version of the framework that was
-used for the 2nd Data Prefetch Championship (DPC-2).\cite{DPC_2} We
+used for the 2nd Data Prefetch Championship (DPC-2)~\cite{DPC_2}. We
 model model a 1-core / 4-core / 8-core Out of Order machine. The
 details of the configuration parameters is summarized in Table
 \ref{tab:Sim_params}.
@@ -30,7 +30,7 @@ The block size was fixed 64KB. Prefetching was only triggered at L2
 Cache demand accesses but could be sent to L2 Cache or Last Level
 Cache.  No L1 Data level prefetching was done.  LRU replacement policy
 was used on all levels of cache hierarchies.  Branch prediction was
-done using the perceptron branch predictor\cite{Perc_Branch}.  Page
+done using the perceptron branch predictor~\cite{Perc_Branch}.  Page
 size was kept as 4KB.  Champsim operates all the prefetchers strictly
 in the physical address space.
 
@@ -51,17 +51,17 @@ configuration.
 
 \subsection{Workloads}
 \label{Method-Workloads}
-This is the first time that SPEC 2017 benchmark suite\cite{SPEC2017}
+This is the first time that SPEC 2017 benchmark suite~\cite{SPEC2017}
 has been used to characterize and measure the prefetch performance.
 We use all the 20 workloads available in the SPEC 2017 Suite.  Using
-SimPoint\cite{SimPoint} methodology, we identified 95 different
+SimPoint~\cite{SimPoint} methodology, we identified 95 different
 program segments of 1 Billion instructions each.
 
 We performed cross-validation of our NATCH model using SPEC
-2006\cite{SPEC2006} and CloudSuite\cite{CloudSuite} benchmarks.  For
+2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks.  For
 SPEC 2006, we developed 94 simpoints spread across the 29
 applications.  For CloudSuite, we used the traces made available for
-the 2nd Cache Replacement Competition (CRC-2)\cite{CRC_2}.  The traces
+the 2nd Cache Replacement Competition (CRC-2)~\cite{CRC_2}.  The traces
 include 4 multi-core applications with 6 distinct phases per
 application.  In total, we used 285 traces representing workloads
 across 53 applications.
@@ -108,7 +108,7 @@ days to simulate 1 Billion instructions.
 \label{Method-Prefetchers}
 We compared NATCH against three of the latest state of the art
 hardware-only prefetchers: Best Offset Prefetcher (BOP), DRAM Aware - Access Map
-Pattern Matching (DA-AMPM)\cite{DA_AMPM} and Signature Path Prefecher
+Pattern Matching (DA-AMPM)~\cite{DA_AMPM} and Signature Path Prefecher
 (SPP).  BOP was the winner of 2nd Data Prefetching Championship.
 DA-AMPM is the enhanced version of AMPM, modified to account for DRAM
 row buffer locality.  SPP has been shown to outperform BOP on SPEC
@@ -232,53 +232,53 @@ prefetching and that enabled us to examine the weights in detail.
     \label{tab:PF_metadata}
 \end{table}
 
+
 \begin{table}[]
     \centering
-    \begin{tabular}{|p{1.5cm}|p{1cm}|c|p{1.5cm}|}
+    \begin{tabular}{|c|c|c|c|}
     \hline
         \textbf{Structure} &
         \textbf{Entry} &
         \textbf{Components} &
         \textbf{Total} \\
     \hline
-        \multirow{5}{1.5cm}{Signature Table} & \multirow{5}{1.5cm}{256} & Valid (1 bit) & \multirow{5}{1cm}{11008  bits}\\
-        & & Tag (16 bits) &\\
-        & & Last Offset (6 bits) &\\  
-        & & Signature (12 bits) &\\
-        & & LRU (6 bits) &\\
+        \multirow{5}{2.2cm}{Signature Table} &      & Valid (1 bit)        &             \\
+                                             &      & Tag (16 bits)        &             \\
+                                             & 256  & Last Offset (6 bits) & 11008 bits  \\  
+                                             &      & Signature (12 bits)  &             \\
+                                             &      & LRU (6 bits)         &             \\
     \hline
-        \multirow{3}{1.5cm}{Pattern Table} & \multirow{3}{1.5cm}{512} & $C_{sig}$ (4bits) &\multirow{3}{1cm}{24576 bits}\\
-        & & $C_{delta}$ (4*4 bits) &\\
-        & & Delta (4*7 bits) &\\
+        \multirow{3}{2.2cm}{~~Pattern Table} &      & $C_{sig}$ (4bits)      &               \\
+                                             & 512  & $C_{delta}$ (4*4 bits) & 24576 bits    \\
+                                             &      & Delta (4*7 bits)       &               \\
     \hline
-        \multirow{3}{1.5cm}{Perceptron Tables} & \multirow{3}{1.5cm}{4096*8 128*1} & \multirow{3}{1.5cm}{5 bits} & \multirow{3}{1.5cm}{164480 bits}\\
-        & & &\\
-        & & &\\
+        \multirow{3}{1.5cm}{Perceptron\newline}     & 4096*8    &            &              \\
+        \multirow{2}{0.9cm}{Tables}                 & 2048*x    & 5 bits     & 164480 bits  \\
+                                                    & 128*1     &            &              \\
     \hline
-        \multirow{2}{1.5cm}{Prefetch Filter \footnotemark[1]} & \multirow{2}{1.5cm}{1024} & \multirow{2}{1.5cm}{84 bits} & \multirow{2}{1.5cm}{86016 bits}\\
-        & & &\\
+        Prefetch Filter\footnotemark[1]             & 1024      & 84 bits    & 86016 bits   \\
     \hline
-     \multirow{2}{1.5cm}{Reject Filter \footnotemark[2]} & \multirow{2}{1.5cm}{1024} & \multirow{2}{1.5cm}{83 bits} & \multirow{2}{1.5cm}{84992 bits}\\
-        & & &\\
+        Reject Filter\footnotemark[2]               & 1024      & 83 bits    & 84992 bits   \\
     \hline
-        \multirow{4}{1.5cm}{Global History Register} & \multirow{4}{1.5cm}{8} & Signature (12 bits) & \multirow{4}{1.5cm}{264 bits}\\
-        & & Confidence (8 bits) & \\
-        & & Last Offset (6 bits) & \\
-        & & Delta (7 bits) & \\
+        \multirow{4}{1cm}{Global\newline\newline}   & \multirow{4}{0.2cm}{8} & Signature (12 bits)  & \multirow{4}{1.1cm}{264 bits} \\
+        \multirow{3}{1.1cm}{History\newline}        &                        & Confidence (8 bits)  &                               \\
+        \multirow{2}{1.2cm}{Register}               &                        & Last Offset (6 bits) &                               \\
+                                                    &                        & Delta (7 bits)       &                               \\
     \hline
-        \multirow{2}{1.5cm}{Accuracy Counters} & 1 & C$_{total}$ & 10 bits\\
-        & 1 & C$_{useful}$ & 10 bits\\
+        Accuracy        & 1     & C$_{total}$       & 10 bits   \\
+        Counters        & 1     & C$_{useful}$      & 10 bits   \\
     \hline
-        \multirow{3}{1.5cm}{Global PC Trackers} & \multirow{3}{1cm}{3} & $PC_1$ (12 bits)& \multirow{3}{1.cm}{36 bits}\\
-        & & $PC_2$ (12 bits) &\\
-        & & $PC_3$ (12 bits) &\\
+        \multirow{3}{1.5cm}{Global PC\newline}      &       & $PC_1$ (12 bits)      &           \\
+        \multirow{2}{1.5cm}{~Trackers}              & 3     & $PC_2$ (12 bits)      & 36 bits   \\
+                                                    &       & $PC_3$ (12 bits)      &           \\
     \hline
-        \multicolumn{4}{|c|}{\textbf{Total: 371356 bits = 45.33 KB}}\\
+        \multicolumn{4}{|c|}{\textbf{Total: 371392 bits = 45.33 KB}}\\
     \hline
     \end{tabular}
-    \caption{NATCH Storage Overhead}
-    \label{tab:NATCH_overhead}
+    \caption{SPP-Perc Storage Overhead}
+    \label{tab:SPPPerc_overhead}
 \end{table}
+
 \footnotetext[1]{Components of Prefetch Filter can be found in Table \ref{tab:PF_metadata}}
 \footnotetext[2]{RF does not need to maintain the useful bit as that only applies for prefetches that ultimately made through}
 

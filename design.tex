@@ -212,7 +212,7 @@ prefetching decision with the program behaviour
   actual demand fetch case.  This feature resolves a PC into a
   different value for each lookahead depth of prefetch speculation, giving
   a more accurate correlation in lookahead cases.  This is akin to the
-  concept of Virtual Program Counters\cite{VPC} introduced by Kim
+  concept of Virtual Program Counters~\cite{VPC} introduced by Kim
   \textit{et. al.} for indirect branch prediction.
 
 
@@ -230,7 +230,7 @@ prefetching decision with the program behaviour
 
 \item \textbf{Program Counter XOR Delta}: This tells us if a given PC
   favours particular value(s) of delta.  As noted earlier, while PC in
-  itself does not much useful information, this hash resolves PC into
+  itself does not convey much useful information, this hash resolves PC into
   different values based on the tendency of that PC to favour a
   certain delta.  This way, dynamic nature of different instances of
   the same memory access instruction can be captured here.
@@ -310,7 +310,7 @@ the weights.
 \item \textbf{Feature Selection:} Six out of the nine features we developed use information derived 
 from program execution, irrespective of the baseline SPP prefetcher. Beyond that, the feature set 
 can be expanded to convey any useful information from the prefetcher to the perceptron throttler.
-For example, in our implementation 'Confidence', 'Current Signature XOR Delta', and 
+For example, in our implementation `Confidence', `Current Signature XOR Delta', and 
 'Page Address XOR Confidence' are such features.
 
 \end{itemize}

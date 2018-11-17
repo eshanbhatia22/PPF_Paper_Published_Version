@@ -4,7 +4,7 @@ Since past few decades, processor and memory scaling has been enabled
 with different philosophies in mind.  While processor scaling focused
 on speed improvements, memory scaling was centred around increasing
 the storage capacity.  The process technology reaching scaling
-limitations led to Memory Wall\cite{MemWall} - the increasing
+limitations led to Memory Wall~\cite{MemWall} - the increasing
 performance gap between the processor speed and the memory speeds.
 Various techniques have been developed to combat this widening gap.
 Data prefetching is one such important technique.  Data prefetching
@@ -50,9 +50,9 @@ future scope for expansion.  The contributions made by this paper are:
 \item This is the first time where a truly on-line learning based
   neural network model has been used when it comes to hardware data
   prefetching.  The prior works in this area either relied on program
-  semantics\cite{Semantics} or were application
-  specific\cite{Datacenter} or could not yield a significant
-  improvement over the baseline prefetcher used\cite{BadPerc}.
+  semantics~\cite{Semantics} or were application
+  specific~\cite{Datacenter} or could not yield a significant
+  improvement over the baseline prefetcher used~\cite{BadPerc}.
 
 \item Implementing the pereptron throttler in a robust and accurate
   practical prefetching mechanism.  The overall scheme yields
@@ -62,7 +62,7 @@ future scope for expansion.  The contributions made by this paper are:
   performance in multi-core and lower capacity / bandwidth
   environments.
 
-\item Examining the perceptron weights doing a statistical study to
+\item Examining the perceptron weights by doing a statistical study to
   quantify the contribution made by each feature.  We have also used
   this idea to develop a comprehensive set of features where each
   feature contributes some `new' information to the perceptron.  The
@@ -75,7 +75,7 @@ future scope for expansion.  The contributions made by this paper are:
 
 \end{itemize}
 
-We tested NATCG on Champsim, an open source simulator which models
+We tested NATCH on Champsim, an open source simulator which models
 an Out-of-Order CPU using.  For evaluation, we used SPEC 2017
 benchmarks.  On a single core configuration, NATCH increases
 performance of the system by 39.5\% as compared to the baseline with
