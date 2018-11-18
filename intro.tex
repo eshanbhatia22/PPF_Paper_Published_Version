@@ -1,9 +1,10 @@
-\section{Introduction}
+\section{INTRODUCTION}
+\label{Introduction}
 Since past few decades, processor and memory scaling has been enabled
 with different philosophies in mind.  While processor scaling focused
 on speed improvements, memory scaling was centred around increasing
 the storage capacity.  The process technology reaching scaling
-limitations led to Memory Wall\cite{MemWall} - the increasing
+limitations led to Memory Wall~\cite{MemWall} - the increasing
 performance gap between the processor speed and the memory speeds.
 Various techniques have been developed to combat this widening gap.
 Data prefetching is one such important technique.  Data prefetching
@@ -27,29 +28,31 @@ where the last level cache is a shared resource.  Conversely, a
 conservative prefetcher would be highly accurate but might not make
 enough useful predictions.
 
-To this effect we propose SPP-Perc <come up with a catchy name>.  It
+To this effect we propose NATCH: NeurAl prefeTCh tHrottler.  It
 is an enhancement to the existing state of the art prefetcher and
 overcomes the coverage vs accuracy trade-off in a robust manner.  The
-idea is to modify SPP design to make it as aggressive as it can get.
-This enables SPP to capture complex memory access patterns hence
+idea is to use a state-of-the-art prefetcher as the base engine.
+For that we choose Signature Path Prefetcher (SPP) and 
+modify the design to make it as aggressive as it can get.
+This enables the base engine to capture complex memory access patterns hence
 leading to increased coverage.  This comes at a cost of increased DRAM
 traffic, hence reduction in overall IPC.  The prefetch suggestions
-recommended by SPP pass through the perceptron based throttler.  Over
-time, perceptron layer learns to correlate the prefetches recommended
-by SPP with various available features, leading to elimination of
-useless prefetches.  This leads to an overall increased accuracy of
+recommended by SPP pass through the perceptron based throttler. Over
+time, perceptron layer learns to correlate the prefetch recommendations 
+with various available features, leading to elimination of
+useless prefetches. This leads to an overall increased accuracy of
 the prefetch scheme and reduction in DRAM traffic.
 
-\vspace{1ex}This paper talks about SPP-Perc, its merits, analysis and
+\vspace{1ex}This paper talks about NATCH, its merits, analysis and
 future scope for expansion.  The contributions made by this paper are:
 
 \begin{itemize}
 \item This is the first time where a truly on-line learning based
   neural network model has been used when it comes to hardware data
   prefetching.  The prior works in this area either relied on program
-  semantics\cite{Semantics} or were application
-  specific\cite{Datacenter} or could not yield a significant
-  improvement over the baseline prefetcher used\cite{BadPerc}.
+  semantics~\cite{Semantics} or were application
+  specific~\cite{Datacenter} or could not yield a significant
+  improvement over the baseline prefetcher used~\cite{BadPerc}.
 
 \item Implementing the pereptron throttler in a robust and accurate
   practical prefetching mechanism.  The overall scheme yields
@@ -59,50 +62,37 @@ future scope for expansion.  The contributions made by this paper are:
   performance in multi-core and lower capacity / bandwidth
   environments.
 
-\item Examining the perceptron weights doing a statistical study to
+\item Examining the perceptron weights by doing a statistical study to
   quantify the contribution made by each feature.  We have also used
   this idea to develop a comprehensive set of features where each
   feature contributes some `new' information to the perceptron.  The
-  details are explained under methodology, in Section XX.
+  details are explained under methodology, in Section \ref{Method-Overheads}.
 
 \item Cross-validating the design across benchmarks.  All the
   development and parameter tuning was done on the SPEC 2017
   benchmark.  The results have been shown to be consistent across
-  unseen benchmarks.  More details can be found in the results section
-  (Section XX).
-
-  % \item Designing the prefetcher keeping SPEC 2017 benchmark suite
-  %   in mind.  We have used SPEC 2017 to compare SPP-Perc against the
-  %   highest performing prefetchers.  We have also used our
-  %   prefetcher to characterize memory intensive benchmarks of the
-  %   SPEC 2017 suite, with respect to prefetching.
-
-  % \item We came up with an efficient model to use the perceptron
-  %   output as a representation of the prefetch confidence using an
-  %   on-line histogram technique.  We show how the simple sum can
-  %   replace the existing mechanism which was essentially based on
-  %   counting the number of hits for a particular entry in SPP.
+  unseen benchmarks.  More details can be found in Section \ref{Results-CrossVal}.
 
 \end{itemize}
 
-We tested SPP-Perc on Champsim, an open source simulator which models
+We tested NATCH on Champsim, an open source simulator which models
 an Out-of-Order CPU using.  For evaluation, we used SPEC 2017
-benchmarks.  On a single core configuration, SPP-Perc increases
+benchmarks.  On a single core configuration, NATCH increases
 performance of the system by 39.5\% as compared to the baseline with
 no prefetching, on the memory intensive subset of the benchmark.  This
 outperforms the next best prefetcher, SPP, by 6.84\%.  On a multi-core
 system running a mix of memory intensive subset of the SPEC 2017
-traces, SPP-Perc saw an improvement of 11.9\% over SPP for 4-core
+traces, NATCH saw an improvement of 11.9\% over SPP for 4-core
 system and 10.67\% for 8-core system.
 
-In the results part in section XX, we show a detailed analysis of the
+In the results part in Section \ref{Results}, we show a detailed analysis of the
 speedup achieved.  We also used SPEC 2006 and CloudSuite benchmarks
 for cross-validation of the prefetcher implementation.
 
-The rest of the paper is organized as follows.  Section 2 talks about
-background work and recaptures the SPP architecture Section 3
+The rest of the paper is organized as follows.  Section \ref{Background} talks about
+background work and recaptures the SPP architecture Section \ref{Design}
 discusses the detailed implementation of the perceptron mechanism and
-the features used.  Section 4 consists of the evaluation methodology
-and explores the feature space for perceptron learning.  Section 5 is
-the performance evaluation of our prefetcher and Section 6 concludes
+the features used.  Section \ref{Method} consists of the evaluation methodology
+and explores the feature space for perceptron learning.  Section \ref{Results} is
+the performance evaluation of our prefetcher and Section \ref{Conclusion} concludes
 the paper.

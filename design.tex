@@ -1,34 +1,42 @@
-\section{SPP-Perc}
+\section{NATCH Architecture}
+\label{Design}
+
+In this section we describe our implementation of NATCH.
+NATCH is a generalised prefetch throttler and can be adapted to 
+any existing or upcoming prefetcher with minimal modifications.
+For a practical implementation, we have used SPP as the base engine prefetcher.
 
 \subsection{Changes made to original SPP}
-To modify the SPP Design to suit our scheme, the following changes were made:
+\label{Design-Changes}
+To modify the SPP design to suit our scheme, the following changes were made:
 
 \begin{itemize}
 \item \textbf{Original Thresholds discarded}\newline In the original
-  SPP design, an internal confidence mechanism was developed which was
+  SPP design, the internal confidence was
   compared against a preset PF\_THRESHOLD (T\textsubscript{p}) to
   decide whether to accept or reject the prefetch suggestion.
   Furthermore, the accepted suggestions were thresholded against FILL
   \_THRESHOLD (T\textsubscript{f}) to decide the fill level: L2 Cache
   vs Last Level Cache.  T\textsubscript{p} and T\textsubscript{f} were
   set to 25 and 90 respectively, on the scale of 0 to 100.  In
-  SPP-Perc, the perceptron sum is used to make these decisions.  Hence
+  NATCH, the perceptron sum is used to make these decisions.  Hence
   these two thresholds are no longer needed
 
+%%[NOTE] Can this point be removed?
 \item \textbf{Looking at L2 MSHR Queue while prefetching}\newline
   Original SPP would not consider the slots available in the L2 MSHR
   queue.  It had an assumption that at no time can the number of
   prefetches suggested by SPP could exceed the capacity of the queue.
   While it was not proven in the paper, the internal confidence
   mechanism along with the thresholds made sure that the above
-  assumption was maintained.  In SPP-Perc since there can be no
-  assumption on the degree of aggressiveness - because SPP is being
-  tuned to its lowest thresholds, we explicitly check that at no point
+  assumption was maintained.  In NATCH since there can be no
+  assumption on the degree of aggressiveness of the underlying prefetcher, 
+  we explicitly check that at no point
   should the number of suggested prefetches exceed L2 MSHR queue.
 
 \item \textbf{Enhanced Filter}\newline Original SPP introduces a
   concept of Prefetch Filter, which keeps a track of up to 1024 L2
-  Cache prefetches suggested by SPP.  The Filter was modified to store
+  Cache prefetches suggestions.  For NATCH, the Filter was modified to store
   meta-data like program counter, memory access address etc.  This is
   needed to train the perceptron when the result of that particular
   prefetch gets available.  At training time, this data is used to
@@ -45,8 +53,9 @@ To modify the SPP Design to suit our scheme, the following changes were made:
 \end{itemize}
 
 \subsection{The Perceptron Layer}
+\label{Design-Perceptron}
 As discussed earlier, the perceptron layer was introduced to act as a
-throttler to the underlying SPP engine.  This section explores the
+throttler to the underlying prefetchh engine.  This section explores the
 details of the perceptron layer and the range of features that are
 ultimately used by the perceptron for correlating the prefetches.
 
@@ -59,7 +68,7 @@ features requiring lower resolution required as low as 7 bits of
 indexing.  The variable indexing was determined by studying the
 features and fine-tuned empirically so as to achieve a good accuracy
 vs area trade-off.  Exact details are mentioned under `Area Overheads'
-in Section XX.
+in Section \ref{Method-Overheads}
 
 A single entry in the table corresponds to a perceptron weight.  Each
 weight is a 5 bit counter - saturating at -16 and +15.  Each feature
@@ -74,10 +83,8 @@ prefetches can be places either in L2 Cache or in Last Level Cache.
 The prefetcher gets to decide this, and is usually done based on an
 internal confidence mechanism.
 
-When SPP gets triggered, it suggests up to 4 (=Associativity of the
-Pattern Table) candidates for prefetch based on the demand access
-address.  In each subsequent lookahead depth, SPP suggests up to 4
-more prefetch candidates, as explained in section\_\_.  All these
+When the base prefetcher gets triggered, it starts suggesting candidates for prefetching. 
+All these
 recommended prefetches are tested in the perceptron throttler before
 they can access the Prefetch Filter, as in the original SPP data-path.
 
@@ -91,9 +98,9 @@ the traditional perceptron dot product.  On obtaining the overall sum,
 it is thresholded based on the preset threshold PERC\_THRESHOLD\_LO.
 Only the prefetch candidates with the perceptron sum higher that the
 threshold qualify for prefetching.  The prefetches that qualify the
-perceptron throttler stage go through the Prefetch Filter stage, just
-as in the SPP design.  The Prefetch Filter eliminates any redundant
-prefetch suggestions.  In SPP-Perc, all the meta-data that is required
+perceptron throttler stage go through the Prefetch Filter stage.  
+The Prefetch Filter eliminates any redundant
+prefetch suggestions.  In NATCH, all the meta-data that is required
 to recreate the features is also stored in the Prefetch Filter.  At a
 later stage, when the feedback of the current prefetched line is
 available, the stored data can be used to train the perceptron.
@@ -118,7 +125,7 @@ Such prefetches are directed to fill the bigger Last Level Cache and
 potentially not pollute the more scarce L2 Cache.  The highest
 confidence prefetches are filled in the L2 Cache.
 
-In addition to the Prefetch Filter mentioned above, SPP-Perc also
+In addition to the Prefetch Filter mentioned above, NATCH also
 maintains a `Reject Filter'.  Reject filter is a 1024-entry deep 1-way
 associative table.  In case that a prefetch suggestion is rejected by
 perceptron throttler, it instead gets logged into the Reject Filter.
@@ -128,15 +135,14 @@ can be used to train the perceptron to avoid false negatives
 \textit{i.e.}, cases where prediction was to reject the prefetch but
 the prefetch would have been useful.
 
-As previously stated, an enhancement to the original SPP design
-includes storing all the meta-data describing the program state at the
-instant of prefetching, in the Prefetch Filter.  This information is
-useful when the perceptron needs to be updated subsequently.
+As previously stated all the meta-data describing the program state at the
+instant of prefetching, is stored in the Prefetch Filter or the Reject Filter.  
+This information is useful when the perceptron needs to be updated subsequently.
 
 \textbf{TRAINING}\newline In the prefetching environment, feedback of
 a prefetch is received whenever there is an eviction or a demand
 access from L2 Cache.  This acts as a trigger to update all the
-baseline SPP entries and to also train the perceptron throttler.
+base prefetcher entries and to also train the perceptron throttler.
 Training of the perceptron throttler involves restoring the meta-data
 that was stored in Prefetch Filter or the Reject Filter.  This is done
 by indexing into the corresponding filters using the cache line
@@ -161,7 +167,7 @@ A secondary training mechanism also kicks in during demand fetches.
 Before the demand access triggers the next set of prefetches, it
 checks the Reject Filter for the valid entry.  In case it is a hit,
 that means that the corresponding cache line was initially suggested
-by the underlying SPP engine but rejected by the perceptron throttler.
+by the underlying prefetch engine but rejected by the perceptron throttler.
 This means that perceptron should have been more confident about that
 particular prefetch.  Once such a scenario is identified, the state of
 the execution at the time of prefetch is retrieved from the Reject
@@ -174,19 +180,19 @@ prefetch.
 This mechanism allows us to solve the classical problem of exploiting
 `lost opportunity'.  In prior perceptron based implementations (and in
 general, prefetching algorithms), there is usually no way of knowing
-the result of not prefetch a particular line.  Our two-step SPP-Perc
-allows us to overcome that issue in a simple manner.
+the result of not prefetch a particular line.  Our two-step NATCH
+architecture allows us to overcome that issue in a simple manner.
 
 \subsection{Features used by Perceptron}
-
+\label{Design-Features}
 Here we discuss the various features which help correlate the
 prefetching decision with the program behaviour
 \begin{itemize}
-\item \textbf{Base address} of the demand access which triggered the
+\item \textbf{Base Address} of the demand access which triggered the
   prefetch.  Since prefetch are triggered from the L2 demand access,
   they tend to be correlated with the triggering address.
 
-\item \textbf{Cache line} and \textbf{Page address}: These two
+\item \textbf{Cache Line} and \textbf{Page Address}: These two
   separate features are derived from the base address which triggered
   the prefetch, as follows: base\_addr >> LOG2\_BLOCK \_SIZE and
   base\_addr >> LOG2\_PAGE\_ SIZE respectively.  The idea behind using
@@ -197,10 +203,6 @@ prefetching decision with the program behaviour
   approach can also eliminate destructive interference that can be
   caused by directly folding the bits into half.
 
-\item \textbf{Confidence}: The integer confidence on the scale of 0 to
-  100 which was used in the original SPP design.  While the original
-  confidence is not used directly for decision making, it can still
-  contribute to the final decision made.
 
 \item \textbf{Program Counter XOR Depth}: PC is for the instruction
   which triggered the prefetch chain.  Depth refers to the iteration
@@ -208,16 +210,16 @@ prefetching decision with the program behaviour
   a good basis for doing lookahead prefetching as all the prefetches
   with depth >= 1 gets aliased onto the same PC which won't be true in
   actual demand fetch case.  This feature resolves a PC into a
-  different value for each lookahead depth of SPP speculation, giving
+  different value for each lookahead depth of prefetch speculation, giving
   a more accurate correlation in lookahead cases.  This is akin to the
-  concept of Virtual Program Counters\cite{VPC} introduced by Kim
+  concept of Virtual Program Counters~\cite{VPC} introduced by Kim
   \textit{et. al.} for indirect branch prediction.
 
 
 \item \textbf{PC\textsubscript{1} XOR PC\textsubscript{2}>>1 XOR
     PC\textsubscript{3}>>2}: Here $PC_i$ refers to the last $i^{th}$
   PC before the instruction that triggered the current prefetch.
-  Hashing together the last three PCs tell SPP-Perc about the path
+  Hashing together the last three PCs tell NATCH about the path
   that led to the current demand access and helps capture and
   branching information of the current basic block.  PCs are shifted
   in the increasing order of history before being hashed together.
@@ -228,17 +230,27 @@ prefetching decision with the program behaviour
 
 \item \textbf{Program Counter XOR Delta}: This tells us if a given PC
   favours particular value(s) of delta.  As noted earlier, while PC in
-  itself does not much useful information, this hash resolves PC into
+  itself does not convey much useful information, this hash resolves PC into
   different values based on the tendency of that PC to favour a
   certain delta.  This way, dynamic nature of different instances of
   the same memory access instruction can be captured here.
 
+\item \textbf{Confidence}: The integer confidence on the scale of 0 to
+  100 which was used in the original SPP design.  While the original
+  confidence is not used directly for decision making, it can still
+  contribute to the final decision made.
+
 \item \textbf{Current Signature XOR Delta}: It can be recalled from
-  the discussion of SPP in section XX that the new signature is
+  the discussion of SPP in Section \ref{Background-SPP} that the new signature is
   generated using the old signature and the blobk delta.  While
   `Current Signature XOR Delta' is not the exact formula for
   generating the future signature, it gives an approximate idea of the
   path that the combination of these two values can lead to.
+
+\item \textbf{Page Address XOR Confidence}: This feature helps look at the 
+tendency of each page to be prefetch friendly or prefetch averse. It 
+helps resolve a page into different entries depending on its confidence 
+for prefetching, which can vary during phases of a program execution.
 
 %%%%%%% Below are the features rejected when downsizing 14 -> 9
 % \item \textbf{Current Signature}: The 12-bit signature used by SPP
@@ -264,6 +276,42 @@ Some of the composite features are derive from simple hashing (XOR) of
 two primary features.  There is always a question of usefulness of
 such composite features and the `fresh' information added.  We try to
 justify the choice of each feature by quantifying the contribution
-made towards predicting prefetch behaviour, in Section XX.  Finally,
+made towards predicting prefetch behaviour, in Section \ref{Method-Features}.  Finally,
 as noted above, each feature indexes into its independent entry of
 perceptron weights.
+
+\subsection{Generalizing NATCH for any Prefetcher}
+\label{Design-Generalizing}
+The above implementation of NATCH suggests that it is highly modular and can be 
+adapted to be used over any base prefecher for increased prefetch accuracy. 
+In our implementation, 
+only two `hooks' are required between NATCH and the baseline SPP. First  
+is to make sure that all the prefetch candidates of SPP pass through 
+the perceptron throttler and if qualified, the metadata for perceptron indexing
+be stored. Second is needed when the feedback of a prior prefetch is available in form 
+of a subsequent demand hit or cache eviction. In that case, the stored meta-data needs 
+to be retrieved to update the state of the perceptrons.
+
+In general, NATCH can be adapted to a new base prefetcher with only a few modifications.
+\begin{itemize}
+
+\item \textbf{Enhancing the Base Prefetcher:} By tuning down any internal thresholds 
+to increase its inherent aggressiveness. 
+
+\item \textbf{Inferencing and Storing:} All prefetch recommendations to be tested 
+using the perceptron inferencing algorithm.
+Perceptron output: \textit{true} and \textit{false} should be saved appropriately, along with all 
+the meta-data required for perceptron indexing.
+
+\item \textbf{Retrieving and Training:} When the feedback is available, the previously 
+stored meta-data can be used to re-index into the perceptron entries and increment / decrement 
+the weights.
+
+\item \textbf{Feature Selection:} Six out of the nine features we developed use information derived 
+from program execution, irrespective of the baseline SPP prefetcher. Beyond that, the feature set 
+can be expanded to convey any useful information from the prefetcher to the perceptron throttler.
+For example, in our implementation `Confidence', `Current Signature XOR Delta', and 
+'Page Address XOR Confidence' are such features.
+
+\end{itemize}
+
