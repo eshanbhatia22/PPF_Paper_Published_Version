@@ -6,7 +6,7 @@
 For testing and comparing NATCH, we used ChampSim~\cite{Champsim}
 simulator.  ChampSim is an enhanced version of the framework that was
 used for the 2nd Data Prefetch Championship (DPC-2)~\cite{DPC_2}. We
-model model a 1-core / 4-core / 8-core Out of Order machine. The
+model a 1-core / 4-core / 8-core Out of Order machine. The
 details of the configuration parameters is summarized in Table
 \ref{tab:Sim_params}.
 
@@ -27,9 +27,9 @@ details of the configuration parameters is summarized in Table
 \end{table}
 
 The block size was fixed 64KB. Prefetching was only triggered at L2
-Cache demand accesses but could be sent to L2 Cache or Last Level
-Cache.  No L1 Data level prefetching was done.  LRU replacement policy
-was used on all levels of cache hierarchies.  Branch prediction was
+Cache demand accesses but could be directed to L2 Cache or Last Level
+Cache. No L1 Data level prefetching was done. LRU replacement policy
+was used on all levels of cache hierarchies. Branch prediction was
 done using the perceptron branch predictor~\cite{Perc_Branch}.  Page
 size was kept as 4KB.  Champsim operates all the prefetchers strictly
 in the physical address space.
@@ -57,26 +57,16 @@ We use all the 20 workloads available in the SPEC 2017 Suite.  Using
 SimPoint~\cite{SimPoint} methodology, we identified 95 different
 program segments of 1 Billion instructions each.
 
-We performed cross-validation of our NATCH model using SPEC
-2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks.  For
-SPEC 2006, we developed 94 simpoints spread across the 29
-applications.  For CloudSuite, we used the traces made available for
-the 2nd Cache Replacement Competition (CRC-2)~\cite{CRC_2}.  The traces
-include 4 multi-core applications with 6 distinct phases per
-application.  In total, we used 285 traces representing workloads
-across 53 applications.
-
 \textit{Single-core performance:} For single-core simulations, we use
 200 Million instructions to warm-up the microarchitectural structures
 and next 1 Billion instructions to do detailed simulations and collect
-run-time statistics.  We report the performance as speedup over
-baseline \textit{i.e.}, no prefetching.  We take the Instruction Per
-Cycle (IPC) of the prefetcher and divide it with the IPC of baseline.
+run-time statistics. We report the IPC speed over
+baseline \textit{i.e.}, no prefetching.
 The final number reported is the geometric mean of the speed-up
 attained on individual traces.
 
 \textit{Multi-core performance:} For multi-application workloads, we
-generate 100 completely random mixes and another 100 mixes from the
+generate 100 random mixes and another 100 mixes from the
 memory intensive subset of SPEC 2017.  For 4-core workload, 200
 Million instructions are used for warm-up and additional 1 Billion
 instruction simulated for collecting statistics.  Each CPU keeps
@@ -98,11 +88,32 @@ prefetching, to get the weighted-IPC-speedup.  Finally the geometric
 mean of these 100 weighted-IPC-speedup is reported as the effective
 speedup obtained by the prefetching scheme.
 
-We repeat the same process for 8-core workloads with the exception
-that 20 Million warm-up instructions and 100 Million full instructions
-were executed.  This was done so as to keep the simulation run-time
-within reasonable limits as a single 8-core mix was taking up to 5
+We repeat the same process for 8-core workloads, correspondingly with 16MB LLC.
+Only exception is that 20 Million warm-up instructions and 100 Million 
+full instructions were executed.  
+This was done so as to keep the simulation run-time
+within reasonable limits as a single 8-core mix was taking up to 3
 days to simulate 1 Billion instructions.
+
+\textit{Cross Validation:} We cross-validated our NATCH model using SPEC
+2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks.  
+For single core
+SPEC 2006, we developed 94 simpoints spread across all the 29
+applications. For multi-core, 
+we followed the same methodology as SPEC 2017. 
+For CloudSuite, we used the traces made available for
+the 2nd Cache Replacement Competition (CRC-2)~\cite{CRC_2}.  The traces
+include 4 4-core applications with 6 distinct phases per
+application.  
+
+
+In total, we used 285 traces representing workloads
+across 53 applications. Throughout the paper for SPEC 2017, 
+we consider memory intensive subset as the traces with LLC MPKI > \_\_. 
+This includes 48 out of the 95 simpoints developed.
+Since SPEC 2006 differs considerably in terms of memory behaviour, we 
+define memory intensive subset as traces with LLC MPKI > \_\_.
+This includes 47 out of 94 simpoints.
 
 \subsection{Preferchers Simulated}
 \label{Method-Prefetchers}

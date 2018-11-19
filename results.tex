@@ -10,19 +10,23 @@ workloads are presented.
 
 \subsection{Single-core Results}
 \label{Results-Single}
-Figure \_\_ shows the IPC speedup of the 4 prefetchers simulated.  All
-the results have been normalized to baseline \textit{i.e.}, no
+
+Figure \_\_ shows the IPC speedup on the memory intensive subset of SPEC 2017. 
+All the results have been normalized to baseline \textit{i.e.}, no
 prefetching.  As can be seen, NATCH yields a speedup of XX\% over
 the baseline.  This is equivalent to XX\% over DA-AMPM, xx\% over BOP
 and XX\% over SPP.  Out of the XX benchmarks, NATCH nearly matches
 or outperforms most of the prefetchers on XX traces.
 
 At its peak, NATCH manages to get the IPC speedup of a factor of
-over \textbf{3.4} on the trace \textit{602.gcc\_s-2226B}.  This also
-corresponds to speedup gain of \textbf{22.4\%} over the next best
+over \textbf{XX} on the trace \textit{602.gcc\_s-2226B}.  This also
+corresponds to speedup gain of \textbf{XX\%} over the next best
 prefetcher - SPP.  In general, benchmarks \textit{602.gcc\_s,
   603.bwaves\_s, 605.mcf\_s, 621.wrf\_s} and \textit{649.fotonik3d\_s}
 benefit the most from NATCH, as compared to SPP only prefetching.
+
+On the full SPEC 2017 suite, NATCH improves the baseline by XX\%,
+which is YY\% more than just SPP.
 
 <Discuss the extreme behaviour of \textit{623.xalancbmk\_s}:
 Improvement over SPP is as high as 31\% and even reduces to -1.5\% on
@@ -47,37 +51,50 @@ In this section, we demonstrate the improvement achieved by NATCH
 for a mix of multi-programmed workloads.
 
 \textit{4-core environment} Figure \_\_ shows a comparison of speedups
-obtained on workload mix of memory intensive subset of SPEC 2017.  We
+obtained on 4-core mix of memory intensive subset of SPEC 2017.  We
 plot all the 4 prefetchers, normalized to baseline.  The workloads
-have been sorted in the increasing order of performance benefit, as
-measured in terms of normalized weighted speedup.  As can be seen,
-NATCH offers an IPC improvement by 33.5\% on these traces.  This is
-5.5\% over the next best prefetcher SPP; and XX\% and YY\% over BOP
+have been sorted in the increasing order of IPC obtained with running NATCH.
+As can be seen,
+NATCH offers an IPC improvement by 51.7\% on these traces.  This is
+11.9\% over the next best prefetcher SPP; and XX\% and YY\% over BOP
 and DA-AMPM respectively.
 
-This increased improvement by NATCH on a 4-core machine is not
-surprising.  Since NATCH has an extremely intelligent throttler
-working to eliminate useless prefetches before they can create cache
-pollution.  This further amplifies the edge that SPP had over BOP.
-With the advantage of an orthogonal prefetcher, SPP can be as
-aggressive as possible and leave the accuracy aspect to perceptron
-throttler.
+On a different set of fully random SPEC 2017 4-core mixes, NATCH provides an IPC speedup of 
+26.2\% over baseline, which is 5.7\% more than just SPP.
 
-\textit{8-core environment} To test the effectiveness of NATCH in a
-tighter constrained multi-core environment, we simulated an 8-core
-machine with 16 MB last Level Cache.  Other parameters were kept same
-as discussed under Methodology in Section \ref{Method-Workloads}.  
+\textit{8-core environment} The sorted comparison of speedup obtained 
+on the memory intensive 8-core mixes, is depicted in Fig \_\_.
+NATCH improves baseline performance by 38.6\% and that is 10.7\% 
+more than using just SPP.
+
+For completely random SPEC 2017 mixes, NATCH improves performance by 
+23.6\% over the baseline, corresponding to 4.8\% over SPP.
+
+This increased improvement by NATCH on a multi-core machines is not
+surprising.  Since NATCH has an extremely intelligent throttler, it ends up 
+eliminating useless prefetches before they can create cache
+pollution. This further amplifies the edge that SPP had over BOP in multi-core environment.
+ 
 \textit{<See if we can use
-speed-up over BOP as a measure here>}
+speed-up over BOP as a measure here for showing scalability>}
 
 \subsection{Additional Memory Constraints}
 \label{Results-AdditionalMem}
-Figure \_\_ shows the performance of NATCH against the other
-prefetchers in tighter constraint environments.  For sake of
-simplicity, we show 2 traces where NATCH gives the most advantage
-over baseline, 2 traces where NATCH doesn't perform as well as the
-best prefetcher *<-replace with the prefetcher name once results are
-available* and finally GeoMean across all the traces.  
+
+\textit{Low-Bandwidth DRAM}
+Figure \_\_(a) shows the performance of NATCH against other prefetchers. 
+For sake of simplicity, we show 2 traces where NATCH gives the most advantage
+over baseline, 2 traces where NATCH doesn't perform as well as the next
+best prefetcher (replace with the prefetcher name once results are
+available) and GeoMean across memory intensive and across all the 
+SPEC 2017 traces. As can be seen, for the memory intensive subset,
+ NATCH improves baseline by XX\% and that is XX\% more than using SPP.
+
+\textit{Small LLC}
+Figure \_\_(b) shows the similar analysis of NATCH.
+For the memory intensive subset, a performance improvement of XX\% 
+over baseline is seen with NATCH, XX\% more than just SPP.
+
 
 \subsection{Cross Validation}
 \label{Results-CrossVal}
@@ -93,7 +110,9 @@ benchmark.  This corresponds to 6.84\% over SPP and XX\% over BOP.  On
 the whole of the SPEC 2006 suite, the speedup obtained is 22.4\%,
 which is 3.34\% ahead of SPP.
 
-The 4-core results for SPEC 2006 are \_\_.
+For 4-core memory intensive mixes, NATCH improves the baseline by 59.2\%, 
+8.7\% ahead of SPP. For 8-core memory intensive mixes, the IPC speedup 
+over baseline is 47.9\%, 11.5\% ahead of SPP. 
 
 As can be seen, the performance is very consistent given no prior
 parameter tuning was done keeping SPEC 2006 in mind.  We attribute
