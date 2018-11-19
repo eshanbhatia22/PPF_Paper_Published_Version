@@ -1,91 +1,83 @@
-\section{INTRODUCTION}
+\section{Introduction}
 \label{Introduction}
-Processor scaling and memory scaling have been enabled
-with different philosophies in mind.  While processor scaling focused
-on speed improvements, memory scaling was centred around increasing
-the storage capacity.  The process technology reaching scaling
-limitations led to Memory Wall~\cite{MemWall} - the increasing
-performance gap between the processor speed and the memory speeds.
-Various techniques have been developed to combat this widening gap.
-Data prefetching is one such important technique.  Data prefetching
-exploits the fact that in most applications, memory accesses have a
-well-defined pattern.
+Processor scaling and memory scaling have been enabled with different
+philosophies in mind.  While processor scaling focused on speed improvements,
+memory scaling was centred around increasing the storage capacity.  Process
+technology reaching scaling limitations led to the Memory Wall~\cite{MemWall}
+-- the increasing performance gap between processor speed and the memory
+speeds.  Various techniques have been developed to combat this wide gap. Data
+prefetching is one such important technique. Data prefetching exploits the
+fact that in most applications, memory accesses have a well-defined pattern.
 
-An ideal prefetching scheme involves capturing this memory access
-patterns to predict future prefetches in a timely manner.  Other
-important decisions faced by the prefetcher are when to bring in the
-prefetch block of data, which level of cache hierarchy to place the
-block in and finally, what block to evict to accommodate the incoming
-block.  Memory accesses patterns can be as simple as fetching the next
-cache line or a complex but predictable pattern, like in pointer
-chasing applications.  Predicting this often requires a trade-off
-between coverage and accuracy.  
-Most prefetchers achieve this by maintaining an internal confidence 
-mechanism by keeping a counters to track events like cache hits / miss, 
-references to an entry in the table \textit{etc}. By thresholding this 
-confidence against different values, the extent of aggressiveness 
-can be adjusted.
+An ideal prefetching scheme woudl capture these memory access patterns to
+predict future accesses in a timely manner.  Other important decisions faced
+by the prefetcher are when to bring in the prefetch block of data, which level
+of the cache hierarchy to place the block in, and what block to evict to
+accommodate the incoming block.  Memory accesses patterns can be as simple as
+fetching the next cache line or a complex pattern such as pointer chasing.
+Predicting future accesses requires a trade-off between coverage and accuracy.
+Most prefetchers maintain an internal confidence mechanism by keeping counters
+to track events such as cache hits / misses, references to an entry in the
+table, etc. By thresholding this confidence against different values, the
+degree of aggressiveness can be adjusted.
 
-For a prefetcher to capture highly
-irregular access patterns, it needs to be highly aggressive (high
-coverage).  That also means the prefetcher would end up recommending a
-lot of useless prefetches, leading to cache pollution (low accuracy).
-This effect would get even more pronounced in multi-core scenario
-where the last level cache is a shared resource~\cite{Friendly}.  Conversely, a
-conservative prefetcher would be highly accurate but might not make
-enough useful predictions.
+For a prefetcher to capture highly irregular access patterns, it needs to be
+highly aggressive (high coverage).  Thus, the prefetcher would recommend many
+useless prefetches, leading to cache pollution (low accuracy).  This effect is
+even more pronounced in a multi-core scenario where the last-level cache is a
+shared resource~\cite{Friendly}.  Conversely, a conservative prefetcher would
+be highly accurate but might not make enough useful prefetches.
 
-To this effect we propose NATCH: NeurAl prefeTCh tHrottler.  It
-is an enhancement to the existing state of the art prefetcher and
-overcomes the coverage vs accuracy trade-off in a robust manner.  The
-idea is to use a state-of-the-art prefetcher as the base engine.
-For that we choose Signature Path Prefetcher (SPP) and 
-modify the design to make it as aggressive as it can get.
-This enables the base engine to capture complex memory access patterns 
-and go deeper into the speculation path. This
-leading to increased coverage, which comes at a cost of increased DRAM
-traffic.  The prefetch suggestions
-recommended by the base prefetch engine pass through the perceptron based throttler. 
-Over time, perceptron layer learns to correlate the prefetch recommendations 
-with various available features, leading to elimination of
-useless prefetches. This leads to an overall increased accuracy of
-the prefetch scheme and reduction in DRAM traffic.
+We propose Perceptron-based Prefetch Filtering (PPF).  It is an enhancement to
+the existing state of the art prefetcher and robustly overcomes the coverage
+vs.  accuracy trade-off.  The idea is to use a state-of-the-art prefetcher as
+the base engine.  For that we choose Signature Path Prefetcher (SPP) and
+modify the design to make it as aggressive as possible.  This modification
+enables the base engine to capture complex memory access patterns and go
+deeper into the speculation path, leading to increased coverage. Normally such
+aggressive prefetching would come at the cost of increased DRAM traffic.
+However, prefetch suggestions recommended by the base prefetch engine are
+passed through the perceptron based throttler.  Over time, perceptron layer
+learns to correlate the prefetch recommendations with various available
+features, leading to elimination of useless prefetches. This filtering leads
+to overall increased accuracy of the prefetch scheme and reduction in DRAM
+traffic.
 
-\vspace{1ex}This paper talks about NATCH, its merits, analysis and
-future scope for expansion.  The contributions made by this paper are:
+\vspace{1ex}This paper describes PPF, giving its merits, analysis and
+future scope for expansion.  The contributions include:
 
 \begin{itemize}
-\item This is the first time where a truly on-line learning based
-  neural network model has been used when it comes to hardware data
-  prefetching.  The prior works in this area either relied on program
-  semantics~\cite{Semantics} or were application
-  specific~\cite{Datacenter} or could not yield a significant
-  improvement over the baseline prefetcher used~\cite{BadPerc}.
 
-\item Implementing the pereptron throttler in a robust and accurate
-  practical prefetching mechanism, yielding a significant performance 
-  improvement as compared to the other state of the art
-  prefetchers.  Moreover, the perceptron throttler learns to adapt
-  itself to shared resource constraints - leading to a further increased
-  performance in multi-core and lower capacity environments.
+\item An on-line neural model is used for hardware data
+  prefetching.  Previous work in this area either relied on program
+  semantics~\cite{Semantics} or were application specific~\cite{Datacenter}.
+% djimenez: removing reference to this arXiv paper. we are not obligated to cite it.
+%, or
+%  could not yield a significant improvement over the baseline prefetcher
+%  used~\cite{BadPerc}.
+
+\item Implementing the perceptron throttler in a robust and accurate
+  practical prefetching mechanism, yielding a significant performance
+  improvement as compared to the other state of the art prefetchers.
+  Moreover, the perceptron throttler learns to adapt itself to shared resource
+  constraints, leading to further increased performance in multi-core and
+  lower capacity environments.
 
 \item Defining a methodology for determining an appropriate set of 
-  features to be used regardless of the underlying prefetcher used.
+  features for prediction regardless of the underlying prefetcher used.
   More details are explained in Section \ref{Method-Features}.
 
 \end{itemize}
 
-On a single core configuration, NATCH increased
-performance of the system by 6.84\% as compared to the 
-next best prefetcher, SPP.  On a multi-core
-system running a mix of memory intensive subset of the SPEC 2017
-traces, NATCH saw an improvement of 11.9\% over SPP for 4-core
-system and 10.67\% for 8-core system.
+On a single core configuration, PPF increased performance by 6.84\% as
+compared to the next best prefetcher, SPP.  On a multi-core system running a
+mix of memory intensive subset of the SPEC 2017 traces, PPF saw an improvement
+of 11.9\% over SPP for a 4-core system and 10.67\% for an 8-core system.
 
-The rest of the paper is organized as follows.  Section \ref{Background} talks about
-background work and recaptures the SPP architecture.  Section \ref{Design}
-discusses the detailed implementation of the perceptron mechanism and
-the features used.  Section \ref{Method} consists of the evaluation methodology
-and explores the feature space for perceptron learning.  Section \ref{Results} is
-the performance evaluation of our prefetcher and Section \ref{Conclusion} concludes
-the paper.
+The paper is organized as follows. Section \ref{Background} describes
+background work and summarizes SPP.  Section \ref{Design} discusses the
+detailed implementation of the perceptron mechanism and the features used.
+Section \ref{Method} gives the evaluation methodology and explores the feature
+space for perceptron learning.  Section \ref{Results} evaluates the
+performance of the prefetcher and Section \ref{Conclusion} concludes the
+paper.

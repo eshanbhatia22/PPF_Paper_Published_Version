@@ -1,14 +1,13 @@
-\section{METHODOLOGY}
+\section{Methodology}
 \label{Method}
 
 \subsection{Performance Model}
 \label{Method-Model}
-For testing and comparing NATCH, we used ChampSim~\cite{Champsim}
-simulator.  ChampSim is an enhanced version of the framework that was
-used for the 2nd Data Prefetch Championship (DPC-2)~\cite{DPC_2}. We
-model a 1-core / 4-core / 8-core Out of Order machine. The
-details of the configuration parameters is summarized in Table
-\ref{tab:Sim_params}.
+For testing and comparing PPF, we used the ChampSim~\cite{Champsim} simulator.
+ChampSim is an enhanced version of the framework that was used for the 2nd
+Data Prefetch Championship (DPC-2)~\cite{DPC_2}. We model 1-core, 4-core, and
+8-core out-of-order machines. The details of the configuration parameters are
+summarized in Table~\ref{tab:Sim_params}.
 
 \begin{table}[]
     \centering
@@ -26,13 +25,15 @@ details of the configuration parameters is summarized in Table
     \label{tab:Sim_params}
 \end{table}
 
-The block size was fixed 64KB. Prefetching was only triggered at L2
-Cache demand accesses but could be directed to L2 Cache or Last Level
-Cache. No L1 Data level prefetching was done. LRU replacement policy
-was used on all levels of cache hierarchies. Branch prediction was
-done using the perceptron branch predictor~\cite{Perc_Branch}.  Page
-size was kept as 4KB.  Champsim operates all the prefetchers strictly
-in the physical address space.
+% djimenez: changing all the "was" to "is." when describing our work, use
+% present tense
+
+The block size is fixed at 64 bytes. Prefetching is only triggered at an L2 cache
+demand accesses but could be directed to the L2 or last-level cache. No L1
+data level prefetching is done. The LRU replacement policy is used on all levels
+of cache hierarchies. Branch prediction is done using the perceptron branch
+predictor~\cite{Perc_Branch}.  ThE page size is 4KB.  Champsim operates
+all the prefetchers strictly in the physical address space.
 
 \subsection{Testing Under Additional Memory Constraints}
 \label{Method-AdditionalMem}
@@ -51,29 +52,30 @@ configuration.
 
 \subsection{Workloads}
 \label{Method-Workloads}
-This is the first time that SPEC 2017 benchmark suite~\cite{SPEC2017}
-has been used to characterize and measure the prefetch performance.
-We use all the 20 workloads available in the SPEC 2017 Suite.  Using
-SimPoint~\cite{SimPoint} methodology, we identified 95 different
-program segments of 1 Billion instructions each.
+% djimenez: don't say this is the first time SPEC 2017 has been used this way.
+% i don't know if that's true, and in any event the value is small.
 
-\textit{Single-core performance:} For single-core simulations, we use
-200 Million instructions to warm-up the microarchitectural structures
-and next 1 Billion instructions to do detailed simulations and collect
-run-time statistics. We report the IPC speed over
-baseline \textit{i.e.}, no prefetching.
-The final number reported is the geometric mean of the speed-up
-attained on individual traces.
+%This is the first time that SPEC 2017 benchmark suite~\cite{SPEC2017}
+%has been used to characterize and measure the prefetch performance.
+We use the that SPEC 2017 benchmark suite~\cite{SPEC2017}.  We use all the 20
+workloads available in the SPEC 2017 suite.  Using the SimPoint~\cite{SimPoint}
+methodology, we identified 95 different program segments of 1 Billion
+instructions each.
 
-\textit{Multi-core performance:} For multi-application workloads, we
-generate 100 random mixes and another 100 mixes from the
-memory intensive subset of SPEC 2017.  For 4-core workload, 200
-Million instructions are used for warm-up and additional 1 Billion
-instruction simulated for collecting statistics.  Each CPU keeps
-executing its workload till the last CPU completes 1 Billion
-instructions after warm-up.  For collecting IPC and other data, only
-the first billion instructions are considered as the ``region of
-interest''.
+\textit{Single-core performance:} For single-core simulations, we use 200
+million instructions to warm-up the microarchitectural structures and the next
+one billion instructions to do detailed simulations and collect run-time
+statistics. We report the IPC speedup over the baseline of no prefetching.
+The final number reported is the geometric mean of the speedup achieved on
+individual traces.
+
+\textit{Multi-core performance:} For multi-application workloads, we generate
+100 random mixes and another 100 mixes from the memory intensive subset of
+SPEC 2017.  For 4-core workload, 200 Million instructions are used for warm-up
+and additional 1 Billion instruction simulated for collecting statistics.
+Each CPU keeps executing its workload till the last CPU completes one billion
+instructions after warm-up.  For collecting IPC and other data, only the first
+billion instructions are considered as the region of interest.
 
 Here we report the weighted speedup normalized to baseline
 \textit{i.e.}, no prefetching.  For each of the workloads running on a
@@ -88,68 +90,57 @@ prefetching, to get the weighted-IPC-speedup.  Finally the geometric
 mean of these 100 weighted-IPC-speedup is reported as the effective
 speedup obtained by the prefetching scheme.
 
-We repeat the same process for 8-core workloads, correspondingly with 16MB LLC.
-Only exception is that 20 Million warm-up instructions and 100 Million 
-full instructions were executed.  
-This was done so as to keep the simulation run-time
-within reasonable limits as a single 8-core mix was taking up to 3
-days to simulate 1 Billion instructions.
+We repeat the same process for 8-core workloads, correspondingly with 16MB
+LLC.  The only difference is that 20 million warm-up instructions and 100
+million full instructions are executed.  This is done so as to keep the
+simulation run-time within reasonable limits as a single 8-core mix takes up
+to 3 days to simulate one billion instructions.
 
-\textit{Cross Validation:} We cross-validated our NATCH model using SPEC
-2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks.  
-For single core
-SPEC 2006, we developed 94 simpoints spread across all the 29
-applications. For multi-core, 
-we followed the same methodology as SPEC 2017. 
-For CloudSuite, we used the traces made available for
-the 2nd Cache Replacement Competition (CRC-2)~\cite{CRC_2}.  The traces
-include 4 4-core applications with 6 distinct phases per
-application.  
+\textit{Validation:} We cross-validated our PPF model using SPEC
+2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks.  For
+single-core SPEC 2006, we developed 94 simpoints spread across all the 29
+applications. For multi-core, we followed the same methodology as SPEC 2017.
+For CloudSuite, we used the traces made available for the 2nd Cache
+Replacement Competition (CRC-2)~\cite{CRC_2}.  The traces include 4 4-core
+applications with 6 distinct phases per application.
 
-
-In total, we used 285 traces representing workloads
-across 53 applications. Throughout the paper for SPEC 2017, 
-we consider memory intensive subset as the traces with LLC MPKI > \_\_. 
-This includes 48 out of the 95 simpoints developed.
-Since SPEC 2006 differs considerably in terms of memory behaviour, we 
-define memory intensive subset as traces with LLC MPKI > \_\_.
-This includes 47 out of 94 simpoints.
+In total, we used 285 traces representing workloads across 53 applications.
+Throughout the paper for SPEC 2017, we consider memory intensive subset as the
+traces with LLC MPKI > \_\_.  This includes 48 out of the 95 simpoints
+developed.  Since SPEC 2006 differs considerably in terms of memory behaviour,
+we define memory intensive subset as traces with LLC MPKI > \_\_.  This
+includes 47 out of 94 simpoints.
 
 \subsection{Preferchers Simulated}
 \label{Method-Prefetchers}
-We compared NATCH against three of the latest state of the art
-hardware-only prefetchers: Best Offset Prefetcher (BOP), DRAM Aware - Access Map
-Pattern Matching (DA-AMPM)~\cite{DA_AMPM} and Signature Path Prefecher
-(SPP).  BOP was the winner of 2nd Data Prefetching Championship.
-DA-AMPM is the enhanced version of AMPM, modified to account for DRAM
-row buffer locality.  SPP has been shown to outperform BOP on SPEC
-2006 traces.  For each of these, we compare their speedups taking no
-prefetching as the baseline.
+We compared PPF against three of the latest state of the art hardware-only
+prefetchers: Best Offset Prefetcher (BOP), DRAM Aware - Access Map Pattern
+Matching (DA-AMPM)~\cite{DA_AMPM} and Signature Path Prefecher (SPP).  BOP was
+the winner of 2nd Data Prefetching Championship.  DA-AMPM is the enhanced
+version of AMPM, modified to account for DRAM row buffer locality.  SPP has
+been shown to outperform BOP on SPEC 2006 traces.  For each of these, we
+compare their speedups taking no prefetching as the baseline.
 
-
-\subsection{Developing Features for NATCH}
+\subsection{Developing Features for PPF}
 \label{Method-Features}
-This section describes the intuition and analysis that went behind
-finalizing the features.  As noted earlier, we developed a set of 9
-features which allow the perceptron throttler to correlate prefetching
-decision with the program context.  To study the correlation across
-each feature, we study statistically the perceptron weights and try to
-interpret their distribution.
+This section describes the intuition and analysis that went behind developing
+the features.  As noted earlier, we developed a set of 9 features that allow
+the perceptron throttler to correlate prefetching decision with the program
+context.  To study the correlation across each feature, we study statistically
+the perceptron weights and try to interpret their distribution.
 
-\textbf{GLOBAL PEARSON'S CORRELATION}\newline For this experiment, we
-create a dump of the state of perceptron weights at the end of all
-trace execution.  The weights obtained from running all the SPEC 2017
-traces are concatenated together.  Since the weights are collected at
-the end of individual trace execution, the perceptron weights have
-attained a relatively stable value by now.  Hence, this dump
-represents a `snap' of the trained perceptron weights across all the
-SPEC 2017 traces.  The intuition here is that the feature with bulk of
-the perceptron weights concentrated around 0 or small magnitude
-numbers show a weak correlation with the prefetching outcome.  On the
-other hand, features with most of the weights saturated around highest
-value (+15) show a high positive correlation and the features with
-weights close to the lowest value (-16) show a strong negative
-correlation.
+\textbf{Global Pearson's Correlation}\newline For this experiment, we create a
+dump of the state of perceptron weights at the end of all trace execution.
+The weights obtained from running all the SPEC 2017 traces are concatenated.
+Since the weights are collected at the end of individual trace execution, the
+perceptron weights have attained a relatively stable value by now.  Hence,
+this dump represents a `snap' of the trained perceptron weights across all the
+SPEC 2017 traces.  The intuition here is that the feature with bulk of the
+perceptron weights concentrated around 0 or small magnitude numbers show a
+weak correlation with the prefetching outcome.  On the other hand, features
+with most of the weights saturated around highest value (+15) show a high
+positive correlation and the features with weights close to the lowest value
+(-16) show a strong negative correlation.
 
 We plot a histogram for each feature depicting weights distribution
 from -16 to +15 and use this histogram to generate the Pearson's
@@ -169,7 +160,7 @@ features provide a moderate to high correlation, with the magnitude of
 P-value > 0.4.  The single most important feature, \_\_ helps provide
 a correlation to prefetch outcome with a factor of \_\_.
 
-\textbf{PER TRACE CORRELATION} \newline Another important way to look
+\textbf{Per Trace Correlation} \newline Another important way to look
 at the perceptron features is to see how much their contribution
 varies across the traces.  Here we give special attention to features
 with low P-values in the previous experiment.  Figure XX shows the
@@ -180,14 +171,14 @@ names have been omitted.  It can be seen that even features with a low
 overall correlation provide useful correlation (magnitude > 0.4) for
 XX out of the 95 simpoints developed for SPEC 2017.  
 
-\textbf{TRIMMING FEATURES USING CORRELATION} \newline Besides
+\textbf{Trimming Features Using Correlation} \newline Besides
 providing interesting insights into prefetching behaviour, P-value can
 also be used for feature selection and prefetcher tuning.
 
 Here, we introduce the concept of cross-correlation across features.
 Just as we examined correlation of each feature with the final
 outcome, we can also study correlation between the features.  We used
-the above methodology to eliminate features which provide a little or
+the above methodology to eliminate features that provide a little or
 no information that has already been captured in other features.
 
 As a part of feature selection, we initially came up a mix of 23
@@ -196,7 +187,7 @@ each of these features against others in a 23x23 matrix, we identified
 pairs of features with correlation factor > 0.9 in magnitude and
 carefully eliminated redundant features.  Using this approach, we
 managed to reduce the feature count to 9.  Thus, in the final
-implementation of NATCH, no two features have a high correlation
+implementation of PPF, no two features have a high correlation
 between them.  This way we can be sure that each feature is bringing
 in contribution that cannot be captured using other features.
 
@@ -214,7 +205,7 @@ was made possible only because we used on-line perceptron learning for
 prefetching and that enabled us to examine the weights in detail.
 
 
-\subsection{Overhead for NATCH}
+\subsection{Overhead for PPF}
 \label{Method-Overheads}
 
 \begin{table}[]
@@ -294,13 +285,13 @@ prefetching and that enabled us to examine the weights in detail.
 \footnotetext[2]{RF does not need to maintain the useful bit as that only applies for prefetches that ultimately made through}
 
 In this section, we analyze the hardware overhead required to
-implement NATCH.  The Prefetch Filter was enhanced to accommodate
+implement PPF.  The Prefetch Filter was enhanced to accommodate
 storing of meta-data for perceptron training.  Table
 \ref{tab:PF_metadata} depicts the meta-data stored for each entry in
-the Prefetch Filter.  Table \ref{tab:NATCH_overhead} shows the total
-storage overhead of NATCH implementation.  The hardware budget for
+the Prefetch Filter.  Table \ref{tab:PPF_overhead} shows the total
+storage overhead of PPF implementation.  The hardware budget for
 2nd Data Prefetching championship was 32 KB.  Keeping that in mind 
-the considerable speedup NATCH obtained over the winner, the extra hardware
+the considerable speedup PPF obtained over the winner, the extra hardware
 budget can be accounted for.  The extra hardware also makes the
 overall scheme more scalable than SPP.  In the original SPP paper, it
 was demonstrated that adding extra hardware brings little advantage in
