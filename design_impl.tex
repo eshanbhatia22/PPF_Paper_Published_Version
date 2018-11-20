@@ -1,0 +1,144 @@
+\section{PPF Implementation Using SPP}
+\label{Impl}
+
+This section describes our implementation of PPF and the range of 
+features that are ultimately used by the perceptron for correlating 
+the prefetches.  For a practical implementation, we have used SPP 
+as the base engine prefetcher.
+
+\subsection{Changes made to original SPP}
+\label{Impl-Changes}
+To modify the SPP design to suit our scheme, the following changes were made:
+
+\begin{itemize}
+\item \textbf{Original Thresholds discarded}\newline 
+  In PPF, the perceptron sum is used to decide whether to prefetch or not, 
+  and the fill-level in case of prefetch. 
+  Thus, the confidence thresholds --  T\textsubscript{f} and T\textsubscript{p} 
+  are no longer needed.
+
+%%[NOTE] Can this point be removed?
+% djimenez: I think this would be necessary to reproduce our results so leave it in. 
+
+\item \textbf{Looking at L2 MSHR Queue while prefetching}\newline The original
+  SPP would not consider the slots available in the L2 MSHR queue.  It had an
+  assumption that at no time can the number of prefetches suggested can
+  exceed the capacity of the queue.  While it was not proven in the paper, the
+  internal confidence mechanism made sure that the above assumption was maintained.  
+  In PPF since there can be no assumption on the degree of aggressiveness of the 
+  underlying prefetcher, we explicitly check that at no point should the number 
+  of suggested prefetches exceed the L2 MSHR queue.
+
+\item \textbf{Enhanced Prefetch Table}\newline The Prefetch Table introduced in the 
+  original SPP keeps a track of up to 1024 L2 cache prefetch suggestions.  
+  For PPF, the Table was modified to store metadata such as program counter, 
+  memory access address etc.  This metadata is needed to retrieve the state 
+  of the features to train the perceptron at a later stage in time.
+
+\item \textbf{Reject Table introduced}\newline The Prefetch Table mentioned
+  above keeps track of the prefetches that actually happened in the L2 Cache.
+  Correspondingly, we introduced the Reject Table to keep a track of the
+  prefetches that were suggested by the base SPP engine but were rejected by the
+  perceptron.  In case it is detected that a future demand fetch could have used
+  this rejected prefetch, the perceptron weights are updated to reflect that
+  misprediction.
+
+\end{itemize}
+
+
+\subsection{Features used by Perceptron}
+\label{Impl-Features}
+Here we discuss the various features that correlate the prefetching decision
+with the program behaviour.
+
+\begin{itemize}
+\item \textbf{Base Address} of the demand access that triggered the
+  prefetch.  Since prefetches are triggered from the L2 demand access,
+  they tend to be correlated with the triggering address.
+
+\item \textbf{Cache Line} and \textbf{Page Address}: These two
+  separate features are derived from the base address that triggered
+  the prefetch, as follows: base\_addr >> LOG2\_BLOCK \_SIZE and
+  base\_addr >> LOG2\_PAGE\_SIZE respectively.  The idea behind using
+  three different shifted versions of the same feature is that it
+  allows us to look into a wider range of bits than with a single
+  version.  It also helps give more importance to the overlapping bits
+  and lesser importance to most and least significance bits.  This
+  approach can also eliminate destructive interference that can be
+  caused by directly folding the address bits into half.
+
+% djimenez: this is a nice intuition and explanation.
+
+\item \textbf{Program Counter XOR Depth}: The PC is for the instruction
+  that triggered the prefetch chain.  Depth refers to the iteration count of
+  the lookahead stages.  In general, the PC is not considered as a good basis
+  for doing lookahead prefetching as all the prefetches with depth >= 1 are
+  aliased into the same PC which would not be true in an actual demand access.
+  This feature resolves a PC into a different value for each lookahead depth
+  of prefetch speculation, giving a more accurate correlation in lookahead
+  cases.  This is akin to the concept of Virtual Program Counters~\cite{VPC}
+  introduced by Kim \textit{et. al.} for indirect branch prediction.
+
+\item \textbf{PC\textsubscript{1} XOR PC\textsubscript{2}>>1 XOR
+  PC\textsubscript{3}>>2}: Here $PC_i$ refers to the last $i^{th}$
+  PC before the instruction that triggered the current prefetch.
+  Hashing together the last three PCs tell PPF about the path
+  that led to the current demand access and helps capture and
+  branching information of the current basic block.  PCs are shifted
+  in the increasing order of history before being hashed together.
+  This is done to avoid the resultant value of zero in case 2 or more
+  PCs are the same.  Additionally, obfuscating the information as it
+  gets old allows us to get a wider and an approximate look into the
+  program history.
+
+\item \textbf{Program Counter XOR Delta}: This feature tells us if a given PC
+  favours particular value(s) of delta.  As noted earlier, while the PC in
+  itself does not convey much useful information, this hash resolves the PC
+  into different values based on the tendency of that PC to favour a certain
+  delta.  Thus, the dynamic nature of different instances of the same memory
+  access instruction can be captured here.
+
+\item \textbf{Confidence}: The integer confidence on a scale of 0 to
+  100 that was used in the original SPP design.  While the original confidence
+  is not used directly for decision making, it can still contribute to the
+  final decision made.
+
+\item \textbf{Page Address XOR Confidence}: This feature scores the tendency
+  of each page to be prefetch friendly or prefetch averse. It helps resolve a
+  page into different entries depending on its confidence for prefetching, which
+  can vary during phases of a program execution.
+
+% djimenez: this is a little vague. can you be more precise?
+\item \textbf{Current Signature XOR Delta}: Recall from
+  the discussion of SPP in Section \ref{Background-SPP} that the new signature
+  is generated using the old signature and the block delta.  While ``Current
+  Signature XOR Delta'' is not the exact formula for generating the future
+  signature, it gives an approximate idea of the path that the combination of
+  these two values can lead to.
+
+%%%%%%% Below are the features rejected when downsizing 14 -> 9
+% \item \textbf{Current Signature}: The 12-bit signature used by SPP
+%   to index into the Pattern Table
+% \item \textbf{Delta}: The signed version of the difference in the
+%   block address that triggers the prefetch and the block address of
+%   the data being prefetched
+% \item \textbf{PC}: Program Counter of the Load instruction that
+%   triggers that particular prefetch
+% \item \textbf{Base address XOR Delta}: If any particular value(s) of
+%   delta are highly favoured by a given address which triggered the
+%   prefetch, this composite feature can capture that information
+% \item \textbf{Cache line XOR Delta}: qThis feature captures if any
+%   particular delta is highly favoured by a given cache line address
+%\item \textbf{Confidence XOR Delta}: This gives a combined insight
+%  into that fact that certain delta-confidence pairqs predicted by
+%  SPP might correlate more with the prefetch outcome
+%%%%%%%%%%%%%%%%%%%%%%
+
+\end{itemize} 
+
+Some of the composite features are derived from simple hashing (XOR) of two
+primary features.  There is always a question of usefulness of such composite
+features and the new information added.  We justify the choice of each feature
+by quantifying the contribution made towards predicting prefetch behaviour, in
+Section \ref{Method-Features}.  Finally, as noted above, each feature indexes
+into its independent entry of perceptron weights.

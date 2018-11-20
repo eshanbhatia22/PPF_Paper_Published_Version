@@ -9,7 +9,7 @@ speeds.  Various techniques have been developed to combat this wide gap. Data
 prefetching is one such important technique. Data prefetching exploits the
 fact that in most applications, memory accesses have a well-defined pattern.
 
-An ideal prefetching scheme woudl capture these memory access patterns to
+An ideal prefetching scheme would capture these memory access patterns to
 predict future accesses in a timely manner.  Other important decisions faced
 by the prefetcher are when to bring in the prefetch block of data, which level
 of the cache hierarchy to place the block in, and what block to evict to
@@ -37,7 +37,7 @@ enables the base engine to capture complex memory access patterns and go
 deeper into the speculation path, leading to increased coverage. Normally such
 aggressive prefetching would come at the cost of increased DRAM traffic.
 However, prefetch suggestions recommended by the base prefetch engine are
-passed through the perceptron based throttler.  Over time, perceptron layer
+passed through the perceptron based filter.  Over time, perceptron layer
 learns to correlate the prefetch recommendations with various available
 features, leading to elimination of useless prefetches. This filtering leads
 to overall increased accuracy of the prefetch scheme and reduction in DRAM
@@ -56,10 +56,10 @@ future scope for expansion.  The contributions include:
 %  could not yield a significant improvement over the baseline prefetcher
 %  used~\cite{BadPerc}.
 
-\item Implementing the perceptron throttler in a robust and accurate
+\item Implementing the perceptron filter in a robust and accurate
   practical prefetching mechanism, yielding a significant performance
   improvement as compared to the other state of the art prefetchers.
-  Moreover, the perceptron throttler learns to adapt itself to shared resource
+  Moreover, the perceptron learns to adapt itself to shared resource
   constraints, leading to further increased performance in multi-core and
   lower capacity environments.
 
@@ -74,10 +74,11 @@ compared to the next best prefetcher, SPP.  On a multi-core system running a
 mix of memory intensive subset of the SPEC 2017 traces, PPF saw an improvement
 of 11.9\% over SPP for a 4-core system and 10.67\% for an 8-core system.
 
-The paper is organized as follows. Section \ref{Background} describes
-background work and summarizes SPP.  Section \ref{Design} discusses the
-detailed implementation of the perceptron mechanism and the features used.
-Section \ref{Method} gives the evaluation methodology and explores the feature
-space for perceptron learning.  Section \ref{Results} evaluates the
-performance of the prefetcher and Section \ref{Conclusion} concludes the
+The paper is organized as follows. Section~\ref{Background} describes
+background work and summarizes SPP.  Section~\ref{Arch} given the 
+architectural overview of PPF. Section~\ref{Impl} discusses the
+implementation of PPF using SPP and the features used.
+Section~\ref{Method} gives the evaluation methodology and explores the feature
+space for perceptron learning.  Section~\ref{Results} evaluates the
+performance of the prefetcher and Section~\ref{Conclusion} concludes the
 paper.

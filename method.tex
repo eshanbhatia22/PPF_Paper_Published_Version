@@ -124,8 +124,8 @@ compare their speedups taking no prefetching as the baseline.
 \subsection{Developing Features for PPF}
 \label{Method-Features}
 This section describes the intuition and analysis that went behind developing
-the features.  As noted earlier, we developed a set of 9 features that allow
-the perceptron throttler to correlate prefetching decision with the program
+the features.  As noted earlier, we developed a set of nine features that allow
+the perceptron layer to correlate prefetching decision with the program
 context.  To study the correlation across each feature, we study statistically
 the perceptron weights and try to interpret their distribution.
 
@@ -216,8 +216,8 @@ prefetching and that enabled us to examine the weights in detail.
         \textbf{Bits} &
         \textbf{Comment} \\
     \hline
-         Valid & 1 & Indicates a valid entry in the filter\\
-         Tag & 6 & Identifier for the entry in the filter\\
+         Valid & 1 & Indicates a valid entry in the table\\
+         Tag & 6 & Identifier for the entry in the table\\
          Useful & 1 & To show if the given entry led to a useful demand fetch\\
          Perc Decision & 1 & Prefetched vs Not-prefetched \\
     \hline
@@ -230,8 +230,8 @@ prefetching and that enabled us to examine the weights in detail.
         \multicolumn{3}{|c|}{\textbf{Total 84 bits}}\\
     \hline
     \end{tabular}
-    \caption{Meta-data Stored in Prefetch Filter}
-    \label{tab:PF_metadata}
+    \caption{Meta-data Stored in Prefetch Table}
+    \label{tab:PTable_metadata}
 \end{table}
 
 
@@ -255,12 +255,12 @@ prefetching and that enabled us to examine the weights in detail.
                                              &      & Delta (4*7 bits)       &               \\
     \hline
         \multirow{3}{1.5cm}{Perceptron\newline}     & 4096*8    &            &              \\
-        \multirow{2}{0.9cm}{Tables}                 & 2048*x    & 5 bits     & 164480 bits  \\
+        \multirow{2}{0.9cm}{Weights}                 & 2048*x    & 5 bits     & 164480 bits  \\
                                                     & 128*1     &            &              \\
     \hline
-        Prefetch Filter\footnotemark[1]             & 1024      & 84 bits    & 86016 bits   \\
+        Prefetch Table\footnotemark[1]             & 1024      & 84 bits    & 86016 bits   \\
     \hline
-        Reject Filter\footnotemark[2]               & 1024      & 83 bits    & 84992 bits   \\
+        Reject Table\footnotemark[2]               & 1024      & 83 bits    & 84992 bits   \\
     \hline
         \multirow{4}{1cm}{Global\newline\newline}   & \multirow{4}{0.2cm}{8} & Signature (12 bits)  & \multirow{4}{1.1cm}{264 bits} \\
         \multirow{3}{1.1cm}{History\newline}        &                        & Confidence (8 bits)  &                               \\
@@ -278,17 +278,17 @@ prefetching and that enabled us to examine the weights in detail.
     \hline
     \end{tabular}
     \caption{SPP-Perc Storage Overhead}
-    \label{tab:SPPPerc_overhead}
+    \label{tab:PPF_overhead}
 \end{table}
 
-\footnotetext[1]{Components of Prefetch Filter can be found in Table \ref{tab:PF_metadata}}
-\footnotetext[2]{RF does not need to maintain the useful bit as that only applies for prefetches that ultimately made through}
+\footnotetext[1]{Components of Prefetch Table can be found in Table \ref{tab:PTable_metadata}}
+\footnotetext[2]{the Reject Table does not need to maintain the useful bit as that only applies for prefetches that ultimately made through}
 
 In this section, we analyze the hardware overhead required to
-implement PPF.  The Prefetch Filter was enhanced to accommodate
+implement PPF.  The Prefetch Table was enhanced to accommodate
 storing of meta-data for perceptron training.  Table
-\ref{tab:PF_metadata} depicts the meta-data stored for each entry in
-the Prefetch Filter.  Table \ref{tab:PPF_overhead} shows the total
+\ref{tab:PTable_metadata} depicts the meta-data stored for each entry in
+the Prefetch Table.  Table \ref{tab:PPF_overhead} shows the total
 storage overhead of PPF implementation.  The hardware budget for
 2nd Data Prefetching championship was 32 KB.  Keeping that in mind 
 the considerable speedup PPF obtained over the winner, the extra hardware
@@ -306,6 +306,6 @@ Obtaining the perceptron sum requires addition of 9 5-bit numbers.
 Using an adder tree of 4 5-bit adders, this can be done in
 ceil($log_{2}9$) = 4 steps.  Perceptron update only requires weight
 update by +1 or -1.  Thus, all the operations required for perceptron
-inferencing or updating the states of the perceptron throttler can be
+inferencing or updating the states of the perceptrons can be
 easily done in the time constraints of L2 Cache Accesses.
 
