@@ -32,7 +32,7 @@ The block size is fixed at 64 bytes. Prefetching is only triggered at an L2 cach
 demand accesses but could be directed to the L2 or last-level cache. No L1
 data level prefetching is done. The LRU replacement policy is used on all levels
 of cache hierarchies. Branch prediction is done using the perceptron branch
-predictor~\cite{Perc_Branch}.  ThE page size is 4KB.  Champsim operates
+predictor~\cite{Perc_Branch}.  The page size is 4KB.  Champsim operates
 all the prefetchers strictly in the physical address space.
 
 \subsection{Testing Under Additional Memory Constraints}
@@ -57,7 +57,7 @@ configuration.
 
 %This is the first time that SPEC 2017 benchmark suite~\cite{SPEC2017}
 %has been used to characterize and measure the prefetch performance.
-We use the that SPEC 2017 benchmark suite~\cite{SPEC2017}.  We use all the 20
+We use the SPEC 2017 benchmark suite~\cite{SPEC2017}.  We use all the 20
 workloads available in the SPEC 2017 suite.  Using the SimPoint~\cite{SimPoint}
 methodology, we identified 95 different program segments of 1 Billion
 instructions each.
