@@ -1,54 +1,64 @@
 \section{Introduction}
 \label{Introduction}
-Processor scaling and memory scaling have been enabled with different
+Processor scaling and memory technologies have been developed with different
 philosophies in mind.  While processor scaling focused on speed improvements,
-memory scaling was centred around increasing the storage capacity.  Process
-technology reaching scaling limitations led to the Memory Wall~\cite{MemWall}
--- the increasing performance gap between processor speed and the memory
-speeds.  Various techniques have been developed to combat this wide gap. Data
-prefetching is one such important technique. Data prefetching exploits the
-fact that in most applications, memory accesses have a well-defined pattern.
+memory scaling was centred around increasing the storage capacity.  The
+difference in each technology's scaling has led to the Memory Wall~\cite{MemWall}
+-- the increasing performance gap between processor and memory
+speeds. Data prefetching is one important technique that has been developed 
+to bridge this widening performance gap. Data prefetching exploits the fact that in most applications,
+ memory accesses have a repeating and predictable pattern to speculatively fetch useful data from slower levels
+of the cache hierarchy into faster higher levels of cache. %phrasing?
 
-An ideal prefetching scheme would capture these memory access patterns to
-predict future accesses in a timely manner.  Other important decisions faced
+An ideal prefetching scheme would perfectly capture memory access patterns to
+predict and request future accesses in a timely manner. Other important decisions faced
 by the prefetcher are when to bring in the prefetch block of data, which level
 of the cache hierarchy to place the block in, and what block to evict to
-accommodate the incoming block.  Memory accesses patterns can be as simple as
+accommodate the incoming block. Memory accesses patterns can be as simple as
 fetching the next cache line or a complex pattern such as pointer chasing.
-Predicting future accesses requires a trade-off between coverage and accuracy.
+Predicting future accesses requires a trade-off between coverage, the percent of predictions that 
+prevented a cache miss, and accuracy, the percent of predictions made that were correct. 
+%Gino: Just added a short explanation of coverage and accuracy tradeoff, not sure if necessary
+A prefetcher may have high coverage by reducing the number of misses by simply requesting a large 
+amount of data, however this does not imply accuracy. Even if the prefetcher brought in data accessed in the future,
+a high percentage of the data requested could never be accessed meaning the prefetcher had low accuracy, 
+resulting in wasted resources as well as cache pollution. Likewise, a prefetcher can have a 
+higher accuracy by being completely sure the data requested is used in the future, 
+but may not affect performance since it did not have the coverage needed to make an impact. %end addition.
 Most prefetchers maintain an internal confidence mechanism by keeping counters
-to track events such as cache hits / misses, references to an entry in the
-table, etc. By thresholding this confidence against different values, the
-degree of aggressiveness can be adjusted.
+to track events such as cache hits, misses, references to an entry in the prefetcher's
+structure, etc. By comparing the confidence indicated by the counters against different 
+threshold values, the aggressiveness of the prefetcher can be adjusted, resulting in lower
+coverage and higher accuracy.
 
 For a prefetcher to capture highly irregular access patterns, it needs to be
-highly aggressive (high coverage).  Thus, the prefetcher would recommend many
-useless prefetches, leading to cache pollution (low accuracy).  This effect is
-even more pronounced in a multi-core scenario where the last-level cache is a
+highly aggressive with high coverage. This causes the prefetcher to recommend many
+low accurracy prefetches that lead to the cache being polluted with useless data.  
+This effect is more pronounced in a multi-core scenario where the last-level cache is a
 shared resource~\cite{Friendly}.  Conversely, a conservative prefetcher would
-be highly accurate but might not make enough useful prefetches.
+be highly accurate but might not make enough useful prefetches due to its lower coverage.
 
-We propose Perceptron-based Prefetch Filtering (PPF).  It is an enhancement to
-the existing state of the art prefetcher and robustly overcomes the coverage
-vs.  accuracy trade-off.  The idea is to use a state-of-the-art prefetcher as
-the base engine.  For that we choose Signature Path Prefetcher (SPP) and
+We propose Perceptron-based Prefetch Filtering (PPF) as an enhancement to
+the existing state of the art prefetchers to robustly overcome the coverage
+vs. accuracy trade-off.  The idea is to use a state-of-the-art prefetcher as
+the base engine. For that we choose Signature Path Prefetcher (SPP) and
 modify the design to make it as aggressive as possible.  This modification
 enables the base engine to capture complex memory access patterns and go
-deeper into the speculation path, leading to increased coverage. Normally such
-aggressive prefetching would come at the cost of increased DRAM traffic.
-However, prefetch suggestions recommended by the base prefetch engine are
-passed through the perceptron based filter.  Over time, perceptron layer
-learns to correlate the prefetch recommendations with various available
+deeper into the speculation path, increasing coverage without sacrificing accuracy. 
+Normally such aggressive prefetching would come at the cost of increased DRAM traffic
+and cache pollution. However, prefetch suggestions recommended by the base prefetch
+engine are passed through the perceptron based filter to ensure an accurate prediction.
+Over time, PPF learns to correlate the prefetch recommendations with various available
 features, leading to elimination of useless prefetches. This filtering leads
 to overall increased accuracy of the prefetch scheme and reduction in DRAM
-traffic.
+traffic and cache pollution.
 
 \vspace{1ex}This paper describes PPF, giving its merits, analysis and
-future scope for expansion.  The contributions include:
+future scope for expansion. The contributions include:
 
 \begin{itemize}
 
-\item An on-line neural model is used for hardware data
+\item An on-line neural model used for hardware data
   prefetching.  Previous work in this area either relied on program
   semantics~\cite{Semantics} or were application specific~\cite{Datacenter}.
 % djimenez: removing reference to this arXiv paper. we are not obligated to cite it.
@@ -58,19 +68,19 @@ future scope for expansion.  The contributions include:
 
 \item Implementing the perceptron filter in a robust and accurate
   practical prefetching mechanism, yielding a significant performance
-  improvement as compared to the other state of the art prefetchers.
+  improvement compared to other state of the art prefetchers.
   Moreover, the perceptron learns to adapt itself to shared resource
   constraints, leading to further increased performance in multi-core and
-  lower capacity environments.
+  lower memory capacity environments.
 
-\item Defining a methodology for determining an appropriate set of 
+\item A methodology for determining an appropriate set of 
   features for prediction regardless of the underlying prefetcher used.
   More details are explained in Section \ref{Method-Features}.
 
 \end{itemize}
 
-On a single core configuration, PPF increased performance by 6.84\% as
-compared to the next best prefetcher, SPP.  On a multi-core system running a
+On a single core configuration, PPF increases performance by 6.84\%
+compared to the baseline prefetcher, SPP.  On a multi-core system running a
 mix of memory intensive subset of the SPEC 2017 traces, PPF saw an improvement
 of 11.9\% over SPP for a 4-core system and 10.67\% for an 8-core system.
 

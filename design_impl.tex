@@ -2,7 +2,7 @@
 \label{Impl}
 
 This section describes our implementation of PPF and the range of 
-features that are ultimately used by the perceptron for correlating 
+features that are used by the perceptron for correlating 
 the prefetches.  For a practical implementation, we have used SPP 
 as the base engine prefetcher.
 
@@ -21,25 +21,23 @@ To modify the SPP design to suit our scheme, the following changes were made:
 % djimenez: I think this would be necessary to reproduce our results so leave it in. 
 
 \item \textbf{Looking at L2 MSHR Queue while prefetching}\newline The original
-  SPP would not consider the slots available in the L2 MSHR queue.  It had an
-  assumption that at no time can the number of prefetches suggested can
-  exceed the capacity of the queue.  While it was not proven in the paper, the
-  internal confidence mechanism made sure that the above assumption was maintained.  
-  In PPF since there can be no assumption on the degree of aggressiveness of the 
+  SPP does not consider the slots available in the L2 MSHR queue.  It has the
+  assumption that at no time can the number of suggested prefetches
+  exceed the capacity of the queue.  While it was not described in the paper, the
+  internal confidence mechanism makes sure that the above assumption was maintained.  
+  In PPF, since there cannot be an assumption on the degree of aggressiveness of the 
   underlying prefetcher, we explicitly check that at no point should the number 
   of suggested prefetches exceed the L2 MSHR queue.
 
-\item \textbf{Enhanced Prefetch Table}\newline The Prefetch Table introduced in the 
-  original SPP keeps a track of up to 1024 L2 cache prefetch suggestions.  
-  For PPF, the Table was modified to store metadata such as program counter, 
-  memory access address etc.  This metadata is needed to retrieve the state 
-  of the features to train the perceptron at a later stage in time.
-
-\item \textbf{Reject Table introduced}\newline The Prefetch Table mentioned
-  above keeps track of the prefetches that actually happened in the L2 Cache.
-  Correspondingly, we introduced the Reject Table to keep a track of the
-  prefetches that were suggested by the base SPP engine but were rejected by the
-  perceptron.  In case it is detected that a future demand fetch could have used
+\item \textbf{Enhanced Prefetch Table}\newline The prefetch table introduced in the 
+  original SPP keeps track of up to 1024 L2 cache prefetch suggestions.  
+  For PPF, the prefetch table is modified to store metadata such as program counter, 
+  memory access address etc.  This metadata is needed to retrieve the state  %Gino: What's the etc.?
+  of the features to train the perceptron at a later stage in time. The prefetch table 
+  mentioned above keeps track of the prefetches that actually happened in the L2 Cache.
+  We introduce the reject table to keep a track of the
+  prefetches that were suggested by the base SPP engine but were rejected by PPF.  
+  In case it is detected that a future demand fetch could have used
   this rejected prefetch, the perceptron weights are updated to reflect that
   misprediction.
 
@@ -54,7 +52,7 @@ with the program behaviour.
 \begin{itemize}
 \item \textbf{Base Address} of the demand access that triggered the
   prefetch.  Since prefetches are triggered from the L2 demand access,
-  they tend to be correlated with the triggering address.
+  they tend to correlate to the triggering address.
 
 \item \textbf{Cache Line} and \textbf{Page Address}: These two
   separate features are derived from the base address that triggered
@@ -86,10 +84,10 @@ with the program behaviour.
   that led to the current demand access and helps capture and
   branching information of the current basic block.  PCs are shifted
   in the increasing order of history before being hashed together.
-  This is done to avoid the resultant value of zero in case 2 or more
+  This is done to avoid the resultant value of zero when 2 or more
   PCs are the same.  Additionally, obfuscating the information as it
-  gets old allows us to get a wider and an approximate look into the
-  program history.
+  gets old allows us to get a wider and approximate look into the
+  program's history.
 
 \item \textbf{Program Counter XOR Delta}: This feature tells us if a given PC
   favours particular value(s) of delta.  As noted earlier, while the PC in
@@ -99,7 +97,7 @@ with the program behaviour.
   access instruction can be captured here.
 
 \item \textbf{Confidence}: The integer confidence on a scale of 0 to
-  100 that was used in the original SPP design.  While the original confidence
+  100 that was used in the original SPP design. While the original confidence
   is not used directly for decision making, it can still contribute to the
   final decision made.
 
@@ -111,10 +109,13 @@ with the program behaviour.
 % djimenez: this is a little vague. can you be more precise?
 \item \textbf{Current Signature XOR Delta}: Recall from
   the discussion of SPP in Section \ref{Background-SPP} that the new signature
-  is generated using the old signature and the block delta.  While ``Current
-  Signature XOR Delta'' is not the exact formula for generating the future
+  is generated using the old signature and the current block delta.  
+%Gino: Added the sentence below, is this correct?
+  The result of this feature is the next delta that is predicted to be accessed based on the 
+  delta predicted by SPP. While ``Current Signature XOR Delta'' is not the exact formula for generating the future
   signature, it gives an approximate idea of the path that the combination of
   these two values can lead to.
+
 
 %%%%%%% Below are the features rejected when downsizing 14 -> 9
 % \item \textbf{Current Signature}: The 12-bit signature used by SPP
