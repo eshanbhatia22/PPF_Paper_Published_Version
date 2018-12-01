@@ -30,6 +30,13 @@ coverage for that application.  Prefetcher accuracy refers to the fraction of pr
 that end up being used by the application.  So if a prefetcher prefetches 1,200 cache lines, 
 but only 800 of them are used by the application, then that prefetcher's accuracy is 66.7\%.
 
+
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{Motivation}
+\caption{Variation of IPC, Total Prefetches and Useful Prefetches}
+\label{Fig:Motivation}
+\end{figure}
+
 Coverage and accuracy are generally at odds with one another, and as one metric improves, the other
 usually gets worse.  For example, when an application accesses a new region of memory for the first
 time, a na\"ive prefetcher may predict that all data in that region will be used by the application.
@@ -39,7 +46,19 @@ harmed by this strategy.  On the other extreme, another prefetcher may be overly
 conservative and never prefetch anything, wasting no bandwidth, and achieving 0\% prefetch
 coverage.
 
-A delicate balance between coverage and accuracy is required for a prefetcher to maximize
+Figure~\ref{Fig:Motivation} illustrates the above scenario in a working manner.
+Here we consider a state-of-the-art lookahead prefetcher -- SPP. We keep on 
+re-tuning its thresholds, each time getting a variant with an increasing lookahead 
+depth coverage. The figure depicts the behavior of the prefetcher variants running 
+on the trace \textit{603.bwaves\_s-1740B}. The IPC, total number of prefetches 
+suggested by the prefetcher (TOTAL\_PF) and the actual useful predictions (GOOD\_PF),
+all have been normalized to the least aggressive version of the prefetcher. 
+As the look-ahead depth of the prefetch suggestions increase, so do useful prefetches. 
+But that comes at a cost of total prefetches inceasing at an even higher rate. This leads 
+to cache pollution and bandwidth contention, as is clearly visible with the reduction in 
+the IPC. Similar behaviour was observed in 12 other SPEC 2017 simpoints. 
+
+Therefore, a delicate balance between coverage and accuracy is required for a prefetcher to maximize
 its performance impact.  Prefetchers are generally designed with internal mechanisms to
 monitor their accuracy, with throttling thresholds that can be tuned for either coverage 
 or accuracy.  The more irregular an application's memory access pattern is, the more difficult
