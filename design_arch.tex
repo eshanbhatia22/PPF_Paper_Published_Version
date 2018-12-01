@@ -38,8 +38,8 @@ in the L2 cache or the last-level cache based on the prefetcher's internal confi
 When the base prefetcher is triggered, it begins to suggest candidates for
 prefetching. All suggested prefetches are passed through the perceptron
 filter to decide if they are qualified for final prefetching. 
-he perceptron decides whether to prefetch a candidate by looking at the microarchitectural state 
-\em} i.e. the features, at that instant. Each feature is hashed to form an index into a table of up to 
+The perceptron decides whether to prefetch a candidate by looking at the microarchitectural state 
+\textit{i.e.} the features, at that instant. Each feature is hashed to form an index into a table of up to 
 4096 entries dedicated for that feature. 
 
 Once all the weights are retrieved, they are summed and compared to a preset threshold 

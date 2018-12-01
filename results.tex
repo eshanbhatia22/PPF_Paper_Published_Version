@@ -10,38 +10,70 @@ workloads are presented.
 \subsection{Single-core Results}
 \label{Results-Single}
 
-Figure \_\_ shows the IPC speedup on the memory intensive subset of SPEC 2017. 
+
+Figure~\ref{Fig:SPEC2017_1core} shows the IPC speedup obtained by
+PPF, compred to BOP, DA-AMPM and SPP. 
+In the figure we have depicted selected traces, where PPF shows a 
+noticeable improvement or shows some degradation, along with the 
+geometric mean improvement on the memory intensive subset of SPEC 2017, 
+and finally for the complete SPEC 2017 benchmark. 
 All the results have been normalized to baseline \textit{i.e.}, no
-prefetching.  As can be seen, PPF yields a speedup of XX\% over
-the baseline.  This is equivalent to XX\% over DA-AMPM, xx\% over BOP
-and XX\% over SPP.  Out of the XX benchmarks, PPF nearly matches
-or outperforms most of the prefetchers on XX traces.
+prefetching.  
+
+As can be seen, PPF yields a speedup of \textbf{42.8\%} over
+the baseline. This is equivalent to \textbf{7.8\%} over DA-AMPM, \textbf{9.7\%} over BOP
+and \textbf{6.92\%} over SPP.  Out of the 95 simpoints developed for SPEC 2017, 
+PPF nearly matches or outperforms most of the prefetchers on 91 simpoints.
+
+Only in 607.cactuBSSN and 654.roms, PPF fails to match the improvement 
+offered by BOP.
 
 At its peak, PPF manages to get the IPC speedup of a factor of
-over \textbf{XX} on the trace \textit{602.gcc\_s-2226B}.  This also
-corresponds to speedup gain of \textbf{XX\%} over the next best
-prefetcher - SPP.  In general, benchmarks \textit{602.gcc\_s,
-  603.bwaves\_s, 605.mcf\_s, 621.wrf\_s} and \textit{649.fotonik3d\_s}
-benefit the most from PPF, as compared to SPP only prefetching.
+over \textbf{3.39x} on the trace \textit{602.gcc\_s-2226B}.  This also
+corresponds to speedup gain of \textbf{60\%} over the next best
+prefetcher -- BOP. 
+In general, benchmarks \textit{603.bwaves\_s, 605.mcf\_s, 623.xalancbmk\_s} 
+and \textit{649.fotonik3d\_s} benefit the most from PPF, with the speedup over
+SPP ranging from \textbf{10\% to 25\%}.
 
-On the full SPEC 2017 suite, PPF improves the baseline by XX\%,
-which is YY\% more than just SPP.
+On the full SPEC 2017 suite, PPF improves the baseline by \textbf{20.9\%},
+which is \textbf{3.44\%} more than the next best prefetcher -- SPP.
 
 <Discuss the extreme behaviour of \textit{623.xalancbmk\_s}:
 Improvement over SPP is as high as 31\% and even reduces to -1.5\% on
-traces of this benchmark>
+traces of this benchmark>\newline
 
-<Discuss about coverage on all traces>
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{Coverage}
+\caption{Fraction of Cache Misses Covered}
+\label{Fig:Coverage}
+\end{figure}
+
+\textbf{Coverage}\newline
+A prefetcher coverage can be defined as the ratio of number of misses 
+avoided through prefetching to the number of misses in presence of no 
+prefetchig.
+Figure~\ref{Fig:Coverage} shows the fraction of misses in L2 and Last
+Level Caches avoided by the various prefetchers.
+PPF has the highest coverage of all the prefetchers simulated. Using PPF 
+on SPEC 2017 benchmark, 
+misses can be reduced by \textbf{62.5\%} and \textbf{82.8\%} in L2 Cache and Last Level 
+Cache respectively. For the same benchmark, the next best prefetcher -- 
+DA-AMPM covers \textbf{48.6\%} and \textbf{72.8\%} of the misses respectively.
+
+This superior coverage of PPF can be attributed to aggressive 
+re-tuning of the underlying SPP. At the same time, the Perceptron Filter
+makes sure than this high coverage does not lead to an increased 
+cache pollution. 
 
 <Discuss cases where coverage gets specially increased>
-
 <Discuss accuracy on all traces>
 
-<Discuss about compelling increase in accuracy - details of
-traces. Plot linear separability>
-
-<Any case where accuracy got reduced - go into the trace. See if
-linear separability is the issue. Other possible issues?>
+\begin{figure}[h]
+%%\includegraphics[width=\columnwidth]{4Core_SPEC2017}
+\caption{Normalized speedup for 2 sets of 4-core workloads}
+\label{Fig:4Core_SPEC2017}
+\end{figure}
 
 
 \subsection{Multi-core Results}
@@ -49,33 +81,48 @@ linear separability is the issue. Other possible issues?>
 In this section, we demonstrate the improvement achieved by PPF
 for a mix of multi-programmed workloads.
 
-\textit{4-core environment} Figure \_\_ shows a comparison of speedups
+\textit{4-core environment} Figure~\ref{Fig:4Core_SPEC2017} (a) 
+shows a comparison of speedups
 obtained on 4-core mix of memory intensive subset of SPEC 2017.  We
 plot all the 4 prefetchers, normalized to baseline.  The workloads
 have been sorted in the increasing order of IPC obtained with running PPF.
 As can be seen,
-PPF offers an IPC improvement by 51.7\% on these traces.  This is
-11.9\% over the next best prefetcher SPP; and XX\% and YY\% over BOP
-and DA-AMPM respectively.
+PPF offers an IPC improvement by \textbf{51.7\%} on these traces.  This is
+\textbf{XX\%} over the next best prefetcher -- \_\_; and \textbf{XX\%} 
+and \textbf{YY\%} over \_\_ and \_\_ respectively.
 
-On a different set of fully random SPEC 2017 4-core mixes, PPF provides an IPC speedup of 
-26.2\% over baseline, which is 5.7\% more than just SPP.
+On a different set of fully random SPEC 2017 4-core mixes, 
+PPF provides an IPC speedup of 
+\textbf{26.2}\% over baseline, which is \textbf{5.7}\% more than just SPP.
+
+
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{8Core_SPEC2017}
+\caption{Normalized speedup for 2 sets of 8-core workloads}
+\label{Fig:8Core_SPEC2017}
+\end{figure}
+
 
 \textit{8-core environment} The sorted comparison of speedup obtained 
-on the memory intensive 8-core mixes, is depicted in Fig \_\_.
-PPF improves baseline performance by 38.6\% and that is 10.7\% 
-more than using just SPP.
-
-For completely random SPEC 2017 mixes, PPF improves performance by 
-23.6\% over the baseline, corresponding to 4.8\% over SPP.
-
-This increased improvement by PPF on a multi-core machines is not
-surprising.  Since PPF has an extremely intelligent filter, it ends up 
+on the memory intensive 8-core mixes is depicted in Fig~\ref{Fig:8Core_SPEC2017}.
+PPF improves baseline performance by \textbf{38.6\%} and that is \textbf{10.7\%} 
+more than using just SPP. 
+For completely random set of SPEC 2017 mixes, PPF improves performance by 
+\textbf{23.6\%} over the baseline, corresponding to \textbf{4.8\%} over SPP.
+This increased improvement achieved by PPF over the base engine SPP,
+in a multi-core environment is not surprising. 
+Since PPF has an extremely intelligent filter, it ends up 
 eliminating useless prefetches before they can create cache
-pollution. This further amplifies the edge that SPP had over BOP in multi-core environment.
- 
-\textit{<See if we can use
-speed-up over BOP as a measure here for showing scalability>}
+pollution in the shared LLC. 
+
+As can be seen, BOP offer a better improvement than 
+SPP, for the memory intemsive mix, This can be attributed 
+to BOP's inherent aggressive nature. DA-AMPM is also ahead of
+SPP in both the mixes. Interestingly, in all these cases, 
+PPF consistently outperforms the best performing prefetcher.
+
+%[EB] How to justify only a small margin over DA-AMPM?
+
 
 \subsection{Additional Memory Constraints}
 \label{Results-AdditionalMem}
@@ -95,27 +142,34 @@ For the memory intensive subset, a performance improvement of XX\%
 over baseline is seen with PPF, XX\% more than just SPP.
 
 
+\begin{figure}[ht]
+\includegraphics[width=\columnwidth]{SPEC2006}
+\caption{SPEC 2006 Single-Core IPC Speedup}
+\label{Fig:SPEC2006_1core}
+\end{figure}
+
 \subsection{Cross Validation}
 \label{Results-CrossVal}
+
 Here we try to demonstrate the robustness of PPF by testing it on
 completely unseen benchmarks, namely SPEC 2006 and CloudSuite.
 
-Fig \_\_ shows the speed-up achieved by BOP, SPP and PPF on
+Fig~\ref{Fig:SPEC2006_1core} shows the speed-up achieved by BOP, SPP and PPF on
 selected traces of SPEC 2006, along with the overall geometric mean
 over whole of the benchmark and over memory-intensive subset of the
 SPEC 2006 benchmark.  As can be seen, PPF provides a speed-up of
-44.4\% over baseline, on the memory intensive subset of SPEC 2006
-benchmark.  This corresponds to 6.84\% over SPP and XX\% over BOP.  On
-the whole of the SPEC 2006 suite, the speedup obtained is 22.4\%,
-which is 3.34\% ahead of SPP.
+46.1\% over baseline, on the memory intensive subset of SPEC 2006
+benchmark. This corresponds to \textbf{6.66\%} over SPP and {9.86\%} over BOP and DA-AMPM.  
+On the whole of the SPEC 2006 suite, the speedup obtained is \textbf{22.4\%},
+which is \text{3.34\%} ahead of SPP.
 
-For 4-core memory intensive mixes, PPF improves the baseline by 59.2\%, 
-8.7\% ahead of SPP. For 8-core memory intensive mixes, the IPC speedup 
-over baseline is 47.9\%, 11.5\% ahead of SPP. 
+For 4-core memory intensive mixes, PPF improves the baseline by \textbf{59.2\%}, 
+\textbf{8.7\%} ahead of SPP. For 8-core memory intensive mixes, the IPC speedup 
+over baseline is \textbf{47.9\%}, \textbf{11.5\%} ahead of SPP. 
 
 As can be seen, the performance is very consistent given no prior
 parameter tuning was done keeping SPEC 2006 in mind.  We attribute
 this to the inherent adaptability of the perceptron model.  In
 general, perceptron weights are able to adjust in real-time so as to
-find the best possible correlation between the output and the
+find the best possible correlation between the output and the given set of 
 features.

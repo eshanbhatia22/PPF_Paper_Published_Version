@@ -208,7 +208,7 @@ prefetching and that enabled us to examine the weights in detail.
 \subsection{Overhead for PPF}
 \label{Method-Overheads}
 
-\begin{table}[]
+\begin{table}[t]
     \centering
     \begin{tabular}{|c|c|m{4.8cm}|}
     \hline
@@ -234,8 +234,23 @@ prefetching and that enabled us to examine the weights in detail.
     \label{tab:PTable_metadata}
 \end{table}
 
+In this section, we analyze the hardware overhead required to
+implement PPF.  The Prefetch Table was enhanced to accommodate
+storing of meta-data for perceptron training.  Table
+\ref{tab:PTable_metadata} depicts the meta-data stored for each entry in
+the Prefetch Table.  Table \ref{tab:PPF_overhead} shows the total
+storage overhead of PPF implementation.  The hardware budget for
+2nd Data Prefetching championship was 32 KB.  Keeping that in mind 
+the considerable speedup PPF obtained over the winner, the extra hardware
+budget can be accounted for.  The extra hardware also makes the
+overall scheme more scalable than SPP.  In the original SPP paper, it
+was demonstrated that adding extra hardware brings little advantage in
+terms of performance gain.  The newly added perceptron tables can be
+scaled to increase / decrease features depending on the permitted
+budget.
 
-\begin{table}[]
+\begin{table}[h]
+\begin{adjustwidth}{-0.5cm}{}
     \centering
     \begin{tabular}{|c|c|c|c|}
     \hline
@@ -244,13 +259,13 @@ prefetching and that enabled us to examine the weights in detail.
         \textbf{Components} &
         \textbf{Total} \\
     \hline
-        \multirow{5}{2.2cm}{Signature Table} &      & Valid (1 bit)        &             \\
+        \multirow{5}{1.5cm}{Signature Table} &      & Valid (1 bit)        &             \\
                                              &      & Tag (16 bits)        &             \\
                                              & 256  & Last Offset (6 bits) & 11008 bits  \\  
                                              &      & Signature (12 bits)  &             \\
                                              &      & LRU (6 bits)         &             \\
     \hline
-        \multirow{3}{2.2cm}{~~Pattern Table} &      & $C_{sig}$ (4bits)      &               \\
+        \multirow{3}{2cm}{~~Pattern Table} &      & $C_{sig}$ (4bits)      &               \\
                                              & 512  & $C_{delta}$ (4*4 bits) & 24576 bits    \\
                                              &      & Delta (4*7 bits)       &               \\
     \hline
@@ -279,25 +294,18 @@ prefetching and that enabled us to examine the weights in detail.
     \end{tabular}
     \caption{SPP-Perc Storage Overhead}
     \label{tab:PPF_overhead}
+\end{adjustwidth}
 \end{table}
 
 \footnotetext[1]{Components of Prefetch Table can be found in Table \ref{tab:PTable_metadata}}
-\footnotetext[2]{the Reject Table does not need to maintain the useful bit as that only applies for prefetches that ultimately made through}
+\footnotetext[2]{The Reject Table does not need to maintain the useful bit as that only applies for prefetches that ultimately made through}
 
-In this section, we analyze the hardware overhead required to
-implement PPF.  The Prefetch Table was enhanced to accommodate
-storing of meta-data for perceptron training.  Table
-\ref{tab:PTable_metadata} depicts the meta-data stored for each entry in
-the Prefetch Table.  Table \ref{tab:PPF_overhead} shows the total
-storage overhead of PPF implementation.  The hardware budget for
-2nd Data Prefetching championship was 32 KB.  Keeping that in mind 
-the considerable speedup PPF obtained over the winner, the extra hardware
-budget can be accounted for.  The extra hardware also makes the
-overall scheme more scalable than SPP.  In the original SPP paper, it
-was demonstrated that adding extra hardware brings little advantage in
-terms of performance gain.  The newly added perceptron tables can be
-scaled to increase / decrease features depending on the permitted
-budget.
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{SPEC2017}
+\caption{SPEC 2017 Single-Core IPC Speedup}
+\label{Fig:SPEC2017_1core}
+\end{figure}
+
 
 In terms of computations, the perceptron mechanism only introduces an
 extra adder tree.  The hash perceptron mechanism makes sure than there
