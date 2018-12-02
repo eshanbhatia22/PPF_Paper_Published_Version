@@ -31,6 +31,8 @@ minimal modifications. %Gino: Are these modifications minimal?
 
 \subsection{The Perceptron Filter}
 \label{Arch-Perceptron}
+\pg{rewrite this section as talking to the figures and walking through
+  them}
 
 
 The Perceptron Filter is organized as tables of perceptron weights,
@@ -47,44 +49,46 @@ requiring lower resolution require as few as 7 bits of indexing.  The
 variable indexing was determined by studying the features and
 fine-tuned empirically to achieve a good accuracy vs hardware overhead
 trade-off.  Exact details are mentioned under ``Area Overheads'' in
-Section~\ref{Method-Overheads}
+Section~\ref{Method-Overheads}. \pg{this whole ``bits'' discussion
+  belongs in implementation not here IMHO}
 
 A single entry in the table corresponds to a perceptron weight.  Each
 weight is a 5 bit counter - saturating at -16 and +15 and initialized
 to zero at the beginning of a program's execution. Our proposed design
-uses nine features, represented in nine perceptron weight tables.
+uses nine features, represented in nine perceptron weight
+tables. \pg{the fact that its nine is again implementation details}
 
-\textbf{Inference}\newline In the ChampSim simulator, the prefetching
-method is invoked on every L2 Cache demand access.  At that point, the
-base prefetcher has the option to perform a prefetch -- if it does,
-then it has a choice of how many cache lines to prefetch.  The
-suggested prefetches can be either placed in the L2 cache or the
-last-level cache based on the prefetcher's internal confidence
-mechanism.
+\pg{The word ChampSim should not appear in this part of the paper at
+  all.  Remember you are describing how to build this in the general
+  case...} \textbf{Inference}\newline In the ChampSim simulator, the
+prefetching method is invoked on every L2 Cache demand access.  At
+that point, the base prefetcher has the option to perform a prefetch
+-- if it does, then it has a choice of how many cache lines to
+prefetch.  The suggested prefetches can be either placed in the L2
+cache or the last-level cache based on the prefetcher's internal
+confidence mechanism.
+
 
 When the base prefetcher is triggered, it begins to suggest candidates
-for prefetching. All suggested prefetches are passed through the
+for prefetching.  All suggested prefetches are passed through the
 perceptron filter to decide if they are qualified for final
 prefetching.  The perceptron decides whether to prefetch a candidate
 by looking at the microarchitectural state \textit{i.e.} the features,
-at that instant. Each feature is hashed to form an index into a table
+at that instant.  Each feature is hashed to form an index into a table
 of up to 4096 entries dedicated for that feature.
 
 Once all the weights are retrieved, they are summed and compared to a
-preset threshold ,PERC\_ THRESHOLD\_LO.  Only the prefetch candidates
+preset threshold, PERC\_ THRESHOLD\_LO.  Only the prefetch candidates
 with perceptron sum higher than the threshold qualify for prefetching.
 The prefetches that qualify through the perceptron stage are recorded
-in the ``Prefetch Table". The prefetch table is a 1024-entry, direct
-mapped structure taht conatains all metadata required to recreate the
+in the ``Prefetch Table''. The prefetch table is a 1024-entry, direct
+mapped structure that contains all metadata required to recreate the
 features.  %Gino: Recreate the features?
 When the feedback of the current prefetched line is available at a
 later stage, the stored data is used to train the perceptron.
 
-The sum of the perceptron weights are also used to decide whether to
-place teh data in the L2 or the last level cache. All prefetch
-candidates that are qualified until this stage are compared against
-PERC\_THRESHOLD\_HI to decide the fill level. The two thresholds:
-PERC\_THRESHOLD\_LO and PERC \_THRESHOLD\_HI are empirically set.
+\pg{this discussion below has redundancy and doesn't flow well.
+  Rework it}
 
 The perceptron sum can be considered the sum of the individual
 contribution of a feature.  The value of each contribution corresponds
@@ -99,6 +103,13 @@ corresponds to prefetches with a moderate confidence level.  This bin
 prefetches directeky to fill the bigger last level cache and prevents
 polluting the smaller L2 Cache.  The highest confidence prefetches are
 filled in the L2 cache.
+
+The sum of the perceptron weights are also used to decide whether to
+place the data in the L2 or the last level cache.  All prefetch
+candidates that are qualified until this stage are compared against
+PERC\_THRESHOLD\_HI to decide the fill level. The two thresholds:
+PERC\_THRESHOLD\_LO and PERC \_THRESHOLD\_HI are empirically set.
+
 
 In addition to the prefetch table mentioned above, PPF also maintains
 a ``Reject Table.''  The reject table is a 1024-entry deep
@@ -167,7 +178,7 @@ algorithms, there is usually no way of knowing the result of not
 prefetching a particular line.  Our two-step PPF architecture allows
 us to overcome that issue.
 
-\subsection{Generalizing PPF for any Prefetcher}
+\subsection{Optimizing PPF for a Given Prefetcher}
 \label{Arch-Generalizing}
 The above discussion of PPF shows that it is highly modular and can be
 adapted to be used over any base prefecher for increased prefetch
@@ -179,7 +190,8 @@ is needed when the feedback of a prior prefetch is available in form
 of a subsequent demand hit or cache eviction. In that case, the stored
 metadata needs to be retrieved to update the state of the perceptrons.
 
-In general, PPF can be adapted to a new base prefetcher with only a few modifications.
+In general, PPF can be adapted to a new base prefetcher with only a
+few modifications.
 \begin{itemize}
 
 \item \textbf{Enhancing the Base Prefetcher:} By tuning down any
@@ -202,7 +214,9 @@ In general, PPF can be adapted to a new base prefetcher with only a few modifica
   set can be expanded to convey any useful information from the
   prefetcher to the perceptron filter.  The methodology explained in
   Section~\ref{Method-Features} talks about developing a minimal
-  feature set for PPF.
+  feature set for PPF. \pg{This should be more about how one should
+    choose features than about what you did in the SPP implementation
+    in particular.  Rewrite as a guide on picking features.}
 %For example, in our implementation ``Confidence,'' ``Current Signature XOR Delta,''
 %and ``Page Address XOR Confidence'' are such features.
 
