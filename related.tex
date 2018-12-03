@@ -1,0 +1,12 @@
+\section{Related Work}
+\label{related}
+
+
+The idea of using concepts from machine learning to drive cache management mechanism has become widely popular. Perceptrons in microarchitecture were first introduced by Jimenez and Lin ~\cite{Perc_Branch} for branch prediction. Their predictor consists of a table of weights that was indexed by the program counter associated to the branch. The dot product of the corresponding weight and a history of branches is thresholded against a magnitude to make a prediction. The perceptron-based predictor helped differentiate which branch history outcomes were relevant for marking a prediction for a certain branch, which yield higher accuracy than previously proposed branch predictors. This reason motivated the use of perceptrons in other speculation mechanisms.
+
+To drive their replacement policy, Teran \textit{et.al} proposed using a perceptron-based predictor that obeys by the perceptron learning rule. By adding this way of reinforcement learning, their mechanism avoids overtraining and can rapidly adapt to changes in memory behavior. The continuation of this work was later introduced ~\cite{Multiperspective}, where a genetic algorithm was used to find an extensive set of features to be used as an input to the predictor. The extra features were able to cover more of the memory access patterns. The outcomes of these predictors are used to drive optimizations such a replacement, placement and bypass of the LLC.   
+
+
+
+%%MOVE IT SOMEWHERE
+Peled \textit{et.al.} proposed using on-line reinforcement learnign to dynamically scale the maginitude of input information feed into their prefetcher mechanism ~\cite{Semantics}. The major drawback of this work is the need of compiler support. SVMs and logistic regression were used by Liao \textit{et.al.} to do an off-line optimal feature search for their prefetcher.

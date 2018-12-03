@@ -1,126 +1,21 @@
-\section{Background Work and Motivation}
+\section{Motivation and Prior Work}
 \label{Background}
 
-In this section, we compare the existing work done in the domain of
-prefetching.  We also give a brief background for the 
-Signature Path Prefetcher (SPP) architecture.
+In this section we discussed the most closely related work to our proposed technique. Other relevant work will be discussed throughout the paper. See section \ref{related}.
 
-\subsection{Related Work}
-\label{Background-Related}
-The idea of prefetching has been around since Instruction Stream
-Buffers were proposed by Jouppi~\cite{ISB}. Some of the earliest data
-prefetchers developed to try to identify memory access patterns with a
-constant stride pattern~\cite{Smith,Baer,Stride}. Major research was
-dedicated to stride distance and depth prediction~\cite{Decoupled,Adaptive}. Newer prefetchers aimed at correlating
-predictions with the past memory access addresses~\cite{Address_Correlated,AMPM}.
+	The idea of prefetching has been around ever since Jouppi introduced \textit{instruction stream buffers}. Early prefetchers detected stride access patterns in order to predict future memory requests ~\cite{Smith,Baer,Stride}. These days prefetching mechanisms are more sophisticated, they look into past memory behavior~\cite{Address_Correlated,AMPM}, locality ~\cite{Spatial_Pattern,SMS,Temporal_Instruction_Fetch,Off_Chip,STMS,SMS_JILP}, control-flow speculation ~\cite{BFetch,MTBFetch}, between many other aspects in order to detect complex access patterns in modern applications.
 
-With time, newer and more intricate prefetchers were
-introduced~\cite{Wenisch_Temporal_Streaming,Stealth,Feedback_Directed,Coordinated,Bandwidth_Efficient,Pacman,TLB,Linearizing,Sandbox,VLDP,DoL,Domino}.
-A whole class of streaming prefetchers developed on the lines of Spatial /
-Temporal Memory
-Streaming~\cite{Spatial_Pattern,SMS,Temporal_Instruction_Fetch,Off_Chip,STMS,SMS_JILP}.
-Control-flow speculation directed hardware prefetching has also been
-proposed~\cite{BFetch,MTBFetch}.
+\subsection{Lookahead-based Prefetchers}
 
-Most modern prefetchers aim at identifying complex memory access patterns in a
-given application.  Thus, they capture some of the irregular patterns seen in
-pointer chasing data-structures.  Offset based prefetchers are a
-generalization of the next-line prefetcher.  Some of the prominent prefetchers
-exploiting this idea are Sandbox Prefetcher~\cite{Sandbox} and the Best Offset
-Prefetcher~\cite{BOP}.  Another class of prefetchers is lookahead Prefetchers.
-Such prefetchers try to speculate deep into the application's memory access
-path.  These include Path Confidence based Lookahead Prefetching~\cite{SPP}
-and Kill the Program Counter~\cite{KPC}.
+An optimal prefetcher should be able to detect a wide range of memory access patterns. Simple stride prefetching techniques only detect sequences of addresses that differ by a constant value and fail to capture diverse delta patterns. Lookahead prefetchers learn patterns by collecting histories of observed data access patterns, and correlating these with the strides, by considering each new page in a vacumm. Kim textit{et. al.} proposed SPP ~\cite{SPP}, a confidence-based lookahead prefetcher. SPP creates a signature associated to a memory request by compressing the history of accesses. By correlating the signature with future likely delta patterns, SPP learn both simple and complicated memory access patterns quickly. Our proposed technique builds upon SPP, therefore, we now introduce SPP in more detail.  
 
-A related line of work also explores cache replacement -- insertion policies
-and dead block prediction, with an eye towards
-prefetching~\cite{DB_Pred,Cache_Burst,KPC,Harmony}.  Nori \textit{et.al.}
-introduced prefetching with respect to runtime criticality~\cite{CATCH}.
-
-\textit{Machine Learning and Prefetching:} Peled \textit{et.al.} introduce
-interesting ideas for on-line Reinforcement Learning and dynamically scaling
-the magnitude of feedback given to the baseline prefetcher~\cite{Semantics}.
-The biggest challenge here is that the idea relies on compiler support for
-getting features to build the context.
-
-Liao \textit{et. al.} focus on prefetching for data center
-applications~\cite{Datacenter}. They use offline machine learning algorithms
-such as SVMs and logistic regression to do a parametric search for an optimal
-prefetcher configuration.
-
-%% NOTE: The below paper is literally the same idea as ours. But poor implementation and no good results. How much to talk about this paper?
-% djimenez: let us not cite this paper. it is in arXiv and we are not
-% obligated to cite it. as far as ISCA is concerned it does not exist. there is
-% a reason it is only in arXiv and not published somewhere: it is crap.
-
-%Finally, the paper on Data Cache Prefetching with Perceptron
-%Learning~\cite{BadPerc} talks about the idea of two step prefetching.
-%The first step is an existing baseline prefetcher while the second
-%step is a perceptron based filter.  The paper has lots of
-%limitations in terms of design and implementation.  That reflects in
-%the fact that it did not lead to any significant performance gain over
-%even the basic prefetchers like the Stride Prefetcher~\cite{Stride} and
-%the Markov Prefetcher~\cite{Markov}.
-
-\subsection{Perceptron Learning in Architecture}
-\label{Background-Perceptron}
-Perceptron learning for computer architecture design has been around for a
-while.  It was first popularized by Jim\'enez \textit{et. al.} for conditional
-branch prediction~\cite{Perc_Branch}. The biggest advantage of the perceptron
-model is that it can adjust its weights dynamically to increase / decrease the
-importance given to each feature - branch histories in this case.  
-Perceptron-based Reuse Prediction~\cite{Perc_Reuse} implemented the hashed
-perceptron architecture to perform prediction in context of cache replacement.
-The structure  we use is derived from the model introduced in that paper, refined with 
-many additional features as in Multiperspective Reuse Prediction{Multiperspective}.  
-The model was originally derived from Hashed Perceptron branch 
-prediction~\cite{HashedPerceptron}.  Here, a hash of the feature itself is used to 
-index into a table of perceptron weights.
-
-% djimenez: this detail is unnecessary and likely to invite questions.
-% reviewers might ask "what about linear separability?" but the proof is in the
-% pudding.
-%This form of indexing makes sure that the hyper-plane learned by the
-%perceptron weights is able to differentiate between linearly
-%inseparable outcomes. 
-
-\textit{Deviations From Actual Perceptrons:} Traditionally, a perceptron
-prediction involves multiplying the vector of input features:
-F\textsubscript{1xN}, with the corresponding weight vector:
-W\textsubscript{Nx1} in a dot product to obtain the sum y\textsubscript{out}.
-Here what we use is a perceptron-like structure.  The feature is used to hash
-into the weight of perceptrons and the retrieved weights are added straight
-away.  Thus, the perceptron algorithm doesn't introduce any multiplication
-operations in the inference or training process.  Hence what we adapt in this
-work is a perceptron-like learning algorithm as it involves the same principle
-involved in perceptron inferencing and training.
-
-\textit{Perceptron Update Rule:} In all the above implementations, a uniform
-perceptron update principle is followed.  The weights need to be updated if
-the prediction was wrong or the magnituded of the dot product does not exceed
-a certain threshold.  After a certain training period, these weights are
-proportional to the probability of the outcome being true.  This training
-threshold makes sure that the perceptrons are trained until a certain level of
-confidence and yet they are not over-trained to the given set.  Care is taken
-that the weights saturate at the maximum positive and negative values so that
-they remain confined to the bit-width.  The same rules will be applied in the
-discussion done in Section \ref{Arch-Perceptron} on PPF learning algorithm.
-
-%\subsection{Prefetching with SPEC 2017} \label{Background-SPEC2017}
-% djimenez: we might not need to discuss the benchmarks too much as they are
-% standard. we don't have a lot of room anyway.
-
-%\textit{<Discuss SPEC 2017 traces here> <What are the possible graphs /
-%analysis tools we can use for SPEC traces?>}
 
 \subsection{Baseline Prefetcher: The Signature Path Prefetcher}
 \label{Background-SPP}
 
 While the basic idea of perceptron based prefetch filtering is applicable to
 any look-ahead prefetcher, we developed a practical implementation of the idea
-using SPP~\cite{SPP} as the underlying prefetcher.  SPP is a simple,
-lightweight, lookahead prefetcher which can be easily modified to be highly
-aggressive.  Here we describe the basic architecture of SPP.
+using SPP as our baseline.  Here we describe the basic architecture of SPP.
 
 % djimenez: Paul, is all this stuff accurate? SPP continues to confuse me.
 
@@ -135,9 +30,9 @@ compressed representation of the past few memory accesses for that
 page.  The signature is calculated as:
 $$New Signature = (\,Old Signature << 3 bits\,) \;\;XOR\;\; (\,Delta\,)$$ 
 Delta is the numerical difference between the block offset of the 
-current and the previous memory acces. In case a matching page entry 
+current and the previous memory access. In case a matching page entry 
 is found, the stored signature retrieved and used to index into the 
-Pattern Table.
+Pattern Table. This process is illustrated by figure \ref{fig:spp_update}.
 
 \textbf{Pattern Table:} The Pattern Table is indexed by the signature generated
 from the Signature Table.  Pattern Table holds predicted delta patterns and their confidence
@@ -173,20 +68,20 @@ keeps a record of last few entries prefetched.  This proves useful for
 updating the prefetcher states if a tracked prefetch leads to a demand hit or
 a cache eviction. \textit{Note:} The original paper refers to this as the Prefetch Filter 
 but since in our context filter refers to the perceptron filter, we will be calling 
-this structre as the Prefetch Table to avoid any confusion.
+this structure as the Prefetch Table to avoid any confusion.
 
-\textbf{Lookahead Prefetching:} On each trigger, SPP tries to go down
+\textbf{Lookahead Prefetching:} On each trigger, SPP goes down
 the program speculation path using its own prefetch suggestion.
 Using current prefetch as the baseline, it re-accesses the Pattern Table to generate further
-prefetches.  It keeps on repeating this cycle of accessing Pattern Table and
+prefetches. It repeats the cycle of accessing Pattern Table and
 updating the signature based on highest confidence prefetch from the
-last iteration.  These iteration count till which SPP manages to
+last iteration.  The iteration counter on which SPP manages to
 predict prefetch entries in the lookahead manner is characterized as
-its `depth'.  While doing this, SPP also keeps compounding the
+its `depth'.  While doing so, SPP also keeps compounding the
 confidence in each depth.  Thus as depth increases, overall confidence
 keeps decreasing.  
 
-\textbf{Confidence Tracking}: The Pattern Table keeps a track of hits to each
+\textbf{Confidence Tracking}: The Pattern Table keeps a count of hits to each
 signature through a counter C\textsubscript{sig}.  The number of hits
 for a given delta per signature are tracked using a counter
 C\textsubscript{delta}.  The confidence for a given delta is
@@ -208,25 +103,59 @@ decide whether the prefetch should be sent to L2 Cache
 The two thresholds were empirically set to 25 and 90 respectively, 
 on the scale of 0 to 100.  
 
-<Insert a comprehensive figure about SPP structures>
+%<Insert a comprehensive figure about SPP structures>
 
-<Insert another detailed picture about SPP data-path flow>
+\begin{figure}
+  \begin{center}
+  \includegraphics[width=9cm]{figures/SPP_Prefetch_Description.jpg}
+    \label{fig:spp_strcture}
+  \caption{SPP architecture}
+  \end{center}
+\end{figure}
+
+%<Insert another detailed picture about SPP data-path flow>
+\begin{figure}
+  \begin{center}
+  \includegraphics[width=9cm]{figures/SPP_Update_Description.jpg}
+  \label{fig:spp_update}
+  \caption{SPP data-path flow}
+  \end{center}
+\end{figure}
+
+% djimenez: this detail is unnecessary and likely to invite questions.
+% reviewers might ask "what about linear separability?" but the proof is in the
+% pudding.
+%This form of indexing makes sure that the hyper-plane learned by the
+%perceptron weights is able to differentiate between linearly
+%inseparable outcomes. 
+
+%\textit{Deviations From Actual Perceptrons:} Traditionally, a perceptron
+%prediction involves multiplying the vector of input features:
+%F\textsubscript{1xN}, with the corresponding weight vector:
+%W\textsubscript{Nx1} in a dot product to obtain the sum y\textsubscript{out}.
+%Here what we use is a perceptron-like structure.  The feature is used to hash
+%into the weight of perceptrons and the retrieved weights are added straight
+%away.  Thus, the perceptron algorithm doesn't introduce any multiplication
+%operations in the inference or training process.  Hence what we adapt in this
+%work is a perceptron-like learning algorithm as it involves the same principle
+%involved in perceptron inferencing and training.
+
 
 \subsection{Case for an On-line Filter}
 \label{Background-Case}
-As compared to some of the other state of the art prefetchers [BOP], SPP is
-less aggressive.  In the single-core environment, this gives BOP an edge as
-there is no resource contention among the different cores.  Hence more
-aggressive prefetching is bound to prove beneficial.  As we increase the core
+
+Compared to some of the other state of the art prefetchers, SPP is
+less aggressive.  In a single-core environment, there is no resource
+contention among the different cores, hence aggressive prefetching is bound to prove beneficial. 
+As we increase the core
 count, we observe that SPP starts outperforming rest of the prefetchers.  This
 can be attributed to the fact that each prefetch suggested by SPP is a
-carefully calculated one and that prevents cache pollution.  \textit{<Figure
+carefully calculated and prevents cache pollution.  \textit{<Figure
 showing the variation of SPP vs BOP wrt core count>} For 4-core applications,
-SPP suggests XX\% fewer prefetches than BOP and yet leads to higher IPC.
+SPP suggests XX\% fewer prefetches than Best Offset Prefetcher ~\cite{bop} and yet leads to higher IPC.
 
 The above analysis shows that with a more careful filtering mechanism, any
-prefetcher like SPP can be tuned to become much more aggressive, leading to
-increased coverage.  The onus of maintaining the accuracy now falls on the
+prefetcher like SPP can be tuned to become much more aggressive, yielding higher coverage.  The responsibility of maintaining high accuracy now falls on the
 independent filter.  To test the hypothesis, we tuned down SPP to the
 minimum possible threshold, with the effect of increasing prefetch suggestions
 made by SPP by XX\%.  \textit{<Comparison of SPP-Unleased with SPP / BOP>}
@@ -245,3 +174,14 @@ Cache).
 
 To that effect, we introduce an independent on-line perceptron based
 filtering mechanism.
+
+\subsection{Supervised Learning}
+
+\textit{Perceptron Learning Rule:} In a perceptron-based mechanism, a uniform
+perceptron update principle is followed.  The weights need to be updated if
+the prediction was wrong or the magnitude of the dot product does not exceed
+a certain threshold.  After a certain training period, these weights are
+proportional to the probability of a correct prediction.  Thresholding the outcome to a
+ magnitude makes sure the perceptrons are trained until a certain level of
+confidence and yet they are not over-trained to the given set.  The perceptron 
+learning rule will be applied to PPF.
