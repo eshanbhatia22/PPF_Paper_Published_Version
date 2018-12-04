@@ -212,3 +212,32 @@ apply it for the first time to prefetch filtering.
 % magnitude makes sure the perceptrons are trained until a certain level of
 %confidence and yet they are not over-trained to the given set.  The perceptron
 %learning rule will be applied to PPF.
+
+
+%ETG: this is what I had added about perceptrons, we're trying to 
+%figure out what to leave and what to get rid of ...  
+\subsection{Perceptron-based Prediction}
+
+Perceptrons in microarchitecture were first introduced by Jimenez and Lin ~\cite{Perc_Branch} for branch prediction. In this work, a perceptron weights vector is selected by a hash of the branch address and its dot product with an input vector of branch history outcomes. If the product is at least 0, the branch is predicted as taken, otherwise it is predicted not taken. The weights are updated with the perceptron update rule: if the prediction is incorrect, or the dot product does not exceed some threshold magnitude, then the weights are incremented or decremented based on their correlation to the corresponding history bits. Perceptron learning yields to superior accuracy, which results in increased opportunity for optimizations.
+
+\subsubsection{Perceptron Learning}
+
+In a perceptron-based mechanism, a uniform
+perceptron update principle is followed.  Perceptrons are a simple model of neurons
+in neural networks \cite{perceptrons1,perceptrons2} modeled by vectors of signed weights learned through online training. The output of a perceptron is the dot product of the weights and a vector of inputs. In this work, we make use of the perceptron learning algorithm. There are two components to the abstract perceptron learning algorithm:
+
+\begin{enumerate}
+\item To predict true or false, a vector of signed weights is chosen according to some criteria. The dot product of the weights and input vectors, called $y_{\mbox{\small out}}$, is computed. If $y_{\mbox{\small out}}$ exceeds some threshold, the prediction is true, otherwise it is false.
+
+\item To update the weights after the true outcome of the predicted event is
+known, we first consider the value of $y_{\mbox{\small out}}$. If the
+prediction was correct and $|y_{\mbox{\small out}}|$ exceeds a threshold
+$\theta$, then the weights remain unchanged. Otherwise, the inputs are used to
+update the corresponding weights.  If there is positive correlation between
+the input and the outcome of the event, the corresponding weight is
+incremented; otherwise, it is decremented. Over time, the weights are
+proportional to the probability that the outcome of the event is true in the
+context of the input and the criterion for choosing that weight. The weights
+saturate at maximum and minimum values so they will fit in a fixed bit width.
+\end{enumerate}
+
