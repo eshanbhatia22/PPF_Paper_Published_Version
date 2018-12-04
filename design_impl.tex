@@ -17,27 +17,27 @@ were made:
   fill-level in case of prefetch.  Thus, the confidence thresholds --
   T\textsubscript{f} and T\textsubscript{p} are no longer needed.
 
-%%[NOTE] Can this point be removed?
+% EB: Can this point be removed?
 % djimenez: I think this would be necessary to reproduce our results so leave it in. 
+% EB: It's ultimately a check to avoid SPP's internal segfault. Won't have a real impact.
 
-\item \textbf{Looking at L2 MSHR Queue while prefetching}\newline The
-  original SPP does not consider the slots available in the L2 MSHR
-  queue.  It has the assumption that at no time can the number of
-  suggested prefetches exceed the capacity of the queue.  While it was
-  not described in the paper, the internal confidence mechanism makes
-  sure that the above assumption was maintained.  In PPF, since there
-  cannot be an assumption on the degree of aggressiveness of the
-  underlying prefetcher, we explicitly check that at no point should
-  the number of suggested prefetches exceed the L2 MSHR queue. \pg{is
-    this a big deal?  Seems like a detail}
+%\item \textbf{Looking at L2 MSHR Queue while prefetching}\newline The
+%  original SPP does not consider the slots available in the L2 MSHR
+%  queue.  It has the assumption that at no time can the number of
+%  suggested prefetches exceed the capacity of the queue.  While it was
+%  not described in the paper, the internal confidence mechanism makes
+%  sure that the above assumption was maintained.  In PPF, since there
+%  cannot be an assumption on the degree of aggressiveness of the
+%  underlying prefetcher, we explicitly check that at no point should
+%  the number of suggested prefetches exceed the L2 MSHR queue. \pg{is
+%    this a big deal?  Seems like a detail}
 
 \item \textbf{Enhanced Prefetch Table}\newline The prefetch table
   introduced in the original SPP keeps track of up to 1024 L2 cache
   prefetch suggestions.  For PPF, the prefetch table is modified to
-  store metadata such as program counter, memory access address etc.
+  store the features used for perceptron indexing..
   This metadata is needed to retrieve the
-  state %Gino: What's the etc.?
-  of the features to train the perceptron at a later stage in
+  values of the features to train the perceptron at a later stage in
   time. The prefetch table mentioned above keeps track of the
   prefetches that actually happened in the L2 Cache.  We introduce the
   reject table to keep a track of the prefetches that were suggested
@@ -45,7 +45,8 @@ were made:
   detected that a future demand fetch could have used this rejected
   prefetch, the perceptron weights are updated to reflect that
   misprediction.
-
+%Gino: What's the etc.?
+%EB: Resolved
 \end{itemize}
 
 

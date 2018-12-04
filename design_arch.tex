@@ -114,8 +114,8 @@ PERC\_THRESHOLD\_LO and PERC \_THRESHOLD\_HI are empirically set.
 In addition to the prefetch table mentioned above, PPF also maintains
 a ``Reject Table.''  The reject table is a 1024-entry deep
 direct-mapped table.  If a prefetch suggestion is rejected by the
-perceptron layer, it is logged into the reject table.  The filer is
-used to train the perceptron to %Gino: Filer?
+perceptron layer, it is logged into the reject table.  The table is
+used to train the perceptron to %Gino: Filer? [EB]: Resolved
 avoid false negatives \textit{i.e.}, cases where prediction was to
 reject the prefetch but the prefetch would have been useful.
 
