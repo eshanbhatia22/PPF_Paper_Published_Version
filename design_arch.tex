@@ -15,8 +15,8 @@ machine learning as a mechanism to differentiate between potentially
 useful deeply speculated prefetches and likely not-useful ones.  This
 Perceptron Prefetch Filter (PPF) is placed between the prefetcher and
 the prefetch insertion queue, to ensure that predicted bad prefetches
-are not inserted into the memory system, \pg{As shown in figure
-  whatever...}.
+are not inserted into the memory system, 
+\pg{As shown in figure whatever...}.
 
 As discussed in Section~\ref{sec:Background-Perceptron}, perceptrons
 are useful, light-weight mechanisms to pull together disparate forms
@@ -27,41 +27,44 @@ into a binary useful/non-useful prediction.  In the remainder of this
 section, we discuss the the general structure of PPF for enhancing a
 given underlying prefetcher.  We will show that PPF is a generalized
 prefetch filtering mechanism which may adapted to any prefetcher with
-minimal modifications. %Gino: Are these modifications minimal?
+appropriate modifications.
+% Gino: Are these modifications minimal?
+% EB: That's a good question :P. Edited to 'appropriate'.
 
 \subsection{The Perceptron Filter}
 \label{Arch-Perceptron}
 \pg{rewrite this section as talking to the figures and walking through
   them}
 
-
-The Perceptron Filter is organized as tables of perceptron weights,
-with a separate table of weights for each feature.  A different number
-of bits are used for each feature to index into its corresponding
-table.
 %Gino: repharse below?
-Each feature's value is used to index into the corresponding table.
-This indexing is done using a different number of bits for each
-feature.  At most, 12 bits of a feature are used to index into the
-weights table. Certain features require more resolution \textit{i.e.},
-the full 12 bits of indexing.  On the other hand, some features
-requiring lower resolution require as few as 7 bits of indexing.  The
-variable indexing was determined by studying the features and
+The Perceptron Filter is organized as tables of perceptron weights,
+with a separate table of weights for each feature. For a design using 
+`N' number of features, it's weights will be arranged in N different 
+tables. Each feature's value is used to index into the corresponding table.
+Since each table gets indexed independently, different number of bits can 
+be used for indexing, thus giving each table a different depth.
+The variable indexing can be determined by studying the features and
 fine-tuned empirically to achieve a good accuracy vs hardware overhead
-trade-off.  Exact details are mentioned under ``Area Overheads'' in
-Section~\ref{Method-Overheads}. \pg{this whole ``bits'' discussion
-  belongs in implementation not here IMHO}
+trade-off.  Exact details of our PPF implementation are mentioned 
+under ``Area Overheads'' in Section~\ref{Method-Overheads}.
+ 
+%\pg{this whole ``bits'' discussion belongs in implementation not here IMHO}
+%[EB] Resolved
 
 A single entry in the table corresponds to a perceptron weight.  Each
 weight is a 5 bit counter - saturating at -16 and +15 and initialized
-to zero at the beginning of a program's execution. Our proposed design
-uses nine features, represented in nine perceptron weight
-tables. \pg{the fact that its nine is again implementation details}
+to zero at the beginning of a program's execution. It was empirically 
+observed that 5-bits of indexing achieves a good trade-off between 
+hardware overheads and accuracy. 
+%\pg{the fact that its nine is again implementation details}
+% [EB] Resolved
 
-\pg{The word ChampSim should not appear in this part of the paper at
-  all.  Remember you are describing how to build this in the general
-  case...} \textbf{Inference}\newline In the ChampSim simulator, the
-prefetching method is invoked on every L2 Cache demand access.  At
+% \pg{The word ChampSim should not appear in this part of the paper at
+%   all.  Remember you are describing how to build this in the general
+%   case...} 
+% [EB] Resolved
+\textbf{Inference}\newline The prefetcher gets triggered on every 
+L2 Cache demand access.  At
 that point, the base prefetcher has the option to perform a prefetch
 -- if it does, then it has a choice of how many cache lines to
 prefetch.  The suggested prefetches can be either placed in the L2
@@ -82,11 +85,10 @@ preset threshold, PERC\_ THRESHOLD\_LO.  Only the prefetch candidates
 with perceptron sum higher than the threshold qualify for prefetching.
 The prefetches that qualify through the perceptron stage are recorded
 in the ``Prefetch Table''. The prefetch table is a 1024-entry, direct
-mapped structure that contains all metadata required to recreate the
-features.  %Gino: Recreate the features?
+mapped structure that contains all metadata required to re-index the 
+perceptron entries for training.  
 When the feedback of the current prefetched line is available at a
 later stage, the stored data is used to train the perceptron.
-
 %\pg{this discussion below has redundancy and doesn't flow well.
 %  Rework it}
 
@@ -120,7 +122,7 @@ the base prefetch engine.
 %into three bins. The first bin corresponds to the lowest confidence
 %and leads to prefetch candidate being rejected.  The next bin
 %corresponds to prefetches with a moderate confidence level.  This bin
-%prefetches directeky to fill the bigger last level cache and prevents
+%prefetches directly to fill the bigger last level cache and prevents
 %polluting the smaller L2 Cache.  The highest confidence prefetches are
 %filled in the L2 cache.
 %
@@ -136,12 +138,9 @@ In addition to the prefetch table mentioned above, PPF also maintains
 a ``Reject Table.''  The reject table is a 1024-entry deep
 direct-mapped table.  If a prefetch suggestion is rejected by the
 perceptron layer, it is logged into the reject table.  The table is
-used to train the perceptron to %Gino: Filer? [EB]: Resolved
+used to train the perceptron to 
 avoid false negatives \textit{i.e.}, cases where prediction was to
 reject the prefetch but the prefetch would have been useful.
-
-% djimenez: if it were previously stated then it's redundant here? do we need
-% this statement?
 
 %As previously stated all the metadata describing the program state at the
 %instant of prefetching is stored in the Prefetch Table or the Reject Table.
@@ -155,9 +154,8 @@ prefetcher as well as the perceptron layer.  Training the perceptrons
 involves accessing the metadata that was stored in Prefetch Table or
 the Reject Table.  The cache lines address of the block being trained
 is used to access a table, using 10-bits of the address for indexing
-and another 6-bits to perform tag matching.  Once the state of the
-program at the time of prefetching is available, it is
-%Gino: By "state of the program" are you referring to the state of the features?
+and another 6-bits to perform tag matching.  Once the values of the
+features at the time of prefetching is available, it is
 used to index into the perceptron weights table.
 
 If the demanded block that triggers the training was tagged as a valid
@@ -176,7 +174,7 @@ then the prediction made by the perceptron was wrong.  The perceptron
 should have ideally rejected the prefetch suggestion as a
 low-confidence prefetch.  Here the weights are decremented by 1 to
 reflect the misprediction. In either case, weights are saturated at
--16 or +15. %Gino: Describe how these limits were decided?
+-16 or +15. 
 
 A secondary training mechanism also kicks in during demand fetches.
 Before the demand access triggers the next set of prefetches, the
@@ -185,8 +183,7 @@ corresponding cache line was initially suggested by the underlying
 prefetch engine, but rejected by the perceptron filter.  Thus, the
 perceptron should have been more confident about that particular
 prefetch.  Once such a scenario is identified, the
-state %Gino: state of execution == value of features?
-of the execution at the time of prefetch is retrieved from the reject
+values of the features at the time of prefetch is retrieved from the reject
 table.  The retrieved data is used to index into the various weights
 tables of the perceptron and the corresponding values are updated by
 +1, saturating between and -16 and +15.  This update reflects
@@ -228,17 +225,24 @@ few modifications.
   is available, the previously stored metadata can be used to re-index
   into the perceptron entries and increment or decrement the weights.
 
-\item \textbf{Feature Selection:} In Section~\ref{Impl-Features}, we
-  show the features used for PPF. Six out of the nine features we
-  developed use information derived directly from program execution,
-  irrespective of the baseline prefetcher. Beyond that, the feature
-  set can be expanded to convey any useful information from the
-  prefetcher to the perceptron filter.  The methodology explained in
-  Section~\ref{Method-Features} talks about developing a minimal
-  feature set for PPF. \pg{This should be more about how one should
-    choose features than about what you did in the SPP implementation
-    in particular.  Rewrite as a guide on picking features.}
-%For example, in our implementation ``Confidence,'' ``Current Signature XOR Delta,''
-%and ``Page Address XOR Confidence'' are such features.
+\item \textbf{Feature Selection:}  Perceptrons essentially normalize
+  contributions from different features to get a single sum representing the
+  final confidence. So the perceptron learning can be as good as the set of 
+  features chosen. Interestingly, this is what makes perceptron learning 
+  scalable, as it can easily learn to incorporate newer information in 
+  form of new features. Some of the features we developed use information 
+  derived directly from program execution, agnostic to the baseline 
+  prefetcher. Beyond that, the feature set can be expanded to convey 
+  any useful information from the prefetcher to the perceptron filter. 
+  
+  %[EB] This statement fits better in the next section 'Features used by Perceptron'
+  %The methodology explained in
+  %Section~\ref{Method-Features} talks about developing a minimal feature 
+  %set for PPF. 
+
+%\pg{This should be more about how one should
+%choose features than about what you did in the SPP implementation
+%in particular.  Rewrite as a guide on picking features.}
+% [EB]: Hopefully this is general enough and not too redundant
 
 \end{itemize}

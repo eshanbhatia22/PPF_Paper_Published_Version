@@ -45,17 +45,24 @@ were made:
   detected that a future demand fetch could have used this rejected
   prefetch, the perceptron weights are updated to reflect that
   misprediction.
-%Gino: What's the etc.?
-%EB: Resolved
 \end{itemize}
 
 
 \subsection{Features used by Perceptron}
 \label{Impl-Features}
 Here we discuss the various features that correlate the prefetching
-decision with the program behavior. \pg{again you want to get at why
-  these were chosen.  Also mention that you searched over a large
-  space of possible features and these were the best.}
+decision with the program behavior. All the features we used can be 
+derived from the information available in the L2 Cache access stream.
+Our feature selction involved searching over a large space of 
+relevant perceptron features. Using the statistical methodology 
+outlined in Section~\ref{Method-Features}, we pruned the feature 
+set to a minimal yet relevant set of features
+% \pg{again you want to get at why
+% these were chosen.  Also mention that you searched over a large
+% space of possible features and these were the best.}
+
+% [EB] Tried addressing. Does it look reduntant when read after 'Feature Selection'
+% bullet from the previous section?
 
 \begin{itemize}
 \item \textbf{Base Address}: The base address of the demand 
@@ -76,6 +83,7 @@ to the confidence of a prefetch.
   caused by directly folding the address bits into half.
 
 % djimenez: this is a nice intuition and explanation. 
+% [EB] Thank you!
 
 \item \textbf{Program Counter XOR Depth}: The PC is for the
   instruction that triggered the prefetch chain.  Depth refers to the
@@ -134,7 +142,8 @@ to the confidence of a prefetch.
   of SPP in Section \ref{Background-SPP} that the new signature is
   generated using the old signature and the current block delta.
 %Gino: Added the sentence below, is this correct?
-  The result of this feature is the next delta that is predicted to be
+%[EB]: It gives the next signature instead of next delta
+  The result of this feature is the next signature that is predicted to be
   accessed based on the delta predicted by SPP. While ``Current
   Signature XOR Delta'' is not the exact formula for generating the
   future signature, it gives an approximate idea of the path that the
@@ -168,3 +177,6 @@ choice of each feature by quantifying the contribution made towards
 predicting prefetch behaviour, in Section \ref{Method-Features}.
 Finally, as noted above, each feature indexes into its independent
 entry of perceptron weights.
+
+% [EB]: Think of more implementation specific details
+% 7 to 12 bits of indexing
