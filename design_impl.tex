@@ -58,29 +58,31 @@ decision with the program behavior. \pg{again you want to get at why
   space of possible features and these were the best.}
 
 \begin{itemize}
-\item \textbf{Base Address} of the demand access that triggered the
-  prefetch.  Since prefetches are triggered from the L2 demand access,
-  they tend to correlate to the triggering address.
+\item \textbf{Base Address}: The base address of the demand 
+access that triggers the prefetch coresponds to a stream of 
+future accesses that SPP and the PPF have seen before. 
+Therefore, PPF will correlate the past behavior of this address 
+to the confidence of a prefetch.
 
 \item \textbf{Cache Line} and \textbf{Page Address}: These two
   separate features are derived from the base address that triggered
   the prefetch, as follows: base\_addr >> LOG2\_BLOCK \_SIZE and
-  base\_addr >> LOG2\_PAGE\_SIZE respectively.  The idea behind using
+  base\_addr >> LOG2\_PAGE\_SIZE respectively. The idea behind using
   three different shifted versions of the same feature is that it
   allows us to look into a wider range of bits than with a single
   version.  It also helps give more importance to the overlapping bits
-  and lesser importance to most and least significance bits.  This
+  and lesser importance to most and least significance bits. This
   approach can also eliminate destructive interference that can be
   caused by directly folding the address bits into half.
 
-% djimenez: this is a nice intuition and explanation.
+% djimenez: this is a nice intuition and explanation. 
 
 \item \textbf{Program Counter XOR Depth}: The PC is for the
   instruction that triggered the prefetch chain.  Depth refers to the
   iteration count of the lookahead stages.  In general, the PC is not
   considered as a good basis for doing lookahead prefetching as all
   the prefetches with depth >= 1 are aliased into the same PC which
-  would not be true in an actual demand access.  This feature resolves
+  is not true in an actual demand access.  This feature resolves
   a PC into a different value for each lookahead depth of prefetch
   speculation, giving a more accurate correlation in lookahead cases.
   This is akin to the concept of Virtual Program Counters~\cite{VPC}
@@ -100,16 +102,27 @@ decision with the program behavior. \pg{again you want to get at why
 
 \item \textbf{Program Counter XOR Delta}: This feature tells us if a
   given PC favours particular value(s) of delta.  As noted earlier,
-  while the PC in itself does not convey much useful information, this
+  while the PC alone does not convey useful information, this
   hash resolves the PC into different values based on the tendency of
   that PC to favour a certain delta.  Thus, the dynamic nature of
-  different instances of the same memory access instruction can be
+  different instances of the same memory access instruction is 
   captured here.
+ % GAC: Seems more predictable than dynamic if its capturing 
+ % what is essentially a streaming access pattern. Not quite sure how to rephrase,
+ % if I'm correct
 
-\item \textbf{Confidence}: The integer confidence on a scale of 0 to
-  100 that was used in the original SPP design. While the original
-  confidence is not used directly for decision making, it can still
-  contribute to the final decision made.
+ % GAC: Again having trouble phrasing the below point. I was attempting to say
+ % that despite SPP having low confidence due to speculation, PPF may 
+ % reinforce prefetches with lower confidence if SPP has had a tendancy to be 
+ % correct in the past.
+\item \textbf{Confidence}: The integer confidence, on a scale of 0 to
+  100, that was used in the original SPP design. While the original 
+  confidence does not directly make the decision to prefetch,
+  PPF correlates it to the correctness of a proposed prefetch.
+  While the original SPP may have dismissed a prefetch due to running
+  further into speculation, PPF can use the original confidence as indicator
+  of not only when prefetches become less confident, but also how likely
+  a low confident speculation is correct in the context of other features.
 
 \item \textbf{Page Address XOR Confidence}: This feature scores the
   tendency of each page to be prefetch friendly or prefetch averse. It
@@ -117,7 +130,6 @@ decision with the program behavior. \pg{again you want to get at why
   confidence for prefetching, which can vary during phases of a
   program execution.
 
-% djimenez: this is a little vague. can you be more precise?
 \item \textbf{Current Signature XOR Delta}: Recall from the discussion
   of SPP in Section \ref{Background-SPP} that the new signature is
   generated using the old signature and the current block delta.

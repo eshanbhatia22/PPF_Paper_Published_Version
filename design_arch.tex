@@ -87,28 +87,49 @@ features.  %Gino: Recreate the features?
 When the feedback of the current prefetched line is available at a
 later stage, the stored data is used to train the perceptron.
 
-\pg{this discussion below has redundancy and doesn't flow well.
-  Rework it}
+%\pg{this discussion below has redundancy and doesn't flow well.
+%  Rework it}
 
-The perceptron sum can be considered the sum of the individual
-contribution of a feature.  The value of each contribution corresponds
-to a feature's confidence in the final decision on whether to prefetch
-a cache line. By summing the individual contributions, the final
-perceptron sum denotes the overall confidence for that prefetch
-suggestion.  By comparing the perceptron sum to two different
-thresholds, we divide the confidence scale of the prefetch suggestion
-into three bins. The first bin corresponds to the lowest confidence
-and leads to prefetch candidate being rejected.  The next bin
-corresponds to prefetches with a moderate confidence level.  This bin
-prefetches directeky to fill the bigger last level cache and prevents
-polluting the smaller L2 Cache.  The highest confidence prefetches are
-filled in the L2 cache.
+Each feature's confidence contributes to the final decision on 
+whether to prefetch a cache line, with the summation of all features' 
+confidences dentoting the overall confidence for a prefetch. 
+The final sum is compared against two thresholds: 
+ PERC\_THRESHOLD\_HI and  PERC\_ THRESHOLD\_ LO to decide the
+ placement of the data in the cache heirarchy. Prefetches that 
+have a confidence above the higher threshold are placed into 
+the L2 cache since the observed features strongly recommend  
+the prefetch. A prefetch that results in a confidence between 
+PERC\_ THRESHOLD\_ LO and PERC\_ THRESHOLD\_ HI are placed in 
+the larger last level cache, as the filter is moderately confident of 
+the cache line's use, but seeks to reduce pollution in the smaller 
+L2 cache. Finally, the remaining prefetches that are below the 
+lower threshold are not prefetched due to a lack of correlation 
+between the current observed features and the predicction from 
+the base prefetch engine.
 
-The sum of the perceptron weights are also used to decide whether to
-place the data in the L2 or the last level cache.  All prefetch
-candidates that are qualified until this stage are compared against
-PERC\_THRESHOLD\_HI to decide the fill level. The two thresholds:
-PERC\_THRESHOLD\_LO and PERC \_THRESHOLD\_HI are empirically set.
+%GAC: The section's previous contents are below, in case the above 
+%rewritten work is not what we were looking for in terms of a rewording
+%
+%The perceptron sum can be considered the sum of the individual
+%contribution of a feature.  The value of each contribution corresponds
+%to a feature's confidence in the final decision on whether to prefetch
+%a cache line. By summing the individual contributions, the final
+%perceptron sum denotes the overall confidence for that prefetch
+%suggestion.  By comparing the perceptron sum to two different
+%thresholds, we divide the confidence scale of the prefetch suggestion
+%into three bins. The first bin corresponds to the lowest confidence
+%and leads to prefetch candidate being rejected.  The next bin
+%corresponds to prefetches with a moderate confidence level.  This bin
+%prefetches directeky to fill the bigger last level cache and prevents
+%polluting the smaller L2 Cache.  The highest confidence prefetches are
+%filled in the L2 cache.
+%
+%
+%The sum of the perceptron weights are also used to decide whether to
+%place the data in the L2 or the last level cache.  All prefetch
+%candidates that are qualified until this stage are compared against
+%PERC\_THRESHOLD\_HI to decide the fill level. The two thresholds:
+%PERC\_THRESHOLD\_\_LO and PERC \_THRESHOLD\_HI are empirically set.
 
 
 In addition to the prefetch table mentioned above, PPF also maintains
