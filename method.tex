@@ -3,7 +3,7 @@
 
 \subsection{Performance Model}
 \label{Method-Model}
-For testing and comparing PPF, we used the ChampSim~\cite{Champsim} simulator.
+For testing and comparing PPF, we use the ChampSim~\cite{Champsim} simulator.
 ChampSim is an enhanced version of the framework that was used for the 2nd
 Data Prefetch Championship (DPC-2)~\cite{DPC_2}. We model 1-core, 4-core, and
 8-core out-of-order machines. The details of the configuration parameters are
@@ -39,11 +39,11 @@ summarized in Table~\ref{tab:Sim_params}.
 % djimenez: changing all the "was" to "is." when describing our work, use
 % present tense
 
-The block size is fixed at 64 bytes. Prefetching is only triggered at an L2 cache
-demand accesses but could be directed to the L2 or last-level cache. No L1
-data level prefetching is done. The LRU replacement policy is used on all levels
-of cache hierarchies. Branch prediction is done using the perceptron branch
-predictor~\cite{Perc_Branch}.  The page size is 4KB.  ChampSim operates
+The block size is fixed at 64 bytes. Prefetching is only triggered at an L2
+cache demand accesses but could be directed to the L2 or last-level cache. No
+L1 data level prefetching is done. The LRU replacement policy is used on all
+levels of cache hierarchies. Branch prediction is done using the perceptron
+branch predictor~\cite{Perc_Branch}.  The page size is 4KB.  ChampSim operates
 all the prefetchers strictly in the physical address space.
 
 \subsection{Testing Under Additional Memory Constraints}
@@ -63,13 +63,13 @@ configuration.
 
 \subsection{Workloads}
 \label{Method-Workloads}
-% djimenez: don't say this is the first time SPEC 2017 has been used this way.
+% djimenez: don't say this is the first time SPEC CPU 2017 has been used this way.
 % i don't know if that's true, and in any event the value is small.
 
-%This is the first time that SPEC 2017 benchmark suite~\cite{SPEC2017}
+%This is the first time that SPEC CPU 2017 benchmark suite~\cite{SPEC2017}
 %has been used to characterize and measure the prefetch performance.
-We use the SPEC 2017 benchmark suite~\cite{SPEC2017}.  We use all the 20
-workloads available in the SPEC 2017 suite.  Using the SimPoint~\cite{SimPoint}
+We use the SPEC CPU 2017 benchmark suite~\cite{SPEC2017}.  We use all the 20
+workloads available in the SPEC CPU 2017 suite.  Using the SimPoint~\cite{SimPoint}
 methodology, we identified 95 different program segments of 1 Billion
 instructions each.
 
@@ -82,7 +82,7 @@ individual traces.
 
 \textit{Multi-core performance:} For multi-application workloads, we generate
 100 random mixes and another 100 mixes from the memory intensive subset of
-SPEC 2017.  For 4-core workload, 200 Million instructions are used for warm-up
+SPEC CPU 2017.  For 4-core workload, 200 Million instructions are used for warm-up
 and additional 1 Billion instruction simulated for collecting statistics.
 Each CPU keeps executing its workload till the last CPU completes one billion
 instructions after warm-up.  For collecting IPC and other data, only the first
@@ -108,9 +108,9 @@ simulation run-time within reasonable limits as a single 8-core mix takes up
 to 3 days to simulate one billion instructions.
 
 \textit{Validation:} We cross-validated our PPF model using SPEC
-2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks.  For
-single-core SPEC 2006, we developed 94 simpoints spread across all the 29
-applications. For multi-core, we followed the same methodology as SPEC 2017.
+CPU 2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks.  For
+single-core SPEC CPU 2006, we developed 94 simpoints spread across all the 29
+applications. For multi-core, we followed the same methodology as SPEC CPU 2017.
 For CloudSuite, we used the traces made available for the 2nd Cache
 Replacement Competition (CRC-2)~\cite{CRC_2}.  The traces include 4 4-core
 applications with 6 distinct phases per application.
@@ -118,16 +118,16 @@ applications with 6 distinct phases per application.
 In total, we used 285 traces representing workloads across 53 applications.
 Throughout the paper, we consider memory intensive subset as the
 traces with LLC MPKI > 1.  This includes 48 out of the 95 simpoints
-developed for SPEC 2017. For SPEC 2006, this includes 48 out of 94 simpoints.
+developed for SPEC CPU 2017. For SPEC CPU 2006, this includes 48 out of 94 simpoints.
 
-\subsection{Preferchers Simulated}
+\subsection{Prefetchers Simulated}
 \label{Method-Prefetchers}
 We compared PPF against three of the latest state of the art hardware-only
 prefetchers: Best Offset Prefetcher (BOP), DRAM Aware - Access Map Pattern
-Matching (DA-AMPM)~\cite{DA_AMPM} and Signature Path Prefecher (SPP).  BOP was
+Matching (DA-AMPM)~\cite{DA_AMPM} and Signature Path Prefetcher (SPP).  BOP was
 the winner of 2nd Data Prefetching Championship.  DA-AMPM is the enhanced
 version of AMPM, modified to account for DRAM row buffer locality.  SPP has
-been shown to outperform BOP on SPEC 2006 traces.  For each of these, we
+been shown to outperform BOP on SPEC CPU 2006 traces.  For each of these, we
 compare their speedups taking no prefetching as the baseline.
 
 \subsection{Developing Features for PPF}
@@ -140,11 +140,11 @@ the perceptron weights and try to interpret their distribution.
 
 \textbf{Global Pearson's Correlation}\newline For this experiment, we create a
 dump of the state of perceptron weights at the end of all trace execution.
-The weights obtained from running all the SPEC 2017 traces are concatenated.
+The weights obtained from running all the SPEC CPU 2017 traces are concatenated.
 Since the weights are collected at the end of individual trace execution, the
 perceptron weights have attained a relatively stable value by now.  Hence,
 this dump represents a `snap' of the trained perceptron weights across all the
-SPEC 2017 traces.  The intuition here is that the feature with bulk of the
+SPEC CPU 2017 traces.  The intuition here is that the feature with bulk of the
 perceptron weights concentrated around 0 or small magnitude numbers show a
 weak correlation with the prefetching outcome.  On the other hand, features
 with most of the weights saturated around highest value (+15) show a high
@@ -204,7 +204,7 @@ varies across the traces.  Here we give special attention to features
 with low P-values in.  Figure~\ref{Pvals_Traces} shows the
 variation of P-values for three features : \textit{PC XOR Delta},
 \textit{Signature XOR Delta} and 
-\textit{PC XOR Depth}; across all the SPEC 2017 traces.  
+\textit{PC XOR Depth}; across all the SPEC CPU 2017 traces.  
 For simplicity, the traces are arranged in an
 increasing order of contribution made by the feature and the trace
 names have been omitted.  It can be seen that even features with a low
@@ -212,7 +212,7 @@ overall correlation provide useful correlation (magnitude > 0.5) for
 a significant number of traces.
 
 \textbf{Trimming Features Using Correlation} \newline Besides
-providing interesting insights into prefetching behaviour, P-value can
+providing interesting insights into prefetching behavior, P-value can
 also be used for feature selection and prefetcher tuning.
 
 Here, we introduce the concept of cross-correlation across features.
@@ -235,8 +235,8 @@ Secondly, studying the relative importance of each feature enabled
 us to vary the number of entries dedicated for each feature.  
 Features with higher Pearson's correlation, \textit{cache line} 
 and \textit{page address}  were given most importance and
-allowed full 12-bits of indexing.  Features like \textit{ip XOR delta} 
-and \textit{ip XOR depth} with a low overall P-value 
+allowed full 12-bits of indexing.  Features like \textit{IP XOR delta} 
+and \textit{IP XOR depth} with a low overall P-value 
 were allocated fewer indexes in the feature table.
 
 To conclude, in the above discussion we justify the features for

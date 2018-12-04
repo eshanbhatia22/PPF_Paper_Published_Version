@@ -19,7 +19,7 @@ Memory access patterns may be simple, such as accessing every item in an array w
 or very complex, such as chasing pointers through dynamically-allocated memory.
 Practical prefetchers face challenges not only in predicting what data will be useful in the future,
 but also in timing when data should be prefetched, deciding which level of the cache hierarchy
-the data should be stored in, and deciding what data should be evicted from the caches to accomodate
+the data should be stored in, and deciding what data should be evicted from the caches to accommodate
 the prefetched data.
 
 All prefetchers are designed around a fundamental trade-off between two important metrics:
@@ -54,9 +54,9 @@ on the trace \textit{603.bwaves\_s-1740B}. The IPC, total number of prefetches
 suggested by the prefetcher (TOTAL\_PF) and the actual useful predictions (GOOD\_PF),
 all have been normalized to the least aggressive version of the prefetcher. 
 As the look-ahead depth of the prefetch suggestions increase, so do useful prefetches. 
-But that comes at a cost of total prefetches inceasing at an even higher rate. This leads 
+But that comes at a cost of total prefetches increasing at an even higher rate. This leads 
 to cache pollution and bandwidth contention, as is clearly visible with the reduction in 
-the IPC. Similar behaviour was observed in 12 other SPEC 2017 simpoints. 
+the IPC. Similar behavior was observed in 12 other SPEC CPU 2017 simpoints. 
 
 Therefore, a delicate balance between coverage and accuracy is required for a prefetcher to maximize
 its performance impact.  Prefetchers are generally designed with internal mechanisms to
@@ -65,7 +65,7 @@ or accuracy.  The more irregular an application's memory access pattern is, the 
 it is to accurately predict every access, so a prefetcher will have to be tuned more toward
 coverage (and away from accuracy) in order to gain any benefit.  This may be especially dangerous
 to do in the context of a multi-core processor, where overly aggressive prefetching in one core can
-waste shared resources, such as last-level cache capacity, and off-chip bandwidth~\cite{Friendly}.
+waste shared resources, such as last-level cache (LLC) capacity, and off-chip bandwidth~\cite{Friendly}.
 
 %Predicting future accesses requires a trade-off between coverage, the percent of predictions that 
 %prevented a cache miss, and accuracy, the percent of predictions made that were correct. 
@@ -84,8 +84,8 @@ waste shared resources, such as last-level cache capacity, and off-chip bandwidt
 
 %For a prefetcher to capture highly irregular access patterns, it needs to be
 %highly aggressive with high coverage. This causes the prefetcher to recommend many
-%low accurracy prefetches that lead to the cache being polluted with useless data.  
-%This effect is more pronounced in a multi-core scenario where the last-level cache is a
+%low accuracy prefetches that lead to the cache being polluted with useless data.  
+%This effect is more pronounced in a multi-core scenario where the LLC is a
 %shared resource~\cite{Friendly}.  Conversely, a conservative prefetcher would
 %be highly accurate but might not make enough useful prefetches due to its lower coverage.
 

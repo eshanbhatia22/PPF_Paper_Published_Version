@@ -3,31 +3,29 @@
 % Really need a high-level overview of the technique before you start
 % talking about tables!
 
-As previously discussed, ultimately it might be profitable to allow a
-given prefetcher to speculate as deeply as possible, since often some
-useful prefetches are still being generated long after the confidence
-of the prefetcher has fallen below the point at which performance
-improvements are seen, due to the increasing rate of inaccurate
-prefetches.  In order to allow this deep speculation in the
-prefetcher, however, the increasing numbers of bad prefetches must be
-filtered out.  To this end, we propose to leverage perceptron-based
-machine learning as a mechanism to differentiate between potentially
-useful deeply speculated prefetches and likely not-useful ones.  This
-Perceptron Prefetch Filter (PPF) is placed between the prefetcher and
-the prefetch insertion queue, to ensure that predicted bad prefetches
-are not inserted into the memory system, 
+As previously discussed, ultimately it might be profitable to allow a given
+prefetcher to speculate as deeply as possible, since often some useful
+prefetches are generated long after the confidence of the prefetcher has
+fallen below the point at which performance improvements are seen due to the
+increasing rate of inaccurate prefetches.  However, to allow this deep
+speculation in the prefetcher the increasing numbers of bad prefetches must be
+filtered out.  Thus, we propose to leverage perceptron-based learning as a
+mechanism to differentiate between potentially useful deeply speculated
+prefetches and likely not-useful ones.  This Perceptron Prefetch Filter (PPF)
+is placed between the prefetcher and the prefetch insertion queue, to ensure
+that predicted bad prefetches are not inserted into the memory system.
 \pg{As shown in figure whatever...}.
 
-As discussed in Section~\ref{sec:Background-Perceptron}, perceptrons
-are useful, light-weight mechanisms to pull together disparate forms
-of information and synthesize a decision from them.  In this case, we
-will leverage a variety of different relative characteristics of a
-given prefetch, such as speculation depth, page address and offset,
-into a binary useful/non-useful prediction.  In the remainder of this
-section, we discuss the the general structure of PPF for enhancing a
-given underlying prefetcher.  We will show that PPF is a generalized
-prefetch filtering mechanism which may adapted to any prefetcher with
-appropriate modifications.
+As discussed in Section~\ref{sec:Background-Perceptron}, perceptron learning
+is a light-weight mechanism to pull together disparate forms of information
+and synthesize a decision from them.  In this case, we leverage a variety of
+different relative characteristics of a given prefetch, such as speculation
+depth, page address and offset, into a binary useful/non-useful prediction.
+In the remainder of this section, we discuss the the general structure of PPF
+for enhancing a given underlying prefetcher.  We will show that PPF is a
+generalized prefetch filtering mechanism that may be adapted to any prefetcher
+with appropriate modifications.
+
 % Gino: Are these modifications minimal?
 % EB: That's a good question :P. Edited to 'appropriate'.
 
@@ -36,26 +34,26 @@ appropriate modifications.
 \pg{rewrite this section as talking to the figures and walking through
   them}
 
-%Gino: repharse below?
-The Perceptron Filter is organized as tables of perceptron weights,
-with a separate table of weights for each feature. For a design using 
-`N' number of features, it's weights will be arranged in N different 
-tables. Each feature's value is used to index into the corresponding table.
-Since each table gets indexed independently, different number of bits can 
-be used for indexing, thus giving each table a different depth.
-The variable indexing can be determined by studying the features and
-fine-tuned empirically to achieve a good accuracy vs hardware overhead
-trade-off.  Exact details of our PPF implementation are mentioned 
-under ``Area Overheads'' in Section~\ref{Method-Overheads}.
- 
+%Gino: rephrase below?
+The Perceptron Filter is organized as tables of perceptron weights, with a
+separate table of weights for each feature. For a design using `N' number of
+features, its weights will be arranged in $N$ different tables. Each feature's
+value is used to index into the corresponding table.  Since each table is
+indexed independently, different numbers of bits can be used for indexing,
+thus giving each table a different size.  The variable indexing can be
+determined by studying the features and fine-tuning them empirically to
+achieve a good accuracy versus hardware overhead trade-off.  Exact details of
+our PPF implementation are given under ``Area Overheads'' in
+Section~\ref{Method-Overheads}.
+
 %\pg{this whole ``bits'' discussion belongs in implementation not here IMHO}
 %[EB] Resolved
 
-A single entry in the table corresponds to a perceptron weight.  Each
-weight is a 5 bit counter - saturating at -16 and +15 and initialized
-to zero at the beginning of a program's execution. It was empirically 
-observed that 5-bits of indexing achieves a good trade-off between 
-hardware overheads and accuracy. 
+A single entry in the table corresponds to a perceptron weight.  Each weight
+is a 5 bit counter saturating at -16 and +15 and initialized to zero at the
+beginning of a program's execution. We observed empirically that 5 bits of
+index achieves a good trade-off between hardware overheads and accuracy.
+
 %\pg{the fact that its nine is again implementation details}
 % [EB] Resolved
 
@@ -63,51 +61,44 @@ hardware overheads and accuracy.
 %   all.  Remember you are describing how to build this in the general
 %   case...} 
 % [EB] Resolved
-\textbf{Inference}\newline The prefetcher gets triggered on every 
-L2 Cache demand access.  At
-that point, the base prefetcher has the option to perform a prefetch
--- if it does, then it has a choice of how many cache lines to
-prefetch.  The suggested prefetches can be either placed in the L2
-cache or the last-level cache based on the prefetcher's internal
-confidence mechanism.
+\textbf{Inference}\newline The prefetcher is triggered on every L2 cache
+demand access.  At that point, the base prefetcher has the option to perform a
+prefetch -- if it does, then it has a choice of how many cache lines to
+prefetch.  The suggested prefetches can be either placed in the L2 cache or
+the last-level cache based on the prefetcher's internal confidence mechanism.
 
+When the base prefetcher is triggered, it begins to suggest candidates for
+prefetching.  All suggested prefetches are passed through the perceptron
+filter to decide whether they are qualified for final prefetching.  The filter
+decides whether to prefetch a candidate by looking at the microarchitectural
+state, \textit{i.e.} the features, at that instant.  Each feature is hashed to
+form an index into a table of up to 4,096 entries dedicated to that feature.
 
-When the base prefetcher is triggered, it begins to suggest candidates
-for prefetching.  All suggested prefetches are passed through the
-perceptron filter to decide if they are qualified for final
-prefetching.  The perceptron decides whether to prefetch a candidate
-by looking at the microarchitectural state \textit{i.e.} the features,
-at that instant.  Each feature is hashed to form an index into a table
-of up to 4096 entries dedicated for that feature.
+Once all the weights are retrieved, they are summed and compared to a preset
+threshold, PERC\_ THRESHOLD\_LO.  Only prefetch candidates with perceptron sum
+higher than the threshold qualify for prefetching.  The prefetches that
+qualify through the perceptron stage are recorded in the ``Prefetch Table''.
+The prefetch table is a 1,024-entry, direct mapped structure that contains all
+metadata required to re-index the perceptron entries for training.  When the
+feedback of the current prefetched line is available at a later stage, the
+stored data is used to train the perceptron.
 
-Once all the weights are retrieved, they are summed and compared to a
-preset threshold, PERC\_ THRESHOLD\_LO.  Only the prefetch candidates
-with perceptron sum higher than the threshold qualify for prefetching.
-The prefetches that qualify through the perceptron stage are recorded
-in the ``Prefetch Table''. The prefetch table is a 1024-entry, direct
-mapped structure that contains all metadata required to re-index the 
-perceptron entries for training.  
-When the feedback of the current prefetched line is available at a
-later stage, the stored data is used to train the perceptron.
 %\pg{this discussion below has redundancy and doesn't flow well.
 %  Rework it}
 
-Each feature's confidence contributes to the final decision on 
-whether to prefetch a cache line, with the summation of all features' 
-confidences dentoting the overall confidence for a prefetch. 
-The final sum is compared against two thresholds: 
- PERC\_THRESHOLD\_HI and  PERC\_ THRESHOLD\_ LO to decide the
- placement of the data in the cache heirarchy. Prefetches that 
-have a confidence above the higher threshold are placed into 
-the L2 cache since the observed features strongly recommend  
-the prefetch. A prefetch that results in a confidence between 
-PERC\_ THRESHOLD\_ LO and PERC\_ THRESHOLD\_ HI are placed in 
-the larger last level cache, as the filter is moderately confident of 
-the cache line's use, but seeks to reduce pollution in the smaller 
-L2 cache. Finally, the remaining prefetches that are below the 
-lower threshold are not prefetched due to a lack of correlation 
-between the current observed features and the predicction from 
-the base prefetch engine.
+Each feature's confidence contributes to the final decision of whether to
+prefetch a cache line, with the summation of all features' confidences
+denoting the overall confidence for a prefetch.  The final sum is compared
+against two thresholds: PERC\_THRESHOLD\_HI and  PERC\_ THRESHOLD\_ LO to
+decide the placement of the data in the cache hierarchy. Prefetches that have
+a confidence above the higher threshold are placed into the L2 cache since the
+observed features strongly recommend  the prefetch. A prefetch that results in
+a confidence between PERC\_ THRESHOLD\_ LO and PERC\_ THRESHOLD\_ HI are
+placed in the larger last level cache, as the filter is moderately confident
+of the cache line's use, but seeks to reduce pollution in the smaller L2
+cache. Finally, the remaining prefetches that are below the lower threshold
+are not prefetched due to a lack of correlation between the current observed
+features and the prediction from the base prefetch engine.
 
 %GAC: The section's previous contents are below, in case the above 
 %rewritten work is not what we were looking for in terms of a rewording
@@ -133,80 +124,72 @@ the base prefetch engine.
 %PERC\_THRESHOLD\_HI to decide the fill level. The two thresholds:
 %PERC\_THRESHOLD\_\_LO and PERC \_THRESHOLD\_HI are empirically set.
 
-
-In addition to the prefetch table mentioned above, PPF also maintains
-a ``Reject Table.''  The reject table is a 1024-entry deep
-direct-mapped table.  If a prefetch suggestion is rejected by the
-perceptron layer, it is logged into the reject table.  The table is
-used to train the perceptron to 
-avoid false negatives \textit{i.e.}, cases where prediction was to
-reject the prefetch but the prefetch would have been useful.
+In addition to the prefetch table mentioned above, PPF also maintains a
+``Reject Table.''  The reject table is a 1,024-entry direct-mapped table.
+If a prefetch suggestion is rejected by the perceptron layer, it is logged
+into the reject table.  The table is used to train the perceptron to avoid
+false negatives \textit{i.e.}, cases where prediction was to reject the
+prefetch but the prefetch would have been useful.
 
 %As previously stated all the metadata describing the program state at the
 %instant of prefetching is stored in the Prefetch Table or the Reject Table.
 %This information is useful when the perceptron needs to be updated
 %subsequently.
 
-\textbf{Training}\newline In the prefetching environment, feedback for
-a prefetch is received whenever there is an eviction or a demand
-access from the L2 Cache.  This action triggers training of the base
-prefetcher as well as the perceptron layer.  Training the perceptrons
-involves accessing the metadata that was stored in Prefetch Table or
-the Reject Table.  The cache lines address of the block being trained
-is used to access a table, using 10-bits of the address for indexing
-and another 6-bits to perform tag matching.  Once the values of the
-features at the time of prefetching is available, it is
-used to index into the perceptron weights table.
+\textbf{Training}\newline In the prefetching environment, feedback for a
+prefetch is received whenever there is an eviction or a demand access from the
+L2 cache.  This action triggers training of the base prefetcher as well as the
+perceptron layer.  Training the perceptrons involves accessing the metadata
+that was stored in Prefetch Table or the Reject Table.  The cache lines
+address of the block being trained is used to access a table, using 10 bits of
+the address for indexing and another 6 bits to perform tag matching.  Once the
+values of the features at the time of prefetching is available, it is used to
+index into the perceptron weights table.
 
 If the demanded block that triggers the training was tagged as a valid
-prefetch in the prefetch table, then the earlier prefetch prediction
-was correct.  In that case the perceptron weights are incremented by 1
-if the predicted sum does not cross a pre-defined threshold. These
-training thresholds are introduced to avoid overfitting of the
-perceptron weights to the given program behaviour. These thresholds
-are referred to as POS\_UPDATE\_THRESHOLD ($\theta_p$) and
-NEG\_UPDATE\_THRESHOLD ($\theta_n$), respectively for the positive and
-negative values of training saturation.
+prefetch in the prefetch table, then the earlier prefetch prediction was
+correct.  In that case the perceptron weights are incremented by 1 if the
+predicted sum does not cross a pre-defined threshold. These training
+thresholds are introduced to avoid overfitting of the perceptron weights to
+the given program behavior. These thresholds are referred to as
+POS\_UPDATE\_THRESHOLD ($\theta_p$) and NEG\_UPDATE\_THRESHOLD ($\theta_n$),
+respectively for the positive and negative values of training saturation.
 
-If a cache block eviction led to training and the corresponding valid
-entry is found in the prefetch table without the block being accessed,
-then the prediction made by the perceptron was wrong.  The perceptron
-should have ideally rejected the prefetch suggestion as a
-low-confidence prefetch.  Here the weights are decremented by 1 to
-reflect the misprediction. In either case, weights are saturated at
--16 or +15. 
+If a cache block eviction led to training and the corresponding valid entry is
+found in the prefetch table without the block being accessed, then the
+prediction made by the perceptron was wrong.  The perceptron should have
+ideally rejected the prefetch suggestion as a low-confidence prefetch.  Here
+the weights are decremented by 1 to reflect the misprediction. In either case,
+weights are saturated at -16 or +15.
 
-A secondary training mechanism also kicks in during demand fetches.
-Before the demand access triggers the next set of prefetches, the
-reject table is checked for a valid entry.  A hit means that the
-corresponding cache line was initially suggested by the underlying
-prefetch engine, but rejected by the perceptron filter.  Thus, the
-perceptron should have been more confident about that particular
-prefetch.  Once such a scenario is identified, the
-values of the features at the time of prefetch is retrieved from the reject
-table.  The retrieved data is used to index into the various weights
-tables of the perceptron and the corresponding values are updated by
-+1, saturating between and -16 and +15.  This update reflects
-increased confidence for the prediction corresponding to that
-prefetch.
+A secondary training mechanism also kicks in during demand fetches.  Before
+the demand access triggers the next set of prefetches, the reject table is
+checked for a valid entry.  A hit means that the corresponding cache line was
+initially suggested by the underlying prefetch engine, but rejected by the
+perceptron filter.  Thus, the perceptron should have been more confident about
+that particular prefetch.  Once such a scenario is identified, the values of
+the features at the time of prefetch is retrieved from the reject table.  The
+retrieved data is used to index into the various weights tables of the
+perceptron and the corresponding values are updated by +1, saturating between
+and -16 and +15.  This update reflects increased confidence for the prediction
+corresponding to that prefetch.
 
-This mechanism allows us to exploit a previously lost opportunity.  In
-prior perceptron based implementations, and in general, prefetching
-algorithms, there is usually no way of knowing the result of not
-prefetching a particular line.  Our two-step PPF architecture allows
-us to overcome that issue.
+This mechanism allows us to exploit a previously lost opportunity.  In prior
+perceptron based implementations, and in general, prefetching algorithms,
+there is usually no way of knowing the result of not prefetching a particular
+line.  Our two-step PPF architecture allows us to overcome that issue.
 
 \subsection{Optimizing PPF for a Given Prefetcher}
 \label{Arch-Generalizing}
-The above discussion of PPF shows that it is highly modular and can be
-adapted to be used over any base prefecher for increased prefetch
-accuracy.  In general, only two hooks are required between PPF and the
-baseline prefetcher. The first is to make sure that all the prefetch
-candidates of the prefetcher pass through the perceptron filter and if
-qualified, the metadata for perceptron indexing be stored. The second
-is needed when the feedback of a prior prefetch is available in form
-of a subsequent demand hit or cache eviction. In that case, the stored
-metadata needs to be retrieved to update the state of the perceptrons.
+The above discussion of PPF shows that it is highly modular and can be adapted
+to be used over any base prefetcher for increased prefetch accuracy.  In
+general, only two hooks are required between PPF and the baseline prefetcher.
+The first is to make sure that all the prefetch candidates of the prefetcher
+pass through the perceptron filter and if qualified, the metadata for
+perceptron indexing be stored. The second is needed when the feedback of a
+prior prefetch is available in form of a subsequent demand hit or cache
+eviction. In that case, the stored metadata needs to be retrieved to update
+the state of the perceptrons.
 
 In general, PPF can be adapted to a new base prefetcher with only a
 few modifications.
@@ -230,7 +213,7 @@ few modifications.
   final confidence. So the perceptron learning can be as good as the set of 
   features chosen. Interestingly, this is what makes perceptron learning 
   scalable, as it can easily learn to incorporate newer information in 
-  form of new features. Some of the features we developed use information 
+  the form of new features. Some of the features we developed use information 
   derived directly from program execution, agnostic to the baseline 
   prefetcher. Beyond that, the feature set can be expanded to convey 
   any useful information from the prefetcher to the perceptron filter. 

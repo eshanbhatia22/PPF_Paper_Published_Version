@@ -53,7 +53,7 @@ were made:
 Here we discuss the various features that correlate the prefetching
 decision with the program behavior. All the features we used can be 
 derived from the information available in the L2 Cache access stream.
-Our feature selction involved searching over a large space of 
+Our feature selection involved searching over a large space of 
 relevant perceptron features. Using the statistical methodology 
 outlined in Section~\ref{Method-Features}, we pruned the feature 
 set to a minimal yet relevant set of features
@@ -61,12 +61,12 @@ set to a minimal yet relevant set of features
 % these were chosen.  Also mention that you searched over a large
 % space of possible features and these were the best.}
 
-% [EB] Tried addressing. Does it look reduntant when read after 'Feature Selection'
+% [EB] Tried addressing. Does it look redundant when read after 'Feature Selection'
 % bullet from the previous section?
 
 \begin{itemize}
 \item \textbf{Base Address}: The base address of the demand 
-access that triggers the prefetch coresponds to a stream of 
+access that triggers the prefetch corresponds to a stream of 
 future accesses that SPP and the PPF have seen before. 
 Therefore, PPF will correlate the past behavior of this address 
 to the confidence of a prefetch.
@@ -109,10 +109,10 @@ to the confidence of a prefetch.
   history.
 
 \item \textbf{Program Counter XOR Delta}: This feature tells us if a
-  given PC favours particular value(s) of delta.  As noted earlier,
+  given PC favors particular value(s) of delta.  As noted earlier,
   while the PC alone does not convey useful information, this
   hash resolves the PC into different values based on the tendency of
-  that PC to favour a certain delta.  Thus, the dynamic nature of
+  that PC to favor a certain delta.  Thus, the dynamic nature of
   different instances of the same memory access instruction is 
   captured here.
  % GAC: Seems more predictable than dynamic if its capturing 
@@ -121,7 +121,7 @@ to the confidence of a prefetch.
 
  % GAC: Again having trouble phrasing the below point. I was attempting to say
  % that despite SPP having low confidence due to speculation, PPF may 
- % reinforce prefetches with lower confidence if SPP has had a tendancy to be 
+ % reinforce prefetches with lower confidence if SPP has had a tendency to be 
  % correct in the past.
 \item \textbf{Confidence}: The integer confidence, on a scale of 0 to
   100, that was used in the original SPP design. While the original 
@@ -159,12 +159,12 @@ to the confidence of a prefetch.
 % \item \textbf{PC}: Program Counter of the Load instruction that
 %   triggers that particular prefetch
 % \item \textbf{Base address XOR Delta}: If any particular value(s) of
-%   delta are highly favoured by a given address which triggered the
+%   delta are highly favored by a given address which triggered the
 %   prefetch, this composite feature can capture that information
-% \item \textbf{Cache line XOR Delta}: qThis feature captures if any
-%   particular delta is highly favoured by a given cache line address
+% \item \textbf{Cache line XOR Delta}: this feature captures if any
+%   particular delta is highly favored by a given cache line address
 %\item \textbf{Confidence XOR Delta}: This gives a combined insight
-%  into that fact that certain delta-confidence pairqs predicted by
+%  into that fact that certain delta-confidence pairs predicted by
 %  SPP might correlate more with the prefetch outcome
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -174,7 +174,7 @@ Some of the composite features are derived from simple hashing (XOR)
 of two primary features.  There is always a question of usefulness of
 such composite features and the new information added.  We justify the
 choice of each feature by quantifying the contribution made towards
-predicting prefetch behaviour, in Section \ref{Method-Features}.
+predicting prefetch behavior, in Section \ref{Method-Features}.
 Finally, as noted above, each feature indexes into its independent
 entry of perceptron weights.
 
