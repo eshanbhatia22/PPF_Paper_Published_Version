@@ -64,7 +64,7 @@ is prefetched.  Ishii \textit{et al.} propose the Access Map Pattern Matching
 prefetcher (AMPM)~\cite{AMPM}, which creates a map of all accessed lines within a region
 of memory, and then analyzes this map on every access to see if any 
 fixed-stride pattern can be identified and prefetched that is centered on 
-the current access. Pugsley \textit{et al.} propose the Sandbox Prefetcher~\cite{sandbox},
+the current access. Pugsley \textit{et al.} propose the Sandbox Prefetcher~\cite{Sandbox},
 which analyzes candidate fixed-offset prefetchers in a sandboxed environment
 to determine which is most suitable for the current program phase.  Michaud
 proposes the Best-Offset Prefetcher~\cite{BOP}, which determines the optimal
@@ -131,7 +131,7 @@ observation that most prefetches are dead after their first hit.  To address
 prefetcher-caused cache pollution, it also uses a variation of EAF~\cite{eaf}
 to track prefetching accuracy, and inserts only accurate prefetches to the
 higher priority position in the LRU stack.  Jain \textit{et al.} propose
-Harmony~\cite{HarmonyHawkeye} to accomodate prefetches in their MIN 
+Harmony~\cite{Harmony} to accomodate prefetches in their MIN 
 algorithm-inspired Hawkeye cache management system.
 
 \subsection{Machine Learning for Prefetching}
