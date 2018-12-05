@@ -3,33 +3,109 @@
 
 \subsection{Perceptrons in Cache Management}
 
-Perceptron-based prediction mechanisms have proven to yield superior accuracy, which represents an opportunity for optimizations in cache management. 
-Khan \textit{et. al.} proposed SDBP \cite{sdbp}, in this work, a sampler structure keeps partial tags of sampled sets separate from the cache. Three tables of two-bit saturating counters are accessed using a technique similar to a skewed branch predictor \cite{Piece_Linear}. For each hit to a block in the sampled set, the program counter (PC) of the relevant memory instruction is hashed into the three tables and the corresponding counters are decremented. For each eviction from a sampled set, the counters corresponding to the PC of the last instruction to access the victim block are incremented. For an LLC access, the predictor is consulted by hashing the PC of the memory access instruction into the three tables and taking the sum of the indexed counters. When the sum exceeds some threshold, the accessed block is predicted to be dead. Tags in sampled sets are managed with true LRU and a reduced associativity, but the LLC may be managed by any policy. The paper applies its predictor to replacement and bypass.
+Perceptron-based prediction mechanisms have proven to yield superior accuracy, 
+which represents an opportunity for optimizations in cache management. 
+Khan \textit{et. al.} proposed SDBP~\cite{sdbp}, in this work, a sampler 
+structure keeps partial tags of sampled sets separate from the cache. 
+Three tables of two-bit saturating counters are accessed using a technique 
+similar to a skewed branch predictor~\cite{Piece_Linear}. For each hit to 
+a block in the sampled set, the program counter (PC) of the relevant memory 
+instruction is hashed into the three tables and the corresponding counters 
+are decremented. For each eviction from a sampled set, the counters corresponding 
+to the PC of the last instruction to access the victim block are incremented. 
+For an LLC access, the predictor is consulted by hashing the PC of the memory 
+access instruction into the three tables and taking the sum of the indexed 
+counters. When the sum exceeds some threshold, the accessed block is 
+predicted to be dead. Tags in sampled sets are managed with true LRU and 
+a reduced associativity, but the LLC may be managed by any policy. 
+The paper applies its predictor to do block replacement and bypass for LLC.
 
-Teran \textit{et al.} propose using perceptron learning for reuse prediction driving a bypass and replacement optimization \cite{Perc_Reuse}. In that work, perceptron learning is used to set weights selected by hashes of multiple features consisting of the PC, several recent PCs, and two different shifts of the tag of the referenced block. Each feature is hashed to index its own table of weights. The selected weights are summed and thresholded to make a prediction. When a sampled block is reused or evicted, the corresponding weights are decremented or incremented, respectively, according to the perceptron learning rule. 
+Teran \textit{et al.} propose using perceptron learning for reuse prediction 
+driving a bypass and replacement optimization~\cite{Perc_Reuse}. In that work, 
+perceptron learning is used to set weights selected by hashes of multiple features 
+consisting of the PC, several recent PCs, and two different shifts of the tag 
+of the referenced block. Each feature is hashed to index its own table of weights. 
+The selected weights are summed and thresholded to make a prediction. When a sampled 
+block is reused or evicted, the corresponding weights are decremented or incremented, 
+respectively, according to the perceptron learning rule. 
 
-The continuation of Perceptron was later introduced in the work, Multiperspective Reuse Prediction \cite{Multiperspective}. Compared to previous work that focuses on one or two features at a time, Multiperspective prediction uses many features, each contributing to the overall prediction. The prediction enables placement, promotion and bypass optimizations that improves performance.  
-
+The continuation of Perceptron was later introduced in the work, Multiperspective Reuse 
+Prediction~\cite{Multiperspective}. Compared to previous work that focuses on one or two 
+features at a time, Multiperspective prediction uses many features, each contributing 
+to the overall prediction. The prediction enables placement, promotion and bypass 
+optimizations that further improves performance.
 
 \subsection{Base Prefetchers}
 
-Two widely used prefetchers are Next-n Lines \cite{nextn} and Stride \cite{stride}, both of which capture regular memory access patterns with very low hardware overhead. The Next-n Lines prefetcher simply queues prefetches for the next n lines after any given miss, under the expectation that the principle of spatial locality will hold and those cache lines after a missed line are likely to be used in the future. The stride prefetcher is slightly more sophisticated; it attempts to identify simple stride reference patterns in programs based upon the past behavior of missing loads. Similar to the Next-n Lines technique, when a given load misses, cache lines ahead of that miss are fetched in the pattern following the previous behavior in the hope of avoiding future misses. Both prefetchers have been widely used due to the simple design and low hardware overhead. However, without further knowledge about temporal locality and application characteristics, these prefetchers cannot do more than detecting and prefetching regular memory access patterns with limited spatial locality.
+Two widely used prefetchers are Next-n Lines~\cite{nextn} and Stride~\cite{stride}
+prefetchers, both of which capture regular memory access patterns with very low hardware overhead. 
+The Next-n Lines prefetcher simply queues prefetches for the next n lines after any given miss, 
+under the expectation that the principle of spatial locality will hold and those cache lines after 
+a missed line are likely to be used in the future. The stride prefetcher is slightly more 
+sophisticated -- it attempts to identify simple stride reference patterns in programs based 
+upon the past behavior of missing loads. Similar to the Next-n Lines technique, 
+when a given load misses, cache lines ahead of that miss are fetched in the pattern 
+following the previous behavior in the hope of avoiding future misses. Both prefetchers 
+have been widely used due to the simple design and low hardware overhead. However, 
+without further knowledge about temporal locality and application characteristics, 
+these prefetchers cannot do more than detecting and prefetching regular memory access 
+patterns with limited spatial locality.
 
-Somogyi et al. proposed one of the top practical, low-overhead prefetchers, the Spatial Memory Streaming (SMS) prefetcher \cite{SMS}. SMS leverages code-based correlation to take advantage of spatial locality in the applications over larger regions of memory (called spatial regions). It predicts the future access pattern within a spatial region around a miss, based on a history of access patterns initiated by that missing instruction in the past. While the SMS prefetcher is effective, it is indirectly inferring future program control-flow when it speculates on the misses in a spatial region. As a result, the state overheads of this predictor can be higher than the others in this class.
+Somogyi et al. proposed one of the top practical, low-overhead prefetchers, the Spatial 
+Memory Streaming (SMS) prefetcher~\cite{SMS}. SMS leverages code-based correlation 
+to take advantage of spatial locality in the applications over larger regions of memory 
+(called spatial regions). It predicts the future access pattern within a spatial 
+region around a miss, based on a history of access patterns initiated by that 
+missing instruction in the past. While the SMS prefetcher is effective, it is 
+indirectly inferring future program control-flow when it speculates on the misses 
+in a spatial region. As a result, the state overheads of this predictor can 
+be higher than the others in this class. This idea was further extended by 
+the class of related prefetchers~\cite{STMS,Temporal_Instruction_Fetch}.
+
+While previous work had proposed dynamically finding the best prefetch offset, they have failed to 
+look into prefetch timeliness. Michaud proposed the Best-Offset prefetcher~\cite{BOP}. 
+A prefetch offset is set automatically and dynamically tries to adapt to the application behavior. 
+A good prefetch offset is determined by looking at two recent access to a particularly line 
+that did not happen too recently. The time between both accesses should be 
+greater than the latency for completing a prefetch request. 
 
 \subsection{Lookahead Prefetchers}
+While the stride and the next-n perefetchers are efficient, they suffer from their limited
+ability to capture memory delta patterns. Moreover, a good prefetch proves to be useful only 
+if the prefetcher manages to bring the block before its next demand access. Both these issues 
+can be overcome by Lookahead Prefetchers. These prefetchers try to use their own predictions 
+to create the spelative path of the program's memory access pattern. By going down the speculation
+trail till a certain depth, the prefetcher can bring in cache lines well before they are demand 
+accessed by the processor. VLDP~\cite{VLDP} prefetches a static depth ahead of the demand fetch, 
+without considering the prefetching confidence. More recent Lookahead Prefetchers include SPP and
+KPC~\cite{KPC}
 
-To address both prefetching coverage and accuracy, prior work has adopted lookahead 
-mechanisms. Lookahead prefetchers efficiently encode the relationship between accesses to yield future predictions, enabling further speculative lookahead accesses.
-VLDP \cite {VLDP} prefetches a static depth ahead of the demand fetch, without considering the prefetching confidence, 
-
-DA-AMPM
-
-
-While previous work had proposed dynamically finding the best prefetch offset, they have failed to look into prefetch timeliness. Michaud proposed the Best-Offset prefetcher \cite{BOP}. A prefetch offset is set automatically and dynamically tries to adapt to the application behavior. A good prefetch offset is determined by looking at two recent access to a particularly line that do not happen too recently. The time between both accesses should be greater than the latency for completing a prefetch request. 
+Talk about DA-AMPM
 
 \subsection{Aggressive Prefetching}
 
 %not sure this is where this section was going, I just kidna went with it. 
 
-A low-accuracy aggressive prefetcher can significantly harm performance. In order to minimize the interference from prefetching, Wu \textit{et. al} proposed PACMan ~\cite{pacman}, a prefetch-aware cache management policy. PACMan dedicated a few sets of the LLC to each of the three competing policies that treat demand and prefetch request differently and uses the policy that shows the lowest number of cache misses. Similarly, Seshadri  \textit{et. al.} propose ICP \cite{icp}. ICP is also designed as a comprehensive mechanism to mitigate prefetching interference. ICP simply demotes a prefetch blow to the lowest priority on a demand hit based on the observation that most prefetches are dead after their first hit. To address prefetcher-caused cache pollution, it also uses a variation of EAF \cite{eaf} to track prefetching accuracy and inserts only an accurate prefetch to the higher priority position in the LRU stack. ICP assumes, however, that all prefetches are inserted only into the LLC, which restricts the maximum benefit of prefetching.
+A low-accuracy aggressive prefetcher can significantly harm performance. 
+In order to minimize the interference from prefetching, Wu \textit{et. al} proposed PACMan~\cite{pacman}, 
+a prefetch-aware cache management policy. PACMan dedicated a few sets of the LLC to each of the three 
+competing policies that treat demand and prefetch request differently and uses the policy that 
+shows the lowest number of cache misses. Similarly, Seshadri  \textit{et. al.} proposed ICP~\cite{icp}. 
+ICP is also designed as a comprehensive mechanism to mitigate prefetching interference. It simply 
+demotes a prefetch to the lowest priority on a demand hit based on the observation that most 
+prefetches are dead after their first hit. To address prefetcher-caused cache pollution, it also 
+uses a variation of EAF~\cite{eaf} to track prefetching accuracy and inserts only an accurate 
+prefetch to the higher priority position in the LRU stack. ICP assumes, however, that all 
+prefetches are inserted only into the LLC, which restricts the maximum benefit of prefetching.
+
+\subsection{Machine Learning for Prefetching}
+Peled \textit{et.al.} introduced
+interesting ideas for on-line Reinforcement Learning and dynamically scaling
+the magnitude of feedback given to the baseline prefetcher~\cite{Semantics}.
+The biggest challenge here is that the prefetcher relies on compiler support for
+getting features to build the context.
+
+Liao \textit{et. al.} focused on prefetching for data center
+applications~\cite{Datacenter}. They used offline machine learning algorithms
+such as SVMs and logistic regression to do a parametric search for an optimal
+prefetcher configuration.

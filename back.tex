@@ -4,8 +4,8 @@
 In this section we discuss the most closely related work to our proposed
 technique. See Section~\ref{related} for other relevant work.
 
-The idea of prefetching begins with Jouppi's \textit{instruction stream
-buffers}. Early prefetchers detected stride access patterns in order to
+The idea of prefetching begins with Jouppi's \textit{Instruction Stream
+Buffers}~\cite{ISB}. Early prefetchers detected stride access patterns in order to
 predict future memory requests~\cite{Smith,Baer,Stride}.  Modern prefetching
 mechanisms are more sophisticated as they look into past memory
 behavior~\cite{Address_Correlated,AMPM},
@@ -15,12 +15,12 @@ detect complex access patterns in modern applications.
 
 \subsection{Lookahead-based Prefetchers}
 
-An optimal prefetcher should be able to detect a wide range of memory access
-patterns. Simple stride prefetching techniques only detect sequences of
-addresses that differ by a constant value and fail to capture diverse delta
-patterns. Lookahead prefetchers learn patterns by collecting histories of
-observed data access patterns, and correlating these with the strides, by
-considering each new page in a vacuum. Kim {\em et. al.} proposed
+%% Simple stride prefetching techniques only detect sequences of addresses that differ by a constant value and fail to capture diverse memory access patterns. 
+Lookahead prefetchers can learn complicated patterns by collecting histories of
+observed data access patterns.
+%EB: Didn't really understand this: 
+%% "and correlating these with the strides, by considering each new page in a vacuum."
+Kim {\em et. al.} proposed
 SPP~\cite{SPP}, a confidence-based lookahead prefetcher. SPP creates a
 signature associated to a memory request by compressing the history of
 accesses. By correlating the signature with future likely delta patterns, SPP
