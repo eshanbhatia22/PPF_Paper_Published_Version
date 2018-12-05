@@ -118,29 +118,23 @@ a notable increase in performance.
 %to overall increased accuracy of the prefetch scheme and reduction in DRAM
 %traffic and cache pollution.
 
-\vspace{1ex}This paper describes PPF, explains its merits, offers analysis, and
-outlines the scope for future research. Its contributions include:
+This paper describes PPF, explains its merits, offers analysis, and
+outlines the scope for future research. Its contributions are:
 
 \begin{itemize}
 
-\item An on-line neural model used for hardware data
-  prefetching.  Previous work in this area either relied on program
-  semantics~\cite{Semantics} or were application specific~\cite{Datacenter}.
-% djimenez: removing reference to this arXiv paper. we are not obligated to cite it.
-%, or
-%  could not yield a significant improvement over the baseline prefetcher
-%  used~\cite{BadPerc}.
+\item An on-line neural model used for hardware data prefetching.  Previous
+work in this area either relied on program semantics~\cite{Semantics} or were
+application specific~\cite{Datacenter}.
 
-\item Implementing PPF in a robust and accurate
-  practical prefetching mechanism, yielding a significant performance
-  improvement compared to other state-of-the-art prefetchers.
-  Moreover, PPF learns to adapt itself to shared resource
-  constraints, leading to further increased performance in multi-core and
-  bandwidth-constrained environments.
+\item Implementing PPF filtering a state-of-the-art prefetchier, giving a
+significant performance improvement compared to previous work.  PPF learns to
+adapt itself to shared resource constraints, leading to further increased
+performance in multi-core and bandwidth-constrained environments.
 
-\item A methodology for determining an appropriate set of 
-  features for prediction, regardless of the underlying prefetcher used.
-  More details are explained in Section \ref{Method-Features}.
+\item A methodology for determining an appropriate set of features for
+prediction, regardless of the underlying prefetcher used.  More details are
+explained in Section \ref{Method-Features}.
 
 \end{itemize}
 
@@ -149,11 +143,12 @@ compared to the underlying prefetcher, SPP.  In a multi-core system running a
 mixes of memory intensive SPEC CPU 2017 traces, PPF saw an improvement
 of 11.9\% over SPP for a 4-core system, and 10.67\% for an 8-core system.
 
-The paper is organized as follows. Section~\ref{Background} describes
-background work and summarizes SPP.  Section~\ref{Arch} gives the 
-architectural overview of PPF. Section~\ref{Impl} discusses the
-implementation of PPF using SPP and the particular features used.
-Section~\ref{Method} gives the evaluation methodology and explores the feature
-space for perceptron learning.  Section~\ref{Results} evaluates the
-performance of the prefetcher and Section~\ref{Conclusion} concludes the
-paper.
+% djimenez - cutting this
+%The paper is organized as follows. Section~\ref{Background} describes
+%background work and summarizes SPP.  Section~\ref{Arch} gives the 
+%architectural overview of PPF. Section~\ref{Impl} discusses the
+%implementation of PPF using SPP and the particular features used.
+%Section~\ref{Method} gives the evaluation methodology and explores the feature
+%space for perceptron learning.  Section~\ref{Results} evaluates the
+%performance of the prefetcher and Section~\ref{Conclusion} concludes the
+%paper.

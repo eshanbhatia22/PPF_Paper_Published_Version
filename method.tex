@@ -43,23 +43,17 @@ The block size is fixed at 64 bytes. Prefetching is only triggered at an L2
 cache demand accesses but could be directed to the L2 or last-level cache. No
 L1 data level prefetching is done. The LRU replacement policy is used on all
 levels of cache hierarchies. Branch prediction is done using the perceptron
-branch predictor~\cite{Perc_Branch}.  The page size is 4KB.  ChampSim operates
+branch predictor~\cite{PerceptronPredictor}.  The page size is 4KB.  ChampSim operates
 all the prefetchers strictly in the physical address space.
 
 \subsection{Testing Under Additional Memory Constraints}
 \label{Method-AdditionalMem}
-The default single-core configuration simulates a 2MB LLC and a single
-channel DRAM with 12.8GB/s bandwidth.  We extend the simulations to
-include memory constraints introduced in DPC-2.  Specifically we look
-at the following two variations:
-\begin{itemize}
-\item \textit{Low Bandwidth DRAM}: Here the DRAM bandwidth is limited
-  to 3.2 GB/s
-\item \textit{Small LLC}: In this scenario, LLC size is reduced to 512
-  KB
-\end{itemize}
-All the multi-core simulations are only done in the default
-configuration.
+The default single-core configuration simulates a 2MB LLC and a single channel
+DRAM with 12.8GB/s bandwidth.  We extend the simulations to include memory
+constraints introduced in DPC-2.  Specifically we look at the following two
+variations: Low Bandwidth DRAM, where DRAM bandwidth is limited to 3.2 GB/s,
+and small LLC, where the LLC size is reduced to 512 KB All the multi-core
+simulations are only done in the default configuration.
 
 \subsection{Workloads}
 \label{Method-Workloads}
@@ -136,21 +130,17 @@ This section describes the intuition and analysis that went behind developing
 the features.  As noted earlier, we developed a set of nine features that allow
 the perceptron layer to correlate prefetching decision with the program
 context.  To study the correlation across each feature, we study statistically
-the perceptron weights and try to interpret their distribution.
-
-\textbf{Global Pearson's Correlation}\newline For this experiment, we create a
-dump of the state of perceptron weights at the end of all trace execution.
-The weights obtained from running all the SPEC CPU 2017 traces are concatenated.
-Since the weights are collected at the end of individual trace execution, the
-perceptron weights have attained a relatively stable value by now.  Hence,
-this dump represents a `snap' of the trained perceptron weights across all the
-SPEC CPU 2017 traces.  The intuition here is that the feature with bulk of the
+the perceptron weights and try to interpret their distribution. \\ \\
+%
+\textbf{Global Pearson's Correlation}\newline For this experiment, we examine
+the perceptron weights at the end of all trace execution by which time the
+weights have settled to steady values.  The weights obtained from running all
+the SPEC CPU 2017 traces are concatenated.  The feature with bulk of the
 perceptron weights concentrated around 0 or small magnitude numbers show a
 weak correlation with the prefetching outcome.  On the other hand, features
 with most of the weights saturated around highest value (+15) show a high
 positive correlation and the features with weights close to the lowest value
 (-16) show a strong negative correlation.
-
 
 \begin{figure}[h]
   \begin{center}
@@ -159,7 +149,6 @@ positive correlation and the features with weights close to the lowest value
     \label{Fig:Hist}
   \end{center}
 \end{figure}
-
 
 \begin{figure}[h]
   \begin{center}
@@ -178,26 +167,24 @@ positive correlation and the features with weights close to the lowest value
   \end{center}
 \end{figure}
 
-We plot a histogram for each feature depicting weights distribution
-from -16 to +15 and use this histogram to generate the Pearson's
-correlation factor for that feature.  In statistics, Pearson's factor
-is a numerical measure of the degree of linear correlation between two
-variables.  It ranges from -1 to +1.  The magnitude of Pearson's
-factor depicts the extent of correlation and the sign depicts whether
-it is a positive correlation or a negative correlation.  Values close
-to 0 suggest a low correlation or at times, noisy data.  A value of
-+1/-1 suggests a perfectly linear positive / negative correlation
-respectively.  Figure~\ref{Fig:Hist} depicts the histogram distribution 
-of trained weights, for a feature with high and another with moderate
-Pearson's coefficient.
+We plot a histogram for each feature depicting weights distribution from -16
+to +15 and generate the Pearson's correlation factor for that feature.
+Pearson's factor is a numerical measure ranging from -1 to 1 of the degree of
+linear correlation between two variables.  The magnitude of Pearson's factor
+gives the extent of correlation and the sign indicates whether it is a
+positive correlation or a negative correlation.  Values close to 0 suggest a
+low correlation or at times, noisy data.  A value of +1/-1 suggests a
+perfectly linear positive / negative correlation respectively.
+Figure~\ref{Fig:Hist} depicts the histogram distribution of trained weights,
+for a feature with high and another with moderate Pearson's coefficient.
 
 Figure~\ref{Fig:Pvals} shows all the features used, arranged in the increasing
 order of their Pearson's factor.  As can be seen 5 out of the 9
 features provide a moderate to high correlation, with the magnitude of
 P-value > 0.6.  The single most important feature, 
 \textit{Confidence XOR Page address} helps provide
-a correlation to prefetch outcome with a factor of 0.90.
-
+a correlation to prefetch outcome with a factor of 0.90. \\ \\
+%
 \textbf{Per Trace Correlation} \newline Another important way to look
 at the perceptron features is to see how much their contribution
 varies across the traces.  Here we give special attention to features
@@ -209,42 +196,37 @@ For simplicity, the traces are arranged in an
 increasing order of contribution made by the feature and the trace
 names have been omitted.  It can be seen that even features with a low
 overall correlation provide useful correlation (magnitude > 0.5) for
-a significant number of traces.
-
-\textbf{Trimming Features Using Correlation} \newline Besides
+a significant number of traces. \\ \\
+%
+\textbf{Trimming Features Using Correlation} \newline Beside
 providing interesting insights into prefetching behavior, P-value can
 also be used for feature selection and prefetcher tuning.
 
-Here, we introduce the concept of cross-correlation across features.
-Just as we examined correlation of each feature with the final
-outcome, we can also study correlation between the features.  We used
-the above methodology to eliminate features that provide a little or
-no information that has already been captured in other features.
+As we examine correlation of each feature with the final outcome, we also
+study correlation between the features.  We used the above methodology to
+eliminate features providing little information that has already been captured
+in other features.
 
-As a part of feature selection, we initially came up a mix of 23
-features- primary and composite.  By studying cross correlation of
-each of these features against others in a 23x23 matrix, we identified
-pairs of features with correlation factor > 0.9 in magnitude and
-carefully eliminated redundant features.  Using this approach, we
-managed to reduce the feature count to 9.  Thus, in the final
-implementation of PPF, no two features have a high correlation
-between them.  This way we can be sure that each feature is bringing
-in contribution that cannot be captured using other features.
+We initially came up a mix of 23 features- primary and composite.  By studying
+cross correlation of each of these features against others in a 23$\times$23
+matrix, we identified pairs of features with correlation factor > 0.9 in
+magnitude and eliminated redundant features, reducing the feature count to 9.
+Thus, in the final implementation of PPF, no two features have high
+correlation between them.  This way we can be sure that each feature makes a
+contribution that cannot be captured using other features.
 
-Secondly, studying the relative importance of each feature enabled 
-us to vary the number of entries dedicated for each feature.  
-Features with higher Pearson's correlation, \textit{cache line} 
-and \textit{page address}  were given most importance and
-allowed full 12-bits of indexing.  Features like \textit{IP XOR delta} 
-and \textit{IP XOR depth} with a low overall P-value 
-were allocated fewer indexes in the feature table.
+Secondly, studying the relative importance of each feature enabled us to vary
+the number of entries dedicated for each feature.  Features with higher
+correlation, \textit{cache line} and \textit{page address} were given most
+importance and allowed full 12-bits of indexing.  Features like \textit{IP XOR
+delta} and \textit{IP XOR depth} with a low overall P-value were allocated
+fewer entries in the feature table.
 
-To conclude, in the above discussion we justify the features for
-perceptron from a statistical viewpoint.  We also show how this
-information can also be used for prefetcher tuning.  All this study
-was made possible only because we used on-line perceptron learning for
-prefetching and that enabled us to examine the weights in detail.
-
+%To conclude, in the above discussion we justify the features for
+%perceptron from a statistical viewpoint.  We also show how this
+%information can also be used for prefetcher tuning.  All this study
+%was made possible only because we used on-line perceptron learning for
+%prefetching and that enabled us to examine the weights in detail.
 
 \begin{table}[ht]
     \centering
@@ -332,7 +314,7 @@ budget.
         \multirow{2}{1.5cm}{~Trackers}              & 3     & $PC_2$ (12 bits)      & 36 bits   \\
                                                     &       & $PC_3$ (12 bits)      &           \\
     \hline
-        \multicolumn{4}{|c|}{\textbf{Total: 3222940 bits = 39.34 KB}}\\
+        \multicolumn{4}{|c|}{\textbf{Total: 3,222,940 bits = 39.34 KB}}\\
     \hline
     \end{tabular}
     \caption{SPP-Perc Storage Overhead}

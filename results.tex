@@ -77,11 +77,17 @@ This superior coverage of PPF can be attributed to aggressive re-tuning of the
 underlying SPP, enabled by the Perceptron Filter making sure the high coverage
 does not lead to increased cache pollution.
 
-\begin{figure*}[ht]
-\includegraphics[width=\textwidth]{4Core_SPEC2017}
-\caption{Normalized Speedup for 4-core SPEC CPU 2017 Workloads}
+%\begin{figure*}[ht]
+%\includegraphics[width=\textwidth]{4Core_SPEC2017}
+%\caption{Normalized Speedup for 4-core SPEC CPU 2017 Workloads}
+%\label{Fig:4Core_SPEC2017}
+%\end{figure*}
+
+\begin{figure}[ht]
+\includegraphics[width=2.75in]{4CORE_IPC_PPF}
+\caption{Speedup for 4-core SPEC CPU 2017}
 \label{Fig:4Core_SPEC2017}
-\end{figure*}
+\end{figure}
 
 \subsection{Multi-core Results}
 \label{Results-Multi}
@@ -91,32 +97,36 @@ multi-programmed workloads.
 
 \noindent \textbf{4-CORE ENVIRONMENT}
 \newline
-Figure~\ref{Fig:4Core_SPEC2017}(a) shows a
-comparison of speedups obtained on 4-core mixes of a memory intensive subset
-SPEC CPU 2017.  We plot all 4 prefetchers, normalized to the baseline.  The
-workloads have been sorted in increasing order of the speedup.  PPF offers a
-speedup of \textbf{51.7\%} on these traces, and improvement of \textbf{11.9\%}
-over the baseline SPP, \textbf{10.2\%} over the next DA-AMPM, and
-\textbf{17.4\%} over BOP.
+Figure~\ref{Fig:4Core_SPEC2017} shows a comparison of speedups obtained on
+4-core mixes of a memory intensive subset SPEC CPU 2017.  We plot all 4
+prefetchers, normalized to the baseline.  The workloads have been sorted in
+increasing order of the speedup.  PPF offers a speedup of \textbf{51.7\%} on
+these traces, and improvement of \textbf{11.9\%} over the baseline SPP,
+\textbf{10.2\%} over the next DA-AMPM, and \textbf{17.4\%} over BOP.
 
-On a different set of fully random SPEC CPU 2017 4-core mixes, PPF provides an
-IPC speedup of \textbf{26.2}\% over the baseline, which is an improvement of
-\textbf{5.7}\% over SPP.
-\newline
+On a different set of fully random SPEC CPU 2017 4-core mixes (not illustrated
+for space reasons), PPF provides an IPC speedup of \textbf{26.2}\% over the
+baseline, which is an improvement of \textbf{5.7}\% over SPP.
 
-\begin{figure*}[ht]
-\includegraphics[width=\textwidth]{8Core_SPEC2017}
-\caption{Normalized Speedup for 8-core SPEC CPU 2017 Workloads}
+%\begin{figure*}[ht]
+%\includegraphics[width=\textwidth]{8Core_SPEC2017}
+%\caption{Normalized Speedup for 8-core SPEC CPU 2017 Workloads}
+%\label{Fig:8Core_SPEC2017}
+%\end{figure*}
+
+\begin{figure}[ht]
+\includegraphics[width=2.75in]{8CORE_IPC_PPF}
+\caption{Speedup for 8-core SPEC CPU 2017}
 \label{Fig:8Core_SPEC2017}
-\end{figure*}
+\end{figure}
 
 \noindent \textbf{8-CORE ENVIRONMENT}
 \newline
-The sorted comparison of speedups on the memory
-intensive 8-core mixes is shown in Figure~\ref{Fig:8Core_SPEC2017}.  PPF
-improves baseline performance by \textbf{38.6\%}, an improvement of
-\textbf{10.7\%} over SPP.  For a random set of SPEC CPU 2017 mixes, PPF
-improves performance by \textbf{23.6\%} over the baseline, corresponding to
+The sorted comparison of speedups on the memory intensive 8-core mixes is
+shown in Figure~\ref{Fig:8Core_SPEC2017}.  PPF improves baseline performance
+by \textbf{38.6\%}, an improvement of \textbf{10.7\%} over SPP.  For a random
+set of SPEC CPU 2017 mixes (not illustrated for space reasons), PPF improves
+performance by \textbf{23.6\%} over the baseline, corresponding to
 \textbf{4.8\%} over SPP.  This increased improvement achieved by PPF over the
 base engine SPP in a multi-core environment is expected as PPF has a very
 accurate filter, it eliminates useless prefetches before they can cause
@@ -129,27 +139,30 @@ consistently outperforms the best performing prefetcher.
 
 %[EB] How to justify only a small margin over DA-AMPM?
 
-\begin{figure}[ht]
-\begin{adjustwidth}{-1cm}{}
-  \includegraphics[width=1.2\columnwidth]{AddnConstr}
-  \caption{IPC speedup for Small LLC and Low BW}
-  \label{Fig:AddnConstr}
-\end{adjustwidth}
-\end{figure}
+% djimenez: cut this graph and modified text accordingly
+%\begin{figure}[ht]
+%\begin{adjustwidth}{-1cm}{}
+%  \includegraphics[width=1.2\columnwidth]{AddnConstr}
+%  \caption{IPC speedup for Small LLC and Low BW}
+%  \label{Fig:AddnConstr}
+%\end{adjustwidth}
+%\end{figure}
 
 \subsection{Additional Memory Constraints}
 \label{Results-AdditionalMem}
 
-Figure~\ref{Fig:AddnConstr}(a) and (b) show the performance of PPF in a
-reduced LLC and with low bandwidth constraints, respectively. For the sake of
-brevity, we have only shown selected traces followed by the overall
-performance on the complete benchmark.  Benchmark {\tt 605.mcf\_s} in low
-bandwidth conditions is prefetch averse.  In general, any prefetcher yields a
-negative speedup on that trace.  On {\tt 654.roms\_s} and {\tt
+%Figure~\ref{Fig:AddnConstr}(a) and (b) show the performance of PPF in a
+%followed by the overall performance on the complete benchmark.  
+%For the sake of brevity, we have only shown selected traces 
+
+We also model PPF with reduced LLC and with low bandwidth constraints,
+respectively (not illustrated for space reasons).  Benchmark {\tt 605.mcf\_s}
+in low bandwidth conditions is prefetch averse.  In general, any prefetcher
+yields a negative speedup on that trace.  On {\tt 654.roms\_s} and {\tt
 607.cactuBSSN\_s}, PPF is unable to match the performance achieved by the best
 prefetcher. On the other hand, PPF outperforms all the other prefetchers on
-{\tt 623.xalancbmk\_s} and {\tt 638.imagick\_s} benchmarks.  Overall, PPF gives
-a better improvement under small LLC condition and matches the best
+{\tt 623.xalancbmk\_s} and {\tt 638.imagick\_s} benchmarks.  Overall, PPF
+gives a better improvement under small LLC condition and matches the best
 prefetcher, BOP, under low DRAM bandwidth conditions.
 
 \begin{figure}[ht]
