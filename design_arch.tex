@@ -29,7 +29,7 @@ is a light-weight mechanism to pull together disparate forms of information
 and synthesize a decision from them.  In this case, we leverage a variety of
 different relative characteristics of a given prefetch, such as speculation
 depth, page address and offset, into a binary useful/non-useful prediction.
-In the remainder of this section, we discuss the the general structure of PPF
+In the remainder of this section, we discuss the general structure of PPF
 for enhancing a given underlying prefetcher.  We will show that PPF is a
 generalized prefetch filtering mechanism that may be adapted to any prefetcher
 with appropriate modifications.
@@ -39,23 +39,32 @@ with appropriate modifications.
 \pg{rewrite this section as talking to the figures and walking through
   them}
 
-The Perceptron Filter and the steps used to performed inference 
-and training are shown in figure~\ref{fig:PPF_Datapath}. The filter is organized as tables of 
-perceptron weights, with a separate table of weights for each feature. 
-For a design using `N' number of features, its weights will be arranged
-in $N$ different tables. Each feature's value is used to index 
-into the corresponding table with $K$ entries.  Since each table is
-indexed independently, different numbers of bits can be used for indexing,
-thus giving each table a different size.  The variable indexing can be
-determined by studying the features and fine-tuning them empirically to
-achieve a good accuracy versus hardware overhead trade-off.  Exact details of
-our PPF implementation are given under ``Area Overheads'' in
+The Perceptron Filter structure and the steps used to performed inference 
+and training are illustrated in figure~\ref{fig:PPF_Datapath}. 
+The filter is organized as a set of tables, where each table entry holds a  
+perceptron weight. 
+%There exists a distinct table for each of the features. redundant with next sentence?
+ 
+For a configuration using $N$ number of features, 
+their corresponding weights will be distributed
+in $N$ different tables. Each feature is used to index 
+the corresponding table with $K$ entries.  Each table is
+indexed independently, and the size of table varies, hence, different
+number of bits are used to index different the tables.
+
+%ETG: so not all tables have K entries? K is not a constant,
+
+Variable indexing can be
+determined by studying the features and tuning them empirically to
+achieve a good tradeoff between high accuracy and hardware overhead.
+A detail explanation of the storage overhead of
+our PPF implementation can be found in
 Section~\ref{sec:Method-Overheads}.
 
 A single entry in the table corresponds to a perceptron weight.  Each weight
 is a 5 bit counter saturating at -16 and +15 and initialized to zero at the
-beginning of a program's execution. We empirically observe that 5 bits of
-index achieves a good trade-off between hardware overhead and accuracy.\newline
+beginning of an applications's execution. We empirically observe having 5 bit weights,
+yields a good trade-off between hardware overhead and accuracy.\newline
 
 \begin{figure}
   \begin{center}
@@ -70,31 +79,44 @@ index achieves a good trade-off between hardware overhead and accuracy.\newline
 
 The prefetcher is triggered on every L2 cache
 demand access.  At that point, the base prefetcher has the option to perform a
-prefetch -- if it does, then it has a choice of how many cache lines to
+prefetch -- if it does, then it makes the decision of how many cache lines to
 prefetch.  The suggested prefetches can be either placed in the L2 cache or
-the last-level cache based on the prefetcher's internal confidence mechanism.
+the last-level cache based on a confidence value.
 
 When the base prefetcher is triggered, it begins to suggest candidates for
 prefetching.  All suggested prefetches pass through the perceptron
-filter to decide whether they are qualified for final prefetching.  The filter
-decides whether to prefetch a candidate by looking at the microarchitectural
-state, \textit{i.e.} the features, at that instant.  Each feature is hashed to
-form an index into a table of up to 4,096 entries dedicated to that feature.
+filter to decide whether they are qualified for final prefetching. %final prefetching -_-  
+The filter makes the final decision to prefetch a \textit{prefetch candidate}
+suggested by the base prefetcher.
+Each of the feature is used to index a distinct table, 
+the corresponding eeights are summed. The sum denotes the overall confidence for the prefetch. 
+The value is thresholded against two diffent magnitudes:  
 
-Each feature's confidence contributes to 
-the final decision of whether to prefetch a cache line, with the summation 
-of all features' confidences denoting the overall confidence for a prefetch.  
-The final sum is compared against two thresholds: PERC\_THRESHOLD\_HI and  
-PERC\_ THRESHOLD\_ LO to decide the placement of the data in the cache 
-hierarchy. Prefetches that have a confidence above the higher threshold 
-are placed into the L2 cache since the observed features strongly recommend  
-the prefetch. A prefetch that results in a confidence between 
-PERC\_ THRESHOLD\_ LO and PERC\_ THRESHOLD\_ HI are placed in the larger 
-last level cache, as the filter is moderately confident of the cache line's 
-use, but seeks to reduce pollution in the smaller L2 cache. Finally, the 
-remaining prefetches that are below the lower threshold are not prefetched 
-due to a lack of correlation between the current observed features and 
-the prediction from the base prefetch engine.\newline
+%The filter
+%decides whether to prefetch a candidate by looking at the microarchitectural
+%state, \textit{i.e.} the features.  Each feature is used as an index 
+%to its corresponding table, each table can have up 4,096 entries.
+%Each feature's confidence contributes to 
+%the final decision of whether to prefetch a cache line, with the summation 
+%of all features' confidences denoting the overall confidence for a prefetch.  
+%The final sum is compared against two thresholds: 
+
+PERC\_THRESHOLD\_HI and  
+PERC\_ THRESHOLD\_ LO. 
+%to decide the placement of the data in the cache 
+%hierarchy. 
+Prefetches that have a confidence above the higher magnitude 
+are placed into the L2 cache since the obtained summed suggests with high
+confidence this would be a useful prefetch.
+A prefetchs which features result in a confidence value between  
+%A prefetch that results in a confidence between 
+PERC\_ THRESHOLD\_ LO and PERC\_ THRESHOLD\_ HI is allocated in the larger 
+last-level cache, the filter is moderately confident of use of this 
+cache line, but seeks to reduce pollution in a significantly smaller L2 cache. 
+Lastly, prefetches which features yield a confident value lower than 
+PERC\_ THRESHOLD\_ LO are not prefetched. \newline 
+%due to a lack of correlation between the current observed features and 
+%the prediction from the base prefetch engine.\newline
 
 
 \noindent{\textbf{2. Recording}}\newline 
