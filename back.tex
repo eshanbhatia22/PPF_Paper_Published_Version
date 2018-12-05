@@ -154,27 +154,39 @@ on the scale of 0 to 100.
 \subsection{Case for an On-line Filter}
 \label{Background-Case}
 
-Compared to some of the other state of the art prefetchers, SPP is
-less aggressive.  In a single-core environment, there is no resource
-contention among the different cores, hence aggressive prefetching is bound to prove beneficial. 
-As we increase the core
-count, we observe that SPP starts outperforming rest of the prefetchers.  This
-can be attributed to the fact that each prefetch suggested by SPP is a
-carefully calculated and prevents cache pollution.  \textit{<Figure
-showing the variation of SPP vs BOP wrt core count>} For 4-core applications,
-SPP suggests XX\% fewer prefetches than Best Offset Prefetcher ~\cite{bop} and yet leads to higher IPC.
+%% Compared to some of the other state of the art prefetchers, SPP is
+%% less aggressive.  In a single-core environment, there is no resource
+%% contention among the different cores, hence aggressive prefetching is bound to prove beneficial. 
+%% As we increase the core
+%% count, we observe that SPP starts outperforming rest of the prefetchers.  This
+%% can be attributed to the fact that each prefetch suggested by SPP is a
+%% carefully calculated and prevents cache pollution.  \textit{<Figure
+%% showing the variation of SPP vs BOP wrt core count>} For 4-core applications,
+%% SPP suggests XX\% fewer prefetches than Best Offset Prefetcher ~\cite{bop} and yet leads to higher IPC.
+%% 
+%% The above analysis shows that with a more careful filtering mechanism, any
+%% prefetcher like SPP can be tuned to become much more aggressive, yielding higher coverage.  The responsibility of maintaining high accuracy now falls on the
+%% independent filter.  To test the hypothesis, we tuned down SPP to the
+%% minimum possible threshold, with the effect of increasing prefetch suggestions
+%% made by SPP by XX\%.  \textit{<Comparison of SPP-Unleased with SPP / BOP>}
+%% Obviously this came at a cost of increased DRAM traffic and cache pollution.
 
-The above analysis shows that with a more careful filtering mechanism, any
-prefetcher like SPP can be tuned to become much more aggressive, yielding higher coverage.  The responsibility of maintaining high accuracy now falls on the
-independent filter.  To test the hypothesis, we tuned down SPP to the
-minimum possible threshold, with the effect of increasing prefetch suggestions
-made by SPP by XX\%.  \textit{<Comparison of SPP-Unleased with SPP / BOP>}
-Obviously this came at a cost of increased DRAM traffic and cache pollution.
+% EB: This remains one of the untouched subsections of the paper
 
-Moreover, the on-line confidence mechanism introduced in SPP was very
-rudimentary.  It was based on taking a ratio C\textsubscript{d} =
-C\textsubscript{delta} / C\textsubscript{sig} as explained previously. This
-confidence was used to make the decision of whether to prefetch or not to
+As was noted in Figure~\ref{Fig:Motivation}, an aggressive lookahead 
+prefetching if done without any accuracy check, can harm the performance 
+of the system. In this given case, the effective performance gained
+by the original prefetcher is lost by almost 9\% by the aggressive version 
+of the same prefetcher. Most modern prefetchers are getting increasingly 
+aggressive as that enables them to capture the complex memory access patterns 
+seen in pointer-chasing applications. Thus, we need a mechanism that is 
+orthogonal to the underlying prefetching scheme and can be used
+to prune out the useful prefetcher from the useless ones. 
+
+Moreover, the on-line confidence mechanism used by most prefetchers is very
+rudimentary. For example, SPP's internal confidence mechanism is based on taking 
+the ratio C\textsubscript{d} = C\textsubscript{delta} / C\textsubscript{sig}.
+This confidence was used to make the decision of whether to prefetch or not to
 prefetch; and which level to prefetch.  While this approximation was shown to
 work in the original implementation, we believe that a better form of
 generalized on-line decision making was possible.  Hence, it was necessary to
@@ -218,16 +230,36 @@ apply it for the first time to prefetch filtering.
 %figure out what to leave and what to get rid of ...  
 \subsection{Perceptron-based Prediction}
 
-Perceptrons in microarchitecture were first introduced by Jimenez and Lin ~\cite{Perc_Branch} for branch prediction. In this work, a perceptron weights vector is selected by a hash of the branch address and its dot product with an input vector of branch history outcomes. If the product is at least 0, the branch is predicted as taken, otherwise it is predicted not taken. The weights are updated with the perceptron update rule: if the prediction is incorrect, or the dot product does not exceed some threshold magnitude, then the weights are incremented or decremented based on their correlation to the corresponding history bits. Perceptron learning yields to superior accuracy, which results in increased opportunity for optimizations.
+Perceptrons in microarchitecture were first introduced by Jimenez and Lin~\cite{Perc_Branch} 
+for branch prediction. In this work, a perceptron weights vector is selected by a hash of 
+the branch address and its dot product with an input vector of the previous branch history 
+outcomes. If the product is at least 0, the branch is predicted as taken, otherwise it is 
+predicted not taken. The weights are updated with the perceptron update rule: if the prediction 
+is incorrect, or the dot product does not exceed some threshold magnitude, then the weights 
+are incremented or decremented based on their correlation to the corresponding history bits. 
+Perceptron learning yields to superior accuracy, which results in increased opportunity for 
+optimizations.
+
+\begin{figure}[ht]
+\includegraphics[width=\columnwidth]{Perc_Model}
+\caption{The Basic Perceptron Model}
+\label{Fig:Perc_Model}
+\end{figure}
+
 
 \subsubsection{Perceptron Learning}
 
-In a perceptron-based mechanism, a uniform
-perceptron update principle is followed.  Perceptrons are a simple model of neurons
-in neural networks \cite{perceptrons1,perceptrons2} modeled by vectors of signed weights learned through online training. The output of a perceptron is the dot product of the weights and a vector of inputs. In this work, we make use of the perceptron learning algorithm. There are two components to the abstract perceptron learning algorithm:
+In a perceptron-based mechanism, a uniform perceptron update principle is followed. As
+shown in the figure~\ref{Fig:Perc_Model} Perceptrons 
+are a simple model of neurons in neural networks \cite{perceptrons1,perceptrons2} modeled by 
+vectors of signed weights learned through online training. The output of a perceptron is the 
+dot product of the weights and a vector of inputs. In this work, we make use of the perceptron 
+learning algorithm. There are two components to the abstract perceptron learning algorithm:
 
 \begin{enumerate}
-\item To predict true or false, a vector of signed weights is chosen according to some criteria. The dot product of the weights and input vectors, called $y_{\mbox{\small out}}$, is computed. If $y_{\mbox{\small out}}$ exceeds some threshold, the prediction is true, otherwise it is false.
+\item To predict true or false, a vector of signed weights is chosen according to some criteria. 
+The dot product of the weights and input vectors, called $y_{\mbox{\small out}}$, is computed. 
+If $y_{\mbox{\small out}}$ exceeds some threshold, the prediction is true, otherwise it is false.
 
 \item To update the weights after the true outcome of the predicted event is
 known, we first consider the value of $y_{\mbox{\small out}}$. If the
