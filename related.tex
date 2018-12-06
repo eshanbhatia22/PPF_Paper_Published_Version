@@ -64,7 +64,10 @@ is prefetched. Ishii \textit{et al.} propose the Access Map Pattern Matching
 prefetcher (AMPM)~\cite{AMPM}, which creates a map of all accessed lines within a region
 of memory, and then analyzes this map on every access to see if any 
 fixed-stride pattern can be identified and prefetched that is centered on 
-the current access. Pugsley \textit{et al.} propose the Sandbox Prefetcher~\cite{Sandbox},
+the current access. DRAM-Aware AMPM (DA-AMPM)~\cite{DA_AMPM}
+is a variant of AMPM that delays some prefetches so they can be issued 
+together with others in the same DRAM row, increasing bandwidth utilization.
+Pugsley \textit{et al.} propose the Sandbox Prefetcher~\cite{Sandbox},
 which analyzes candidate fixed-offset prefetchers in a sandboxed environment
 to determine which is most suitable for the current program phase. Michaud
 proposes the Best-Offset Prefetcher~\cite{BOP}, which determines the optimal
