@@ -3,12 +3,12 @@
 
 This section describes our implementation of PPF and the range of
 features that are used by the perceptron for correlating the
-prefetches.  For a practical implementation, we have used SPP as the
+prefetches. For a practical implementation, we have used SPP as the
 base engine prefetcher.
 
 \subsection{Changes Made to SPP}
 \label{Impl-Changes}
-To modify the SPP design to suit our scheme, the following changes were made: \\ \\
+To modify the SPP design to suit our scheme, the following changes were made:\\
 %
 \textbf{Original Thresholds Discarded:} In PPF, the perceptron sum is used to
 decide whether to prefetch or not, and the fill-level in case of prefetch.
@@ -34,13 +34,13 @@ are no longer needed. \\
 %    this a big deal?  Seems like a detail}
 %
 \textbf{Enhanced Prefetch Table:} The prefetch table introduced in the
-original SPP keeps track of up to 1024 L2 cache prefetch suggestions.  For
+original SPP keeps track of up to 1024 L2 cache prefetch suggestions. For
 PPF, the prefetch table is modified to store the features used for perceptron
-indexing..  This metadata is needed to retrieve the values of the features to
+indexing.. This metadata is needed to retrieve the values of the features to
 train the perceptron at a later stage in time. The prefetch table mentioned
 above keeps track of the prefetches that actually happened in the L2 Cache.
 We introduce the reject table to keep a track of the prefetches that were
-suggested by the base SPP engine but were rejected by PPF.  In case it is
+suggested by the base SPP engine but were rejected by PPF. In case it is
 detected that a future demand fetch could have used this rejected prefetch,
 the perceptron weights are updated to reflect that misprediction. 
 
@@ -54,7 +54,7 @@ relevant perceptron features. Using the statistical methodology
 outlined in Section~\ref{Method-Features}, we pruned the feature 
 set to a minimal yet relevant set of features. \\ \\
 % \pg{again you want to get at why
-% these were chosen.  Also mention that you searched over a large
+% these were chosen. Also mention that you searched over a large
 % space of possible features and these were the best.}
 %
 % [EB] Tried addressing. Does it look redundant when read after 'Feature Selection'
@@ -62,7 +62,7 @@ set to a minimal yet relevant set of features. \\ \\
 %
 \textbf{Base Address}: The base address of the demand access that triggers the
 prefetch corresponds to a stream of future accesses that SPP and the PPF have
-seen before.  Therefore, PPF will correlate the past behavior of this address
+seen before. Therefore, PPF will correlate the past behavior of this address
 to the confidence of a prefetch. \\
 %
 \textbf{Cache Line} and \textbf{Page Address}: These two separate features are
@@ -70,7 +70,7 @@ derived from the base address that triggered the prefetch, as follows:
 base\_addr >> LOG2\_BLOCK \_SIZE and base\_addr >> LOG2\_PAGE\_SIZE
 respectively. The idea behind using three different shifted versions of the
 same feature is that it allows us to look into a wider range of bits than with
-a single version.  It also helps give more importance to the overlapping bits
+a single version. It also helps give more importance to the overlapping bits
 and lesser importance to most and least significance bits. This approach can
 also eliminate destructive interference that can be caused by directly folding
 the address bits into half. \\
@@ -78,12 +78,12 @@ the address bits into half. \\
 % djimenez: this is a nice intuition and explanation. 
 % [EB] Thank you!
 \textbf{Program Counter XOR Depth}: The PC is for the instruction that
-triggered the prefetch chain.  Depth refers to the iteration count of the
-lookahead stages.  In general, the PC is not considered as a good basis for
+triggered the prefetch chain. Depth refers to the iteration count of the
+lookahead stages. In general, the PC is not considered as a good basis for
 doing lookahead prefetching as all the prefetches with depth >= 1 are aliased
-into the same PC which is not true in an actual demand access.  This feature
+into the same PC which is not true in an actual demand access. This feature
 resolves a PC into a different value for each lookahead depth of prefetch
-speculation, giving a more accurate correlation in lookahead cases.  This is
+speculation, giving a more accurate correlation in lookahead cases. This is
 akin to the concept of Virtual Program Counters~\cite{VPC} introduced by Kim
 \textit{et. al.} for indirect branch prediction. \\
 %
@@ -92,17 +92,17 @@ PC\textsubscript{3}>>2}: Here $PC_i$ refers to the last $i^{th}$
 PC before the instruction that triggered the current prefetch.
 Hashing together the last three PCs tell PPF about the path that led
 to the current demand access and helps capture and branching
-information of the current basic block.  PCs are shifted in the
-increasing order of history before being hashed together.  This is
+information of the current basic block. PCs are shifted in the
+increasing order of history before being hashed together. This is
 done to avoid the resultant value of zero when 2 or more PCs are the
-same.  Additionally, blurring the information as it gets older
+same. Additionally, blurring the information as it gets older
 allows us to get a wider and approximate look into the program's
 history. \\
 %
 \textbf{Program Counter XOR Delta}: This feature tells us if a given PC favors
-particular value(s) of delta.  As noted earlier, while the PC alone does not
+particular value(s) of delta. As noted earlier, while the PC alone does not
 convey useful information, this hash resolves the PC into different values
-based on the tendency of that PC to favor a certain delta.  Thus, the dynamic
+based on the tendency of that PC to favor a certain delta. Thus, the dynamic
 nature of different instances of the same memory access instruction is
 captured here. \\
 %
@@ -117,7 +117,7 @@ captured here. \\
 \textbf{Confidence}: The integer confidence, on a scale of 0 to 100, that was
 used in the original SPP design. While the original confidence does not
 directly make the decision to prefetch, PPF correlates it to the correctness
-of a proposed prefetch.  While the original SPP may have dismissed a prefetch
+of a proposed prefetch. While the original SPP may have dismissed a prefetch
 due to running further into speculation, PPF can use the original confidence
 as indicator of not only when prefetches become less confident, but also how
 likely a low confident speculation is correct in the context of other
@@ -129,7 +129,7 @@ during phases of a program execution. \\
 %
 \textbf{Current Signature XOR Delta}: Recall from the discussion of SPP in
 Section \ref{Background-SPP} that the new signature is generated using the old
-signature and the current block delta.  The result of this feature is the next
+signature and the current block delta. The result of this feature is the next
 signature that is predicted to be accessed based on the delta predicted by
 SPP. While ``Current Signature XOR Delta'' is not the exact formula for
 generating the future signature, it gives an approximate idea of the path that
@@ -157,8 +157,8 @@ the combination of these two values can lead to. \\ \\
 %%%%%%%%%%%%%%%%%%%%%%
 %
 Some of the composite features are derived from simple hashing (XOR)
-of two primary features.  There is always a question of usefulness of
-such composite features and the new information added.  We justify the
+of two primary features. There is always a question of usefulness of
+such composite features and the new information added. We justify the
 choice of each feature by quantifying the contribution made towards
 predicting prefetch behavior, in Section \ref{Method-Features}.
 Finally, as noted above, each feature indexes into its independent

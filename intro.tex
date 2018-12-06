@@ -2,8 +2,8 @@
 \label{Introduction}
 
 Processor and memory technologies have been developed with different
-goals in mind.  While processor scaling has focused on speed improvements,
-memory scaling has primarily focused on increasing capacity.  The
+goals in mind. While processor scaling has focused on speed improvements,
+memory scaling has primarily focused on increasing capacity. The
 difference in each technology's scaling has led to the Memory Wall~\cite{MemWall}
 -- the increasing gap between processor and memory performance. Data prefetching
 is one important technique that has been developed to minimize the effects 
@@ -23,11 +23,11 @@ the data should be stored in, and deciding what data should be evicted from the 
 the prefetched data.
 
 All prefetchers are designed around a fundamental trade-off between two important metrics:
-coverage and accuracy.  Prefetcher coverage refers to the number of cache hits that would have
-been cache misses without the prefetcher.  For example, if an application experiences 1,000 cache misses
+coverage and accuracy. Prefetcher coverage refers to the number of cache hits that would have
+been cache misses without the prefetcher. For example, if an application experiences 1,000 cache misses
 without a prefetcher, but only 200 cache misses with a prefetcher, then the prefetcher has 80\%
-coverage for that application.  Prefetcher accuracy refers to the fraction of prefetched cache lines
-that end up being used by the application.  So if a prefetcher prefetches 1,200 cache lines, 
+coverage for that application. Prefetcher accuracy refers to the fraction of prefetched cache lines
+that end up being used by the application. So if a prefetcher prefetches 1,200 cache lines, 
 but only 800 of them are used by the application, then that prefetcher's accuracy is 66.7\%.
 
 
@@ -38,11 +38,11 @@ but only 800 of them are used by the application, then that prefetcher's accurac
 \end{figure}
 
 Coverage and accuracy are generally at odds with one another, and as one metric improves, the other
-usually gets worse.  For example, when an application accesses a new region of memory for the first
+usually gets worse. For example, when an application accesses a new region of memory for the first
 time, a na\"ive prefetcher may predict that all data in that region will be used by the application.
 This will clearly result in 100\% coverage for that region, but with possibly a very low accuracy.
 In fact, so much bandwidth may be wasted prefetching unused data that performance can ultimately be
-harmed by this strategy.  On the other extreme, another prefetcher may be overly
+harmed by this strategy. On the other extreme, another prefetcher may be overly
 conservative and never prefetch anything, wasting no bandwidth, and achieving 0\% prefetch
 coverage.
 
@@ -50,7 +50,7 @@ Figure~\ref{Fig:Motivation} illustrates the above scenario in a working manner.
 Here we consider a state-of-the-art lookahead prefetcher -- SPP. We keep on 
 re-tuning its thresholds, each time getting a variant with an increasing lookahead 
 depth coverage. The figure depicts the behavior of the prefetcher variants running 
-on the trace {\tt 603.bwaves\_s-1740B}. The IPC, total number of prefetches 
+on the trace {\tt 603.bwaves\_s}. The IPC, total number of prefetches 
 suggested by the prefetcher (TOTAL\_PF) and the actual useful predictions (GOOD\_PF),
 all have been normalized to the least aggressive version of the prefetcher. 
 As the look-ahead depth of the prefetch suggestions increase, so do useful prefetches. 
@@ -59,11 +59,11 @@ to cache pollution and bandwidth contention, as is clearly visible with the redu
 the IPC. Similar behavior was observed in 12 other SPEC CPU 2017 simpoints. 
 
 Therefore, a delicate balance between coverage and accuracy is required for a prefetcher to maximize
-its performance impact.  Prefetchers are generally designed with internal mechanisms to
+its performance impact. Prefetchers are generally designed with internal mechanisms to
 monitor their accuracy, with throttling thresholds that can be tuned for either coverage 
-or accuracy.  The more irregular an application's memory access pattern is, the more difficult
+or accuracy. The more irregular an application's memory access pattern is, the more difficult
 it is to accurately predict every access, so a prefetcher will have to be tuned more toward
-coverage (and away from accuracy) in order to gain any benefit.  This may be especially dangerous
+coverage (and away from accuracy) in order to gain any benefit. This may be especially dangerous
 to do in the context of a multi-core processor, where overly aggressive prefetching in one core can
 waste shared resources, such as last-level cache (LLC) capacity, and off-chip bandwidth~\cite{Friendly}.
 
@@ -84,30 +84,30 @@ waste shared resources, such as last-level cache (LLC) capacity, and off-chip ba
 
 %For a prefetcher to capture highly irregular access patterns, it needs to be
 %highly aggressive with high coverage. This causes the prefetcher to recommend many
-%low accuracy prefetches that lead to the cache being polluted with useless data.  
+%low accuracy prefetches that lead to the cache being polluted with useless data. 
 %This effect is more pronounced in a multi-core scenario where the LLC is a
-%shared resource~\cite{Friendly}.  Conversely, a conservative prefetcher would
+%shared resource~\cite{Friendly}. Conversely, a conservative prefetcher would
 %be highly accurate but might not make enough useful prefetches due to its lower coverage.
 
 We propose Perceptron-based Prefetch Filtering (PPF) as an enhancement to
-existing state-of-the-art prefetchers.  PPF works by observing the stream of
+existing state-of-the-art prefetchers. PPF works by observing the stream of
 candidate prefetches generated by a prefetcher, and then rejects those that
 are predicted by the online-trained neural model to be inaccurate.
 The state-of-the-art prefetcher that we 
 use to evaluate PPF in this paper is the Signature Path Prefetcher 
 (SPP)~\cite{SPP}, however in principle, PPF could benefit any prefetcher.
 In this design, PPF replaces SPP's existing confidence-based throttling mechanism,
-which itself was a highly tuned feature of that prefetcher.  Because PPF is
+which itself was a highly tuned feature of that prefetcher. Because PPF is
 so much more effective at rejecting inaccurate prefetches than SPP's baseline
 mechanism, we are free to re-tune the rest of SPP's design around maximizing
-coverage.  The result is an increase in both accuracy and coverage, and
+coverage. The result is an increase in both accuracy and coverage, and
 a notable increase in performance.
 
 %We propose Perceptron-based Prefetch Filtering (PPF) as an enhancement to
 %the existing state of the art prefetchers to robustly overcome the coverage
-%vs. accuracy trade-off.  The idea is to use a state-of-the-art prefetcher as
+%vs. accuracy trade-off. The idea is to use a state-of-the-art prefetcher as
 %the base engine. For that we choose Signature Path Prefetcher (SPP) and
-%modify the design to make it as aggressive as possible.  This modification
+%modify the design to make it as aggressive as possible. This modification
 %enables the base engine to capture complex memory access patterns and go
 %deeper into the speculation path, increasing coverage without sacrificing accuracy. 
 %Normally such aggressive prefetching would come at the cost of increased DRAM traffic
@@ -123,32 +123,32 @@ outlines the scope for future research. Its contributions are:
 
 \begin{itemize}
 
-\item An on-line neural model used for hardware data prefetching.  Previous
+\item An on-line neural model used for hardware data prefetching. Previous
 work in this area either relied on program semantics~\cite{Semantics} or were
 application specific~\cite{Datacenter}.
 
 \item Implementing PPF filtering a state-of-the-art prefetchier, giving a
-significant performance improvement compared to previous work.  PPF learns to
+significant performance improvement compared to previous work. PPF learns to
 adapt itself to shared resource constraints, leading to further increased
 performance in multi-core and bandwidth-constrained environments.
 
 \item A methodology for determining an appropriate set of features for
-prediction, regardless of the underlying prefetcher used.  More details are
+prediction, regardless of the underlying prefetcher used. More details are
 explained in Section \ref{Method-Features}.
 
 \end{itemize}
 
 In a single core configuration, PPF increases performance by 6.84\%
-compared to the underlying prefetcher, SPP.  In a multi-core system running a
+compared to the underlying prefetcher, SPP. In a multi-core system running a
 mixes of memory intensive SPEC CPU 2017 traces, PPF saw an improvement
 of 11.9\% over SPP for a 4-core system, and 10.67\% for an 8-core system.
 
 % djimenez - cutting this
 %The paper is organized as follows. Section~\ref{Background} describes
-%background work and summarizes SPP.  Section~\ref{Arch} gives the 
+%background work and summarizes SPP. Section~\ref{Arch} gives the 
 %architectural overview of PPF. Section~\ref{Impl} discusses the
 %implementation of PPF using SPP and the particular features used.
 %Section~\ref{Method} gives the evaluation methodology and explores the feature
-%space for perceptron learning.  Section~\ref{Results} evaluates the
+%space for perceptron learning. Section~\ref{Results} evaluates the
 %performance of the prefetcher and Section~\ref{Conclusion} concludes the
 %paper.

@@ -43,14 +43,14 @@ The block size is fixed at 64 bytes. Prefetching is only triggered at an L2
 cache demand accesses but could be directed to the L2 or last-level cache. No
 L1 data level prefetching is done. The LRU replacement policy is used on all
 levels of cache hierarchies. Branch prediction is done using the perceptron
-branch predictor~\cite{PerceptronPredictor}.  The page size is 4KB.  ChampSim operates
-all the prefetchers strictly in the physical address space.
+branch predictor~\cite{PerceptronPredictor}. The page size is 4KB. 
+ChampSim operates all the prefetchers strictly in the physical address space.
 
 \subsection{Testing Under Additional Memory Constraints}
 \label{Method-AdditionalMem}
 The default single-core configuration simulates a 2MB LLC and a single channel
-DRAM with 12.8GB/s bandwidth.  We extend the simulations to include memory
-constraints introduced in DPC-2.  Specifically we look at the following two
+DRAM with 12.8GB/s bandwidth. We extend the simulations to include memory
+constraints introduced in DPC-2. Specifically we look at the following two
 variations: Low Bandwidth DRAM, where DRAM bandwidth is limited to 3.2 GB/s,
 and small LLC, where the LLC size is reduced to 512 KB All the multi-core
 simulations are only done in the default configuration.
@@ -62,82 +62,83 @@ simulations are only done in the default configuration.
 
 %This is the first time that SPEC CPU 2017 benchmark suite~\cite{SPEC2017}
 %has been used to characterize and measure the prefetch performance.
-We use the SPEC CPU 2017 benchmark suite~\cite{SPEC2017}.  We use all the 20
-workloads available in the SPEC CPU 2017 suite.  Using the SimPoint~\cite{SimPoint}
+We use the SPEC CPU 2017 benchmark suite~\cite{SPEC2017}. We use all the 20
+workloads available in the SPEC CPU 2017 suite. Using the SimPoint~\cite{SimPoint}
 methodology, we identified 95 different program segments of 1 Billion
 instructions each.
 
-\textit{Single-core performance:} For single-core simulations, we use 200
+\noindent \textit{Single-core performance:} For single-core simulations, we use 200
 million instructions to warm-up the microarchitectural structures and the next
 one billion instructions to do detailed simulations and collect run-time
 statistics. We report the IPC speedup over the baseline of no prefetching.
-The final number reported is the geometric mean of the speedup achieved on
-individual traces.
+The final numbers reported are the geometric mean of the weighted mean speedup 
+achieved per application using the SimPoint methodology.\\
 
-\textit{Multi-core performance:} For multi-application workloads, we generate
+\noindent \textit{Multi-core performance:} For multi-application workloads, we generate
 100 random mixes and another 100 mixes from the memory intensive subset of
-SPEC CPU 2017.  For 4-core workload, 200 Million instructions are used for warm-up
+SPEC CPU 2017. For 4-core workload, 200 Million instructions are used for warm-up
 and additional 1 Billion instruction simulated for collecting statistics.
 Each CPU keeps executing its workload till the last CPU completes one billion
-instructions after warm-up.  For collecting IPC and other data, only the first
-billion instructions are considered as the region of interest.
+instructions after warm-up. For collecting IPC and other data, only the first
+billion instructions are considered as the region of interest.\\
 
 Here we report the weighted speedup normalized to baseline
-\textit{i.e.}, no prefetching.  For each of the workloads running on a
+\textit{i.e.}, no prefetching. For each of the workloads running on a
 particular core of the 4-core 8 MB LLC system, we compute
-IPC\textsubscript{i}.  We then find the IPC\_isolated\textsubscript{i}
+IPC\textsubscript{i}. We then find the IPC\_isolated\textsubscript{i}
 of the same workload running in isolated 1-core 8 MB LLC environment.
 Then we calculate the total weighted-IPC for a given workload mix as
-$\Sigma$ (IPC\textsubscript{i} / IPC\_isolated\textsubscript{i}).  For
+$\Sigma$ (IPC\textsubscript{i} / IPC\_isolated\textsubscript{i}). For
 each of the 100 workload-mix, the sum obtained is normalized to the
 weighted-IPC calculated similarly for baseline case \textit{i.e.}, no
-prefetching, to get the weighted-IPC-speedup.  Finally the geometric
+prefetching, to get the weighted-IPC-speedup. Finally the geometric
 mean of these 100 weighted-IPC-speedup is reported as the effective
 speedup obtained by the prefetching scheme.
 
 We repeat the same process for 8-core workloads, correspondingly with 16MB
-LLC.  The only difference is that 20 million warm-up instructions and 100
-million full instructions are executed.  This is done so as to keep the
+LLC. The only difference is that 20 million warm-up instructions and 100
+million full instructions are executed. This is done so as to keep the
 simulation run-time within reasonable limits as a single 8-core mix takes up
-to 3 days to simulate one billion instructions.
+to 3 days to simulate one billion instructions.\\
 
-\textit{Validation:} We cross-validated our PPF model using SPEC
-CPU 2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks.  For
+\noindent \textit{Validation:} We cross-validated our PPF model using SPEC
+CPU 2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks. For
 single-core SPEC CPU 2006, we developed 94 simpoints spread across all the 29
 applications. For multi-core, we followed the same methodology as SPEC CPU 2017.
 For CloudSuite, we used the traces made available for the 2nd Cache
-Replacement Competition (CRC-2)~\cite{CRC_2}.  The traces include 4 4-core
+Replacement Competition (CRC-2)~\cite{CRC_2}. The traces include 4 4-core
 applications with 6 distinct phases per application.
 
 In total, we used 285 traces representing workloads across 53 applications.
 Throughout the paper, we consider memory intensive subset as the
-traces with LLC MPKI > 1.  This includes 48 out of the 95 simpoints
+traces with LLC MPKI > 1. This includes 48 out of the 95 simpoints
 developed for SPEC CPU 2017. For SPEC CPU 2006, this includes 48 out of 94 simpoints.
 
 \subsection{Prefetchers Simulated}
 \label{Method-Prefetchers}
 We compared PPF against three of the latest state of the art hardware-only
 prefetchers: Best Offset Prefetcher (BOP), DRAM Aware - Access Map Pattern
-Matching (DA-AMPM)~\cite{DA_AMPM} and Signature Path Prefetcher (SPP).  BOP was
-the winner of 2nd Data Prefetching Championship.  DA-AMPM is the enhanced
-version of AMPM, modified to account for DRAM row buffer locality.  SPP has
-been shown to outperform BOP on SPEC CPU 2006 traces.  For each of these, we
+Matching (DA-AMPM) \cite{DA_AMPM} and Signature Path Prefetcher (SPP). BOP was
+the winner of 2nd Data Prefetching Championship. DA-AMPM is the enhanced
+version of AMPM, modified to account for DRAM row buffer locality. SPP has
+been shown to outperform BOP on SPEC CPU 2006 traces. For each of these, we
 compare their speedups taking no prefetching as the baseline.
 
 \subsection{Developing Features for PPF}
 \label{Method-Features}
 This section describes the intuition and analysis that went behind developing
-the features.  As noted earlier, we developed a set of nine features that allow
+the features. As noted earlier, we developed a set of nine features that allow
 the perceptron layer to correlate prefetching decision with the program
-context.  To study the correlation across each feature, we study statistically
+context. To study the correlation across each feature, we study statistically
 the perceptron weights and try to interpret their distribution. \\ \\
 %
-\textbf{Global Pearson's Correlation}\newline For this experiment, we examine
+\textbf{Global Pearson's Correlation}\newline 
+For this experiment, we examine
 the perceptron weights at the end of all trace execution by which time the
-weights have settled to steady values.  The weights obtained from running all
-the SPEC CPU 2017 traces are concatenated.  The feature with bulk of the
+weights have settled to steady values. The weights obtained from running all
+the SPEC CPU 2017 traces are concatenated. The feature with bulk of the
 perceptron weights concentrated around 0 or small magnitude numbers show a
-weak correlation with the prefetching outcome.  On the other hand, features
+weak correlation with the prefetching outcome. On the other hand, features
 with most of the weights saturated around highest value (+15) show a high
 positive correlation and the features with weights close to the lowest value
 (-16) show a strong negative correlation.
@@ -170,56 +171,64 @@ positive correlation and the features with weights close to the lowest value
 We plot a histogram for each feature depicting weights distribution from -16
 to +15 and generate the Pearson's correlation factor for that feature.
 Pearson's factor is a numerical measure ranging from -1 to 1 of the degree of
-linear correlation between two variables.  The magnitude of Pearson's factor
+linear correlation between two variables. The magnitude of Pearson's factor
 gives the extent of correlation and the sign indicates whether it is a
-positive correlation or a negative correlation.  Values close to 0 suggest a
-low correlation or at times, noisy data.  A value of +1/-1 suggests a
+positive correlation or a negative correlation. Values close to 0 suggest a
+low correlation or at times, noisy data. A value of +1/-1 suggests a
 perfectly linear positive / negative correlation respectively.
-Figure~\ref{Fig:Hist} depicts the histogram distribution of trained weights,
-for a feature with high and another with moderate Pearson's coefficient.
 
-Figure~\ref{Fig:Pvals} shows all the features used, arranged in the increasing
-order of their Pearson's factor.  As can be seen 5 out of the 9
-features provide a moderate to high correlation, with the magnitude of
-P-value > 0.6.  The single most important feature, 
-\textit{Confidence XOR Page address} helps provide
+As a part of our perceptron feature selection methodology, we explored a wide 
+variety of features to begin with. Features with a low 
+Pearson's coefficient were rejected as they didn't provide much useful 
+correlation. Figure~\ref{Fig:Hist} depicts the histogram distribution of 
+trained weights for two features. The first feature, 
+\textit{Confidence XOR Page address} has the highest observed P-value, 
+hence was retained. On the other hand, the second feature, \textit{Last Signature}
+did not provide any meaningful correlation and hence was rejected. 
+This is visible from the bulk of its trained weights settling to near zero values.
+
+Figure~\ref{Fig:Pvals} shows all the features which are finally used, 
+arranged in the increasing order of their Pearson's factor. 
+As can be seen 5 out of the 9 features provide a moderate to high 
+correlation, with the magnitude of P-value > 0.6. The single most 
+important feature, \textit{Confidence XOR Page address} helps provide
 a correlation to prefetch outcome with a factor of 0.90. \\ \\
 %
 \textbf{Per Trace Correlation} \newline Another important way to look
 at the perceptron features is to see how much their contribution
-varies across the traces.  Here we give special attention to features
-with low P-values in.  Figure~\ref{Pvals_Traces} shows the
+varies across the traces. Here we give special attention to features
+with low P-values in. Figure~\ref{Fig:Pvals_Trace} shows the
 variation of P-values for three features : \textit{PC XOR Delta},
 \textit{Signature XOR Delta} and 
-\textit{PC XOR Depth}; across all the SPEC CPU 2017 traces.  
+\textit{PC XOR Depth}; across all the SPEC CPU 2017 traces. 
 For simplicity, the traces are arranged in an
-increasing order of contribution made by the feature and the trace
-names have been omitted.  It can be seen that even features with a low
+increasing order of contribution made by the. 
+It can be seen that even features with a low
 overall correlation provide useful correlation (magnitude > 0.5) for
 a significant number of traces. \\ \\
 %
-\textbf{Trimming Features Using Correlation} \newline Beside
+\textbf{Trimming Features Using Cross-correlation} \newline Beside
 providing interesting insights into prefetching behavior, P-value can
 also be used for feature selection and prefetcher tuning.
 
-As we examine correlation of each feature with the final outcome, we also
-study correlation between the features.  We used the above methodology to
+As we examined correlation of each feature with the final outcome, we also
+studied correlation between the features. We used the above methodology to
 eliminate features providing little information that has already been captured
 in other features.
 
-We initially came up a mix of 23 features- primary and composite.  By studying
+We initially came up a mix of 23 features. By studying
 cross correlation of each of these features against others in a 23$\times$23
 matrix, we identified pairs of features with correlation factor > 0.9 in
 magnitude and eliminated redundant features, reducing the feature count to 9.
-Thus, in the final implementation of PPF, no two features have high
-correlation between them.  This way we can be sure that each feature makes a
+Thus, in the final implementation of PPF, no two features have a high
+correlation between them. This way we can be sure that each feature makes a
 contribution that cannot be captured using other features.
 
 Secondly, studying the relative importance of each feature enabled us to vary
-the number of entries dedicated for each feature.  Features with higher
+the number of entries dedicated for each feature. Features with higher
 correlation, \textit{cache line} and \textit{page address} were given most
-importance and allowed full 12-bits of indexing.  Features like \textit{IP XOR
-delta} and \textit{IP XOR depth} with a low overall P-value were allocated
+importance and allowed full 12-bits of indexing. Features like \textit{PC XOR
+delta} and \textit{PC XOR depth} with a low overall P-value were allocated
 fewer entries in the feature table.
 
 %To conclude, in the above discussion we justify the features for
@@ -242,13 +251,15 @@ fewer entries in the feature table.
                     	&    & useful demand fetch\\
          Perc Decision 	& 1  & Prefetched vs Not-prefetched \\
     \hline
-        PC 		& 12 & \multirow{4}{4.8cm}{Meta-data required for perceptron}\\
-        Address 	& 24 & \multirow{4}{1.1cm}{training}\\
+        PC 		& 12 & \\
+        Address 	& 24 & \\
+        Curr Signature 	& 10 & \multirow{2}{4.8cm}{Meta-data required for perceptron}\\
+	PC$_i$ Hash	& 12 & \multirow{2}{1.1cm}{training}\\
         Delta 		& 7  & \\
-        Curr Signature 	& 12 & \\
         Confidence 	& 7  & \\
+	Depth		& 4  & \\
     \hline
-        \multicolumn{3}{|c|}{\textbf{Total 84 bits}}\\
+        \multicolumn{3}{|c|}{\textbf{Total 85 bits}}\\
     \hline
     \end{tabular}
     \caption{Meta-data Stored in Prefetch Table}
@@ -257,17 +268,17 @@ fewer entries in the feature table.
 
 
 In this section, we analyze the hardware overhead required to
-implement PPF.  The Prefetch Table was enhanced to accommodate
-storing of meta-data for perceptron training.  Table
+implement PPF. The Prefetch Table was enhanced to accommodate
+storing of meta-data for perceptron training. Table
 \ref{tab:PTable_metadata} depicts the meta-data stored for each entry in
-the Prefetch Table.  Table \ref{tab:PPF_overhead} shows the total
-storage overhead of PPF implementation.  The hardware budget for
-2nd Data Prefetching championship was 32 KB.  Keeping that in mind 
+the Prefetch Table. Table \ref{tab:PPF_overhead} shows the total
+storage overhead of PPF implementation. The hardware budget for
+2nd Data Prefetching championship was 32 KB. Keeping that in mind 
 the considerable speedup PPF obtained over the winner, the extra hardware
-budget can be accounted for.  The extra hardware also makes the
-overall scheme more scalable than SPP.  In the original SPP paper, it
+budget can be accounted for. The extra hardware also makes the
+overall scheme more scalable than SPP. In the original SPP paper, it
 was demonstrated that adding extra hardware brings little advantage in
-terms of performance gain.  The newly added perceptron tables can be
+terms of performance gain. The newly added perceptron tables can be
 scaled to increase / decrease features depending on the permitted
 budget.
 
@@ -328,12 +339,12 @@ budget.
 
 
 In terms of computations, the perceptron mechanism only introduces an
-extra adder tree.  The hash perceptron mechanism makes sure than there
+extra adder tree. The hash perceptron mechanism makes sure than there
 is no actual vector multiplication happening in the hardware.
 Obtaining the perceptron sum requires addition of 9 5-bit numbers.
 Using an adder tree of 4 5-bit adders, this can be done in
-ceil($log_{2}9$) = 4 steps.  Perceptron update only requires weight
-update by +1 or -1.  Thus, all the operations required for perceptron
+ceil($log_{2}9$) = 4 steps. Perceptron update only requires weight
+update by +1 or -1. Thus, all the operations required for perceptron
 inferencing or updating the states of the perceptrons can be
 easily done in the time constraints of L2 Cache Accesses.
 

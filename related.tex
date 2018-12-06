@@ -30,7 +30,7 @@ the referenced block. These features are used to index into weight tables, and
 the weights are then thresholded to generate a prediction. When a block from one
 of a few sampled sets~\cite{sdbp} is reused or evicted, the corresponding weights
 are decremented or incremented, according to the perceptron
-learning rule.  Multiperspective Reuse Prediction~\cite{Multiperspective}
+learning rule. Multiperspective Reuse Prediction~\cite{Multiperspective}
 improves on Perceptron Learning by contributing many new features.
 
 %features. Compared to previous work that focuses on one or two features at a
@@ -57,16 +57,16 @@ Spatial prefetchers include such well-understood examples as the next-line (or
 next-$n$-line) prefetcher, and the stream prefetcher, and are distinguished by prefetching
 data without regard for the order in which the data will be accessed.
 In addition to simpler these, Somogyi \textit{et al.} 
-propose Spatial Memory Streaming (SMS)~\cite{SMS}.  SMS works by learning
+propose Spatial Memory Streaming (SMS)~\cite{SMS}. SMS works by learning
 the spatial footprint of all data used by a program within a region of memory,
 and when that region is revisited by the program, the same spatial footprint
-is prefetched.  Ishii \textit{et al.} propose the Access Map Pattern Matching 
+is prefetched. Ishii \textit{et al.} propose the Access Map Pattern Matching 
 prefetcher (AMPM)~\cite{AMPM}, which creates a map of all accessed lines within a region
 of memory, and then analyzes this map on every access to see if any 
 fixed-stride pattern can be identified and prefetched that is centered on 
 the current access. Pugsley \textit{et al.} propose the Sandbox Prefetcher~\cite{Sandbox},
 which analyzes candidate fixed-offset prefetchers in a sandboxed environment
-to determine which is most suitable for the current program phase.  Michaud
+to determine which is most suitable for the current program phase. Michaud
 proposes the Best-Offset Prefetcher~\cite{BOP}, which determines the optimal
 offset to prefetch while considering memory latency and prefetch timeliness.
 
@@ -82,8 +82,8 @@ offset to prefetch while considering memory latency and prefetch timeliness.
 %related prefetchers~\cite{STMS,Temporal_Instruction_Fetch}.
 
 %Other work also considers prefetch timeliness. Michaud proposed the
-%Best-Offset prefetcher~\cite{BOP}.  A prefetch offset is set automatically and
-%dynamically tries to adapt to the application behavior.  A good prefetch
+%Best-Offset prefetcher~\cite{BOP}. A prefetch offset is set automatically and
+%dynamically tries to adapt to the application behavior. A good prefetch
 %offset is determined by looking at two recent access to a particular block
 %that did not happen too recently. The time between both accesses should be
 %greater than the latency for completing a prefetch request.
@@ -91,13 +91,13 @@ offset to prefetch while considering memory latency and prefetch timeliness.
 \subsection{Lookahead Prefetchers}
 
 Unlike spatial prefetchers, lookahead prefetchers take program order into
-account when they make predictions.  Shevgoor \textit{et al.} propose the Variable 
+account when they make predictions. Shevgoor \textit{et al.} propose the Variable 
 Length Delta Prefetcher (VLDP)~\cite{VLDP} that correlates histories of
 deltas between cache line accesses within memory pages with the next delta
-within that page.  SPP~\cite{SPP} and KPC's prefetching component~\cite{KPC} are
-more recent examples of lookahead prefetchers.  They try to predict not only what
+within that page. SPP~\cite{SPP} and KPC's prefetching component~\cite{KPC} are
+more recent examples of lookahead prefetchers. They try to predict not only what
 data will be used in the future, but also the precise order in which the data
-will be used, within a given page.  Predictions made by lookahead prefetchers can
+will be used, within a given page. Predictions made by lookahead prefetchers can
 be fed back into their prediction mechanisms to predict even further down 
 a speculative path of memory acesses. These prefetchers can also generalize their
 learned patterns from one page, and use those patterns to make predictions in 
@@ -120,17 +120,17 @@ other pages.
 
 %not sure this is where this section was going, I just kidna went with it. 
 
-A low-accuracy aggressive prefetcher can significantly harm performance.  To
+A low-accuracy aggressive prefetcher can significantly harm performance. To
 minimize interference from prefetching, Wu \textit{et al.} propose
-PACMan~\cite{pacman}, a prefetch-aware cache management policy.  PACMan
+PACMan~\cite{pacman}, a prefetch-aware cache management policy. PACMan
 dedicates some LLC sets to each of three competing policies that treat demand
 and prefetch requests differently, using the policy in the rest of the cache that shows the fewest
 misses. Seshadri \textit{et al.} propose ICP~\cite{icp}, which
 demotes a prefetch to the lowest reuse priority on a demand hit, based on the
-observation that most prefetches are dead after their first hit.  To address
+observation that most prefetches are dead after their first hit. To address
 prefetcher-caused cache pollution, it also uses a variation of EAF~\cite{eaf}
 to track prefetching accuracy, and inserts only accurate prefetches to the
-higher priority position in the LRU stack.  Jain \textit{et al.} propose
+higher priority position in the LRU stack. Jain \textit{et al.} propose
 Harmony~\cite{Harmony} to accomodate prefetches in their MIN 
 algorithm-inspired Hawkeye cache management system.
 
@@ -138,8 +138,8 @@ algorithm-inspired Hawkeye cache management system.
 
 Peled \textit{et al.} introduce interesting ideas for on-line Reinforcement
 Learning and dynamically scaling the magnitude of feedback given to the
-baseline prefetcher~\cite{Semantics}.  The prefetcher relies on compiler
-support for getting features to build the context.  Liao \textit{et al.}
+baseline prefetcher~\cite{Semantics}. The prefetcher relies on compiler
+support for getting features to build the context. Liao \textit{et al.}
 focuse on prefetching for data center applications~\cite{Datacenter}. They
 use offline machine learning algorithms such as SVMs and logistic regression
 to do a parametric search for an optimal prefetcher configuration.
