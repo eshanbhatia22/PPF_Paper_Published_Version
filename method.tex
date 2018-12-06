@@ -80,7 +80,7 @@ SPEC CPU 2017. For 4-core workload, 200 Million instructions are used for warm-u
 and additional 1 Billion instruction simulated for collecting statistics.
 Each CPU keeps executing its workload till the last CPU completes one billion
 instructions after warm-up. For collecting IPC and other data, only the first
-billion instructions are considered as the region of interest.\\
+billion instructions are considered as the region of interest.
 
 Here we report the weighted speedup normalized to baseline
 \textit{i.e.}, no prefetching. For each of the workloads running on a
@@ -111,8 +111,9 @@ applications with 6 distinct phases per application.
 
 In total, we used 285 traces representing workloads across 53 applications.
 Throughout the paper, we consider memory intensive subset as the
-traces with LLC MPKI > 1. This includes 48 out of the 95 simpoints
-developed for SPEC CPU 2017. For SPEC CPU 2006, this includes 48 out of 94 simpoints.
+applications with SimPoint weighted LLC MPKI > 1. This includes 11 out of 
+20 SPEC CPU 2017 applications. For SPEC CPU 2006, this includes 16 out of 
+29 applications.
 
 \subsection{Prefetchers Simulated}
 \label{Method-Prefetchers}
