@@ -11,6 +11,7 @@ summarized in Table~\ref{tab:Sim_params}.
 
 \begin{table}[]
     \centering
+    \begin{adjustbox}{width=0.9\columnwidth}
     \begin{tabular}{|c|c|}
     \hline
     	 Block & Configuration\\
@@ -32,6 +33,7 @@ summarized in Table~\ref{tab:Sim_params}.
 						& 64-bit channel, 1600MT/s\\
     \hline
     \end{tabular}
+    \end{adjustbox}
     \caption{Simulation Parameters}
     \label{tab:Sim_params}
 \end{table}
@@ -240,6 +242,7 @@ fewer entries in the feature table.
 
 \begin{table}[ht]
     \centering
+    \begin{adjustbox}{width=0.9\columnwidth}
     \begin{tabular}{|c|c|c|}
     \hline
         \textbf{Field} &
@@ -263,6 +266,7 @@ fewer entries in the feature table.
         \multicolumn{3}{|c|}{\textbf{Total 85 bits}}\\
     \hline
     \end{tabular}
+    \end{adjustbox}
     \caption{Meta-data Stored in Prefetch Table}
     \label{tab:PTable_metadata}
 \end{table}
@@ -286,8 +290,9 @@ scaled to increase / decrease features depending on the permitted
 budget.
 
 \begin{table}[h]
-\begin{adjustwidth}{-0.1cm}{}
+\begin{adjustwidth}{}{}
     \centering
+    \begin{adjustbox}{width=0.8\columnwidth}
     \begin{tabular}{|c|c|c|c|}
     \hline
         \textbf{Structure} &
@@ -331,6 +336,7 @@ budget.
         \multicolumn{4}{|c|}{\textbf{Total: 3,222,940 bits = 39.34 KB}}\\
     \hline
     \end{tabular}
+    \end{adjustbox}
     \caption{SPP-Perc Storage Overhead}
     \label{tab:PPF_overhead}
 \end{adjustwidth}

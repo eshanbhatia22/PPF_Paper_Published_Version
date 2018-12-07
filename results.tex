@@ -40,8 +40,8 @@ simpoints. PPF fails to match the improvement offered by BOP only for
 At its peak, PPF manages a speedup of a factor of over \textbf{3.39x} on one of the
 {\tt 602.gcc\_s} traces. This also corresponds to speedup gain of
 \textbf{60\%} over the next best prefetcher for that trace -- BOP. In general, benchmarks
-{\tt 603.bwaves\_s}, {\tt 605.mcf\_s}, {\tt 623. xalancbmk\_s} and {\tt
-649.fotonik3d\_s} benefit the most from PPF, with the speedup over SPP ranging
+{\tt 603.bwaves\_s}, {\tt 605.mcf\_s}, {\tt {623.xalancbmk}\_s}~~and~~{\tt
+649.fotonik3d\_s}  benefit the most from PPF, with the speedup over SPP ranging
 from \textbf{10\% to 25\%}.
 
 % djimenez: is this geometric mean? if so, say so.
@@ -50,7 +50,7 @@ On the full SPEC CPU 2017 suite, PPF improves the geometric mean IPC of
 the baseline by \textbf{15.24\%}, which is \textbf{2.27\%} better 
 than the next best prefetcher -- SPP.\\ \\
 %
-\begin{figure}[h]
+\begin{figure}[ht]
 \includegraphics[width=\columnwidth]{Coverage}
 \caption{Fraction of Cache Misses Covered}
 \label{Fig:Coverage}
@@ -147,34 +147,25 @@ prefetcher. On the other hand, PPF outperforms all the other prefetchers on
 gives a better improvement under small LLC condition and matches the best
 prefetcher, BOP, under low DRAM bandwidth conditions.
 
-\begin{figure}[ht]
-\includegraphics[width=0.8\columnwidth,height=4cm,keepaspectratio]{SPEC2006}
-\caption{SPEC CPU 2006 Single-Core IPC Speedup}
-\label{Fig:SPEC2006_1core}
-\end{figure}
-
-\begin{figure}[ht]
-\includegraphics[width=0.9\columnwidth,height=3.5cm,keepaspectratio]{CloudSuite}
-\caption{IPC Speedup for CloudSuite Workloads}
-\label{Fig:CloudSuite}
-\end{figure}
-
 %% \begin{figure}[ht]
-%%   \centering
-%%   \begin{subfigure}{0.5\columnwidth}
-%%     \centering
-%%     \includegraphics[width=0.45\columnwidth]{CloudSuite}
-%%     \caption{CloudSuite Workloads}
-%%   \end{subfigure}
-%%   %
-%%   \begin{subfigure}{0.5\columnwidth}
-%%     \centering
-%%     \includegraphics[width=0.45\columnwidth]{SPEC2006}
-%%     \caption{Single Core SPEC CPU 2006}
-%%   \end{subfigure}
-%%   \caption{Performance with Unseen Benchmarks}
-%%   \label{Fig:CrossVal}
+%% \includegraphics[width=0.8\columnwidth,height=4cm,keepaspectratio]{SPEC2006}
+%% \caption{SPEC CPU 2006 Single-Core IPC Speedup}
+%% \label{Fig:SPEC2006_1core}
 %% \end{figure}
+%% 
+%% \begin{figure}[ht]
+%% \includegraphics[width=0.9\columnwidth,height=3.5cm,keepaspectratio]{CloudSuite}
+%% \caption{IPC Speedup for CloudSuite Workloads}
+%% \label{Fig:CloudSuite}
+%% \end{figure}
+
+\begin{figure}[ht]
+\begin{adjustwidth}{-0.4cm}{}
+\includegraphics[width=1.1\columnwidth]{CrossVal}
+\caption{IPC Speedup for Unseen Workloads}
+\label{Fig:CrossVal}
+\end{adjustwidth}
+\end{figure}
 
 \subsection{Cross Validation}
 \label{Results-CrossVal}
@@ -191,8 +182,9 @@ prefetcher, BOP, under low DRAM bandwidth conditions.
 % [EB] Resolved. Increased precision of values. But yes, BOP / DA-AMPM 
 % have really close numbers for SPEC 2006
 
-Figure~\ref{Fig:SPEC2006_1core} shows the speed-up achieved by BOP, SPP and
-PPF on the memory intensive subset and the full SPEC CPU 2006 suite. 
+Figure~\ref{Fig:CrossVal}(a) shows the speed-up achieved by BOP, SPP and
+PPF on the memory intensive subset and the full SPEC CPU 2006 suite for a
+single-processor machine. 
 PPF provides a speedup of \textbf{36.3\%} over the baseline on the 
 memory intensive subset of SPEC CPU
 2006 benchmark, giving an improvement of \textbf{6.1\%} over SPP and
@@ -205,7 +197,7 @@ For 4-core memory intensive mixes, PPF improves the baseline by
 mixes, the speedup over the baseline is \textbf{47.8\%}, \textbf{11.3\%} ahead
 of SPP.
 
-Figure~\ref{Fig:CloudSuite} shows the performance benefit comparison of all
+Figure~\ref{Fig:CrossVal}(b) shows the performance benefit comparison of all
 the prefetch schemes on 4 different applications in the CloudSuite benchmark.
 In general, these applications are prefetch agnostic. Even so, PPF manages a
 \textbf{3.78\%} improvement over no prefetching, putting it ahead of the next
