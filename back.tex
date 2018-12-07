@@ -1,30 +1,34 @@
 \section{Motivation and Prior Work}
 \label{Background}
 
-In this section we discuss the most closely related work to our proposed
-technique. See Section~\ref{related} for other relevant work.
+In this section we discuss the most closely related work to our
+proposed technique. See Section~\ref{related} for other relevant work.
 
-The idea of prefetching begins with Jouppi's \textit{Instruction Stream
-Buffers}~\cite{ISB}. Early prefetchers detected stride access patterns in order to
-predict future memory requests~\cite{Smith,Baer,Stride}. Modern prefetching
-mechanisms are more sophisticated as they look into past memory
+The idea of prefetching begins with Jouppi's \textit{Instruction
+  Stream Buffers}~\cite{ISB}.  Early prefetchers detected stride access
+patterns in order to predict future memory
+requests~\cite{Smith,Baer,Stride}. Modern prefetching mechanisms are
+more sophisticated as they look into past memory
 behavior~\cite{Address_Correlated,AMPM},
 locality~\cite{Spatial_Pattern,SMS,Temporal_Instruction_Fetch,Off_Chip,STMS,SMS_JILP},
-control-flow speculation~\cite{BFetch,MTBFetch}, and many other aspects to
-detect complex access patterns in modern applications.
+control-flow speculation~\cite{BFetch,MTBFetch}, and many other
+aspects to detect complex access patterns in modern applications.
 
 \subsection{Lookahead-based Prefetchers}
 
-%% Simple stride prefetching techniques only detect sequences of addresses that differ by a constant value and fail to capture diverse memory access patterns. 
-Lookahead prefetchers can learn complicated patterns by collecting histories of
-observed data access patterns.
+%% Simple stride prefetching techniques only detect sequences of
+%% addresses that differ by a constant value and fail to capture
+%% diverse memory access patterns.
+Lookahead prefetchers can learn complicated patterns by collecting
+histories of observed data access patterns.
 %EB: Didn't really understand this: 
-%% "and correlating these with the strides, by considering each new page in a vacuum."
-Kim {\em et. al.} proposed
-SPP~\cite{SPP}, a confidence-based lookahead prefetcher. SPP creates a
-signature associated to a memory request by compressing the history of
-accesses. By correlating the signature with future likely delta patterns, SPP
-learn both simple and complicated memory access patterns quickly. Our proposed
+%% "and correlating these with the strides, by considering each new
+%% page in a vacuum."
+Kim {\em et. al.} proposed SPP~\cite{SPP}, a confidence-based
+lookahead prefetcher.  SPP creates a per-page signature by compressing
+the history of recent accesses to a given page.  By correlating the
+signature with future likely access patterns, SPP learn both simple
+and complicated memory access patterns quickly.  Our proposed
 technique builds upon SPP. Thus, we describe SPP in more detail.
 
 \subsection{Baseline Prefetcher: The Signature Path Prefetcher}
