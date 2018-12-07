@@ -41,7 +41,7 @@ that prefetcher's accuracy is 66.7\%.
 \caption{Impact of aggressive prefetching on performance. X-axis
   represents increasingly aggressive prefetch lookahead depth. All the
   metrics have been normalized to the least aggressive
-  configuration. As can be seen, total number of prefetches increases
+  configuration. As can be seen, total number of prefetches increase
   at a higher rate than the number of good prefetches, leading to IPC
   reduction.}
 \label{Fig:Motivation}
@@ -65,18 +65,18 @@ Lookahead prefetchers such as SPP provide a mechanism to speculate an
 arbitrary number of references ahead of the initial triggering miss.
 In SPP, a throttling confidence threshold is then used to ensure that
 the lookahead stops when confidence falls too low to ensure that
-prefetches are accurate.  In the figure, we remove this threshold and
-instead allow the prefetcher to lookahead an of arbitrary depth from 7
-to 15.  The figure depicts the behavior of the {\tt 603.bwaves\_s}
-SPEC CPU 2017 benchmark.  The IPC, total number of prefetches
-suggested by the prefetcher (TOTAL\_PF) and the actual useful
-predictions (GOOD\_PF), all have been normalized to the least
-aggressive version of the prefetcher (depth 7).  As the look-ahead
-depth increases, so do useful prefetches, and hence coverage.  This
+prefetches are accurate.  In the figure, we iteratively re-tuned 
+this threshold and allowed the prefetcher to lookahead an of 
+arbitrary depth from 7 to 15. The figure depicts the behavior 
+of the {\tt 603.bwaves\_s} SPEC CPU 2017 benchmark. The IPC, the 
+total number of prefetches suggested by the prefetcher (TOTAL\_PF) 
+and the actual useful predictions (GOOD\_PF), all have been normalized 
+to the least aggressive version of the prefetcher. As the look-ahead
+depth increases, so do useful prefetches, and hence coverage. This
 coverage, however, comes at a cost of total prefetches increasing at
-an even higher rate.  This leads to cache pollution and bandwidth
-contention, as is clearly visible with the reduction in IPC.  Similar
-behavior was observed in 12 other SPEC CPU 2017 benchmarks.
+an even higher rate. This leads to cache pollution and bandwidth
+contention, as is clearly visible with the reduction in IPC.  
+%Similar behavior was observed in 12 other SPEC CPU 2017 benchmarks.
 
 Therefore, a delicate balance between coverage and accuracy is
 required for a prefetcher to maximize its performance impact.

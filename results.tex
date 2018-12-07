@@ -64,9 +64,9 @@ through prefetching to the number of misses with no prefetching.
 Figure~\ref{Fig:Coverage} shows the fraction of misses in the L2 and LLC
 avoided by the various prefetchers. PPF has the highest coverage of all the
 prefetchers simulated. On the SPEC CPU 2017 benchmarks, PPF reduces misses by
-\textbf{62.5\%} and \textbf{82.8\%} in the L2 and LLC respectively. For the
-same benchmark, the next best prefetcher, DA-AMPM, covers \textbf{48.6\%} and
-\textbf{72.8\%} of the misses respectively.
+\textbf{75.5\%} and \textbf{86.9\%} in the L2 and LLC respectively. For the
+same benchmark, the next best prefetcher, DA-AMPM, covers \textbf{54.3\%} and
+\textbf{78.5\%} of the misses respectively.
 
 This superior coverage of PPF can be attributed to aggressive re-tuning of the
 underlying SPP, enabled by the Perceptron Filter making sure the high coverage
@@ -94,7 +94,7 @@ Figure~\ref{Fig:4Core_SPEC2017} shows a comparison of speedups obtained on
 4-core mixes of a memory intensive subset SPEC CPU 2017. We plot all 4
 prefetchers, normalized to the baseline. The workloads have been sorted in
 increasing order of the speedup. PPF offers a speedup of \textbf{51.2\%} on
-these traces, and improvement of \textbf{11.4\%} over the baseline SPP,
+these traces, an improvement of \textbf{11.4\%} over the underlying SPP,
 \textbf{9.7\%} over the next DA-AMPM, and \textbf{16.9\%} over BOP.
 On a different set of fully random SPEC CPU 2017 4-core mixes (not illustrated
 for space reasons), PPF provides an IPC speedup of \textbf{26.07}\% over the
@@ -182,8 +182,14 @@ prefetcher, BOP, under low DRAM bandwidth conditions.
 % [EB] Resolved. Increased precision of values. But yes, BOP / DA-AMPM 
 % have really close numbers for SPEC 2006
 
-Figure~\ref{Fig:CrossVal}(a) shows the speed-up achieved by BOP, SPP and
-PPF on the memory intensive subset and the full SPEC CPU 2006 suite for a
+Figure~\ref{Fig:CrossVal}(a) shows the performance benefit comparison of all
+the prefetch schemes on 4 different applications in the CloudSuite benchmark.
+In general, these applications are prefetch agnostic. Even so, PPF manages a
+\textbf{3.78\%} improvement over no prefetching, putting it ahead of the next
+best prefetcher, SPP, which provides a 3.08\% speedup.
+
+Figure~\ref{Fig:CrossVal}(b) shows the speed-up achieved 
+on the memory intensive subset and the full SPEC CPU 2006 suite for a
 single-processor machine. 
 PPF provides a speedup of \textbf{36.3\%} over the baseline on the 
 memory intensive subset of SPEC CPU
@@ -196,12 +202,6 @@ For 4-core memory intensive mixes, PPF improves the baseline by
 \textbf{59.1\%}, \textbf{8.6\%} ahead of SPP. For 8-core memory intensive
 mixes, the speedup over the baseline is \textbf{47.8\%}, \textbf{11.3\%} ahead
 of SPP.
-
-Figure~\ref{Fig:CrossVal}(b) shows the performance benefit comparison of all
-the prefetch schemes on 4 different applications in the CloudSuite benchmark.
-In general, these applications are prefetch agnostic. Even so, PPF manages a
-\textbf{3.78\%} improvement over no prefetching, putting it ahead of the next
-best prefetcher, SPP, which provides a 3.08\% speedup.
 
 We developed PPF to yield good performance on the SPEC CPU 2017 benchmarks.
 Nevertheless, the performance is consistently good on other benchmark suites.

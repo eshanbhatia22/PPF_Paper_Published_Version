@@ -20,7 +20,7 @@ must be filtered out. We propose to leverage perceptron-based learning as a
 mechanism to differentiate between potentially useful deeply speculated
 prefetches and likely not-useful ones. The Perceptron Prefetch Filter (PPF) is
 placed between the prefetcher and the prefetch insertion queue, as illustrated
-in figure~\ref{fig:PPF_Hierarchy}, to prevent not-useful prefetches from
+in Figure~\ref{fig:PPF_Hierarchy}, to prevent not-useful prefetches from
 polluting the higher levels of the memory hierarchy.
 
 Perceptron learning is a light-weight mechanism to pull together disparate
@@ -85,7 +85,7 @@ represents that the perceptron has learn that similar set of features are
 associated with non-useful prefetches. \newline
 
 \noindent \textbf{Recording}\\
-As shown in step 2 of figure~\ref{fig:PPF_Datapath} the prefetches that make
+As shown in step 2 of Figure~\ref{fig:PPF_Datapath} the prefetches that make
 it through the inference stage are recorded in the ``Prefetch Table''. The
 prefetch table is a 1,024-entry, direct mapped structure that contains all
 metadata required to re-index the perceptron entries for training.
@@ -123,9 +123,8 @@ On a cache block eviction, we look up the corresponding address in the
 prefetch table. If there is a valid entry with this address, the filter made a
 misprediction. The block was allocated in the L2 with a prefetch request that
 the filter should have categorized as a useless prefetch. Thus, the
-corresponding features of the prefetch request that cause these block to be
-placed in the cache are used to index the tables of weights, and those weights
-are adjusted accordingly.
+corresponding features of the prefetch request are used to re-index the tables 
+of weights, and those weights are adjusted accordingly.
 
 %wait at the same time or no?
 %Yes, and they are mutex cases

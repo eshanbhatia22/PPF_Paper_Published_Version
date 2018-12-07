@@ -36,8 +36,8 @@ practical implementation of our proposed perceptron prefetch filter
 using SPP as our baseline.  Here we describe the basic architecture of
 SPP.
 
-\noindent \textbf{Signature Table:} As shown on the right side of
-figure \ref{fig:spp_update}, the Signature Table keeps track of 256
+\noindent \textbf{Signature Table:} As shown on the left side of
+Figure~\ref{fig:spp_update}, the Signature Table keeps track of 256
 most recently accessed pages. It is meant to capture memory access
 patterns within a page boundary. SPP indexes into an entry of the
 Signature Table using the page number. For each entry corresponding to
@@ -52,10 +52,10 @@ $$New Signature = (\,Old Signature << 3 bits\,) \;\;XOR\;\;
 offset of the current and the previous memory access. In case a
 matching page entry is found, the stored signature retrieved and used
 to index into the Pattern Table.  This process is illustrated in
-figure \ref{fig:spp_update}.
+Figure~\ref{fig:spp_update}.
 
-\noindent \textbf{Pattern Table:} The Pattern Table, shown on the left
-side of figure~\ref{fig:spp_update} is indexed by the signature
+\noindent \textbf{Pattern Table:} The Pattern Table, shown on the right
+side in Figure~\ref{fig:spp_update} is indexed by the signature
 generated from the Signature Table.  Pattern Table holds predicted
 delta patterns and their confidence estimates. Each entry indexed by
 the signature holds up to 4 unique delta predictions.
@@ -98,7 +98,7 @@ the signature holds up to 4 unique delta predictions.
 down the program speculation path using its own prefetch suggestion.
 Using current prefetch as a starting point, it re-accesses the Pattern
 Table to generate further prefetches.  As illustrated in
-figure~\ref{fig:spp_structure}, it repeats the cycle of accessing
+Figure~\ref{fig:spp_structure}, it repeats the cycle of accessing
 Pattern Table and updating the signature based on highest confidence
 prefetch from the last iteration.  The iteration counter on which SPP
 manages to predict prefetch entries in the lookahead manner is
@@ -107,7 +107,7 @@ compounding the confidence in each depth. Thus as depth increases,
 overall confidence keeps decreasing.
 
 \noindent \textbf{Confidence Tracking}: As shown in
-figure~\ref{fig:spp_structure}, the Pattern Table keeps a count of
+Figure~\ref{fig:spp_structure}, the Pattern Table keeps a count of
 hits to each signature through a counter C\textsubscript{sig}. The
 number of hits for a given delta per signature are tracked using a
 counter C\textsubscript{delta}.  The confidence for a given delta is
