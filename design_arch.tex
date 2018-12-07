@@ -6,8 +6,8 @@
 \begin{figure}
   \begin{center}
   \includegraphics[width=8cm]{PPF_Hierarchy}
-    \label{fig:PPF_Hierarchy}
   \caption{PPF Architecture in the Memory Hierarchy}
+  \label{fig:PPF_Hierarchy}
   \end{center}
 \end{figure}
 
@@ -36,8 +36,8 @@ with appropriate modifications.
 \begin{figure}[ht]
   \begin{center}
   \includegraphics[width=\columnwidth]{Datapath_Separate}
-    \label{fig:PPF_Datapath}
   \caption{PPF Data Path and Operation}
+  \label{fig:PPF_Datapath}
   \end{center}
 \end{figure}
 
@@ -55,7 +55,7 @@ corresponding feature, hence, different number of bits are needed to index
 different tables. Each weight is a 5-bit saturating counter ranging from -16
 to +15. We found that having 5-bit weights provide a good trade-off between
 accuracy and area. A detailed explanation of the storage overhead of PPF can
-be found in Figure~\ref{tab:PPF_overhead}.\\
+be found in Section~\ref{Method-Overheads}.\\
 
 \noindent{\textbf{Inferencing}\\
 %ETG:is this like an explanation of how prefetching happens? 
@@ -71,16 +71,16 @@ the prefetch suggestions from the base prefetcher. To make the decision, each
 feature corresponding to a suggested prefetch is used to index a table and all
 the corresponding weights are summed. The sum denotes the confidence value
 for the suggested prefetch, and is thresholded against two different
-magnitudes: PERC\_THRESHOLD\_HI and PERC\_ THRESHOLD\_ LO.
+magnitudes: $\tau_{hi}$ and $\tau_{lo}$.
 
-Prefetches whose sum exceeds PERC\_THRESHOLD\_HI are placed into the L2 cache.
+Prefetches whose sum exceeds $\tau_{hi}$ are placed into the L2 cache.
 The higher confidence value hints the prefetch would be useful and should be
 prioritized. A prefetch for which the features result in a confidence value
-between PERC\_THRESHOLD\_LO and PERC\_THRESHOLD\_ HI is allocated in the larger
+between $\tau_{lo}$ and $\tau_{hi}$ is allocated in the larger
 LLC, as the filter is moderately confident of the future reuse of the cache
 block, but not enough to possible pollute a significantly smaller L2.
 Suggested prefetches for which the features lead to a confidence value lower
-than PERC\_THRESHOLD\_LO are not prefetched, as the low confidence value
+than $\tau_{lo}$ are not prefetched, as the low confidence value
 represents that the perceptron has learn that similar set of features are
 associated with non-useful prefetches. \newline
 
@@ -116,9 +116,8 @@ compute the sum of the corresponding weights. If the sum falls below a
 specific threshold, training occurs and the corresponding weights are adjusted
 accordingly. These thresholds are introduced in order to avoid over-training,
 helping the filter adapt quickly to changes in memory behavior. These
-thresholds are referred to as POS\_UPDATE\_THRESHOLD ($\theta_p$) and \newline
-NEG\_UPDATE\_THRESHOLD ($\theta_n$), respectively for the positive and
-negative values of training saturation.
+thresholds are referred to as $\theta_p$ and $\theta_n$, 
+respectively for the positive and negative values of training saturation.
 
 On a cache block eviction, we look up the corresponding address in the
 prefetch table. If there is a valid entry with this address, the filter made a

@@ -65,15 +65,15 @@ simulations are only done in the default configuration.
 We use the SPEC CPU 2017 benchmark suite~\cite{SPEC2017}. We use all the 20
 workloads available in the SPEC CPU 2017 suite. Using the SimPoint~\cite{SimPoint}
 methodology, we identified 95 different program segments of 1 Billion
-instructions each.
-
+instructions each.\\
+%
 \noindent \textit{Single-core performance:} For single-core simulations, we use 200
 million instructions to warm-up the microarchitectural structures and the next
 one billion instructions to do detailed simulations and collect run-time
 statistics. We report the IPC speedup over the baseline of no prefetching.
 The final numbers reported are the geometric mean of the weighted mean speedup 
 achieved per application using the SimPoint methodology.\\
-
+%
 \noindent \textit{Multi-core performance:} For multi-application workloads, we generate
 100 random mixes and another 100 mixes from the memory intensive subset of
 SPEC CPU 2017. For 4-core workload, 200 Million instructions are used for warm-up
@@ -100,7 +100,7 @@ LLC. The only difference is that 20 million warm-up instructions and 100
 million full instructions are executed. This is done so as to keep the
 simulation run-time within reasonable limits as a single 8-core mix takes up
 to 3 days to simulate one billion instructions.\\
-
+%
 \noindent \textit{Validation:} We cross-validated our PPF model using SPEC
 CPU 2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite} benchmarks. For
 single-core SPEC CPU 2006, we developed 94 simpoints spread across all the 29
@@ -268,6 +268,8 @@ fewer entries in the feature table.
 \end{table}
 
 
+\subsection{Overhead for PPF}
+\label{Method-Overheads}
 In this section, we analyze the hardware overhead required to
 implement PPF. The Prefetch Table was enhanced to accommodate
 storing of meta-data for perceptron training. Table

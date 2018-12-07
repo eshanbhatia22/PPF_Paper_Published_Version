@@ -38,8 +38,12 @@ that prefetcher's accuracy is 66.7\%.
 
 \begin{figure}[t]
 \includegraphics[width=\columnwidth]{Motivation}
-\caption{Variation of IPC, Total Prefetches and Useful Prefetches with
-  lookahead depth.}
+\caption{Impact of aggressive prefetching on performance. X-asis
+  represents increasingly aggressive prefetch lookahead depth. All the
+  metrics have been normalized to the least aggressive
+  configuration. As can be seen, total number of prefetches increases
+  at a higher rate than the number of good prefetches, leading to IPC
+  reduction.}
 \label{Fig:Motivation}
 \end{figure}
 
@@ -173,11 +177,10 @@ outlines the scope for future research. Its contributions are:
 
 \end{itemize}
 
-In a single core configuration, PPF increases performance by 6.84\%
-compared to the underlying prefetcher, SPP. In a multi-core system
-running a mixes of memory intensive SPEC CPU 2017 traces, PPF saw an
-improvement of 11.9\% over SPP for a 4-core system, and 10.67\% for an
-8-core system.  \pg{update numbers before submit}
+In a single core configuration, PPF increases performance by 3.78\%
+compared to the underlying prefetcher, SPP. In a multi-core system running a
+mixes of memory intensive SPEC CPU 2017 traces, PPF saw an improvement
+of 11.4\% over SPP for a 4-core system, and 9.65\% for an 8-core system.
 
 % djimenez - cutting this
 %The paper is organized as follows. Section~\ref{Background} describes

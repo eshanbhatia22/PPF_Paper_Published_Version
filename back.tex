@@ -1,62 +1,62 @@
-\section{Motivation and Prior Work}
+\section{Motivation}
 \label{Background}
 
 In this section we discuss the most closely related work to our
-proposed technique. See Section~\ref{related} for other relevant work.
-
-The idea of prefetching begins with Jouppi's \textit{Instruction
-  Stream Buffers}~\cite{ISB}.  Early prefetchers detected stride access
-patterns in order to predict future memory
+proposed technique.  The idea of prefetching begins with Jouppi's
+\textit{Instruction Stream Buffers}~\cite{ISB}. Early prefetchers
+detected stride access patterns in order to predict future memory
 requests~\cite{Smith,Baer,Stride}. Modern prefetching mechanisms are
 more sophisticated as they look into past memory
 behavior~\cite{Address_Correlated,AMPM},
 locality~\cite{Spatial_Pattern,SMS,Temporal_Instruction_Fetch,Off_Chip,STMS,SMS_JILP},
-control-flow speculation~\cite{BFetch,MTBFetch}, and many other
-aspects to detect complex access patterns in modern applications.
+control-flow speculation~\cite{BFetch,MTBFetch}, and other other
+aspects to detect complex memory access patterns.  See
+Section~\ref{related} for other relevant work.
 
-\subsection{Lookahead-based Prefetchers}
+% [EB:] Removing this section title and moving relevant text to next section
+%       We weren't talking about LA prefetchers here anyway, just SPP
+% \subsection{Lookahead-based Prefetchers}
+%% Simple stride prefetching techniques only detect sequences of addresses that differ by a constant value and fail to capture diverse memory access patterns. 
+% Lookahead prefetchers can learn complicated patterns by collecting
+% histories of observed data access patterns.  EB: Didn't really
+% understand this:
+%% "and correlating these with the strides, by considering each new page in a vacuum."
 
-%% Simple stride prefetching techniques only detect sequences of
-%% addresses that differ by a constant value and fail to capture
-%% diverse memory access patterns.
-Lookahead prefetchers can learn complicated patterns by collecting
-histories of observed data access patterns.
-%EB: Didn't really understand this: 
-%% "and correlating these with the strides, by considering each new
-%% page in a vacuum."
-Kim {\em et. al.} proposed SPP~\cite{SPP}, a confidence-based
-lookahead prefetcher.  SPP creates a per-page signature by compressing
-the history of recent accesses to a given page.  By correlating the
-signature with future likely access patterns, SPP learn both simple
-and complicated memory access patterns quickly.  Our proposed
-technique builds upon SPP. Thus, we describe SPP in more detail.
-
-\subsection{Baseline Prefetcher: The Signature Path Prefetcher}
+\subsection{Baseline Prefetcher: SPP}
 \label{Background-SPP}
 
-While the basic idea of perceptron based prefetch filtering is applicable to
-any look-ahead prefetcher, we develop a practical implementation of the idea
-using SPP as our baseline. Here we describe the basic architecture of SPP.\\
+Kim {\em et. al.} proposed Signature Path Prefetcher (SPP)~\cite{SPP},
+a confidence-based lookahead prefetcher.  SPP creates a signature
+associated with a page address by compressing the history of
+accesses. By correlating the signature with future likely delta
+patterns, SPP learns both simple and complicated memory access
+patterns quickly.  While the basic idea of perceptron based prefetch
+filtering is applicable to any look-ahead prefetcher, we develop a
+practical implementation of the idea
+using SPP as our baseline. Here we describe the basic architecture of SPP.
 
-\noindent \textbf{Signature Table:} The Signature Table keeps track of 256 most recently
-accessed pages. It is meant to capture memory access patterns within a page
-boundary. SPP indexes into an entry of the Signature Table using the page
-number. For each entry corresponding to a page, the table stores a `last
-block offset' and an `old signature'. Last block offset is the block offset
-of the last memory access of that given page. The block offset is calculated
-with respect to the page boundary. The signature is a 12-bit compressed
-representation of the past few memory accesses for that page. The signature
-is calculated as: $$New Signature = (\,Old Signature << 3 bits\,) \;\;XOR\;\;
-(\,Delta\,)$$ Delta is the numerical difference between the block offset of
-the current and the previous memory access. In case a matching page entry is
-found, the stored signature retrieved and used to index into the Pattern
-Table. This process is illustrated by figure \ref{fig:spp_update}.\\
+\noindent \textbf{Signature Table:} As shown in figure
+\ref{fig:spp_structure}, the Signature Table keeps track of 256 most
+recently accessed pages. It is meant to capture memory access patterns
+within a page boundary. SPP indexes into an entry of the Signature
+Table using the page number. For each entry corresponding to a page,
+the table stores a `last block offset' and an `old signature'. Last
+block offset is the block offset of the last memory access of that
+given page. The block offset is calculated with respect to the page
+boundary. The signature is a 12-bit compressed representation of the
+past few memory accesses for that page. The signature is calculated
+as:
+$$New Signature = (\,Old Signature << 3 bits\,) \;\;XOR\;\;
+(\,Delta\,)$$ Delta is the numerical difference between the block
+offset of the current and the previous memory access. In case a
+matching page entry is found, the stored signature retrieved and used
+to index into the Pattern
+Table. This process is illustrated by figure \ref{fig:spp_update}.
 
-\noindent \textbf{Pattern Table:} The Pattern Table is indexed by the signature
-generated from the Signature Table. Pattern Table holds predicted delta
-patterns and their confidence estimates. Each entry indexed by the signature
-holds up to 4 unique delta predictions. This is implemented by making the
-Pattern Table 4-way associative.\\
+\noindent \textbf{Pattern Table:} The Pattern Table is indexed by the
+signature generated from the Signature Table. Pattern Table holds
+predicted delta patterns and their confidence estimates. Each entry
+indexed by the signature holds up to 4 unique delta predictions.
 
 % djimenez: it does look like we're pushing it with all the stuff about SPP.
 % Let's describe it enough to give the reader the idea that he/she has a vague
@@ -80,31 +80,34 @@ Pattern Table 4-way associative.\\
 %% 	(+2 in this case). This, in turn generates the new memory pattern
 %% 	(New Signature). This newly learned signature pattern and the delta
 %% 	is stored in the Pattern Table.
+\noindent \textbf{Prefetch Table:} The Prefetch Table is a 1024 entry
+1-way associative table that keeps a record of last few entries
+prefetched. This proves useful for updating the prefetcher states if a
+tracked prefetch leads to a demand hit or a cache
+eviction. \textit{Note:} The original paper refers to this as the
+Prefetch Filter but since in our context filter refers to the
+perceptron filter, we will be calling this structure as the Prefetch
+Table to avoid any confusion.
 
-\noindent \textbf{Prefetch Table:} The Prefetch Table is a 1024 entry 1-way associative
-table that keeps a record of last few entries prefetched. This proves useful
-for updating the prefetcher states if a tracked prefetch leads to a demand hit
-or a cache eviction. \textit{Note:} The original paper refers to this as the
-Prefetch Filter but since in our context filter refers to the perceptron
-filter, we will be calling this structure as the Prefetch Table to avoid any
-confusion.\\
+\noindent \textbf{Lookahead Prefetching:} On each trigger, SPP goes
+down the program speculation path using its own prefetch
+suggestion. Using current prefetch as the baseline, it re-accesses the
+Pattern Table to generate further prefetches.  It repeats the cycle of
+accessing Pattern Table and updating the signature based on highest
+confidence prefetch from the last iteration. The iteration counter on
+which SPP manages to predict prefetch entries in the lookahead manner
+is characterized as its `depth'. While doing so, SPP also keeps
+compounding the confidence in each depth. Thus as depth increases,
+overall confidence keeps decreasing.
 
-\noindent \textbf{Lookahead Prefetching:} On each trigger, SPP goes down the program
-speculation path using its own prefetch suggestion. Using current prefetch as
-the baseline, it re-accesses the Pattern Table to generate further prefetches.
-It repeats the cycle of accessing Pattern Table and updating the signature
-based on highest confidence prefetch from the last iteration. The iteration
-counter on which SPP manages to predict prefetch entries in the lookahead
-manner is characterized as its `depth'. While doing so, SPP also keeps
-compounding the confidence in each depth. Thus as depth increases, overall
-confidence keeps decreasing.\\
-
-\noindent \textbf{Confidence Tracking}: The Pattern Table keeps a count of hits to each
-signature through a counter C\textsubscript{sig}. The number of hits for a
-given delta per signature are tracked using a counter C\textsubscript{delta}.
-The confidence for a given delta is approximated through C\textsubscript{d} =
-C\textsubscript{delta} / C\textsubscript{sig}. When SPP enters into a
-lookahead mode, the path confidence P\textsubscript{d} is given as:
+\noindent \textbf{Confidence Tracking}: The Pattern Table keeps a
+count of hits to each signature through a counter
+C\textsubscript{sig}. The number of hits for a given delta per
+signature are tracked using a counter C\textsubscript{delta}.  The
+confidence for a given delta is approximated through
+C\textsubscript{d} = C\textsubscript{delta} /
+C\textsubscript{sig}. When SPP enters into a lookahead mode, the path
+confidence P\textsubscript{d} is given as:
 $$P\textsubscript{d} \;=\; \alpha  \;.\;  C\textsubscript{d}  \;.\;
 P\textsubscript{d-1}$$ Here $\alpha$ represents the global accuracy,
 calculated as the ratio of the number of prefetches which led to a demand hit
@@ -122,16 +125,16 @@ on the scale of 0 to 100.
 \begin{figure}
   \begin{center}
   \includegraphics[width=\columnwidth]{SPP_Prefetch_Description}
-    \label{fig:spp_strcture}
   \caption{SPP Architecture}
+  \label{fig:spp_structure}
   \end{center}
 \end{figure}
 
 \begin{figure}
   \begin{center}
   \includegraphics[width=\columnwidth]{SPP_Update_Description}
-  \label{fig:spp_update}
   \caption{SPP Data-path Flow}
+  \label{fig:spp_update}
   \end{center}
 \end{figure}
 
@@ -183,7 +186,7 @@ of the same prefetcher. Most modern prefetchers are getting increasingly
 aggressive as that enables them to capture the complex memory access patterns 
 seen in pointer-chasing applications. Thus, we need a mechanism that is 
 orthogonal to the underlying prefetching scheme and can be used
-to prune out the useful prefetcher from the useless ones. 
+to prune out the useful prefetches from the useless ones. 
 
 Moreover, the on-line confidence mechanism used by most prefetchers is very
 rudimentary. For example, SPP's internal confidence mechanism is based on
