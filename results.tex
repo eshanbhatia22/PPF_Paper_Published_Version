@@ -151,24 +151,23 @@ prefetcher.
 %\end{adjustwidth}
 %\end{figure}
 
-% \subsection{Additional Memory Constraints}
-% \label{Results-AdditionalMem}
+\subsection{Additional Memory Constraints}
+\label{Results-AdditionalMem}
 
-% %Figure~\ref{Fig:AddnConstr}(a) and (b) show the performance of PPF in a
-% %followed by the overall performance on the complete benchmark.  
-% %For the sake of brevity, we have only shown selected traces 
+%Figure~\ref{Fig:AddnConstr}(a) and (b) show the performance of PPF in a
+%followed by the overall performance on the complete benchmark.  
+%For the sake of brevity, we have only shown selected traces 
 
-% We also model PPF with reduced LLC and with low bandwidth constraints,
-% respectively (not illustrated for space reasons).  % Benchmark {\tt
-% % 605.mcf\_s} in low bandwidth conditions is prefetch averse. In
-% % general, any prefetcher yields a negative speedup on that trace. On
-% % {\tt 654.roms\_s} and {\tt 607.cactuBSSN\_s}, PPF is unable to match
-% % the performance achieved by the best prefetcher. On the other hand,
-% % PPF outperforms all the other prefetchers on {\tt 623.xalancbmk\_s}
-% % and {\tt 638.imagick\_s} benchmarks.
-% Overall, PPF provides a greater improvement under small LLC condition
-% and matches the best prefetcher, BOP, under low DRAM bandwidth
-% conditions.
+We also model PPF with reduced LLC and with low bandwidth constraints,
+respectively (not illustrated for space reasons).  Benchmark {\tt
+  605.mcf\_s} in low bandwidth conditions is prefetch averse. In
+general, any prefetcher yields a negative speedup on that trace. On
+{\tt 654.roms\_s} and {\tt 607.cactuBSSN\_s}, PPF is unable to match
+the performance achieved by the best prefetcher. On the other hand,
+PPF outperforms all the other prefetchers on {\tt 623.xalancbmk\_s}
+and {\tt 638.imagick\_s} benchmarks.  Overall, PPF provides a greater
+improvement under small LLC condition and matches the best prefetcher,
+BOP, under low DRAM bandwidth conditions.
 
 %% \begin{figure}[ht]
 %% \includegraphics[width=0.8\columnwidth,height=4cm,keepaspectratio]{SPEC2006}
