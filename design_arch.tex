@@ -61,26 +61,28 @@ that having 5-bit weights provides a good trade-off between accuracy
 and area. A detailed explanation of the storage overhead of PPF can
 be found in Section~\ref{Method-Overheads}.
 
-\pg{the text below would be easier to follow if you used the figure
-  more. make reference to the figure at the points that you are
-  talking about}
+%%\pg{the text below would be easier to follow if you used the figure
+%%  more. make reference to the figure at the points that you are
+%%  talking about}
 
 \noindent \textbf{Inferencing}\\
 %ETG:is this like an explanation of how prefetching happens? 
 %EB: I see this as a short context of the datapath leading to the perc filter.
 The base prefetcher is triggered on every demand access to the L2
-Cache.  At this point, it has the opportunity to trigger a prefetch.
+Cache, as seen in Figure~\ref{fig:PPF_Hierarchy}.  At this point, 
+it has the opportunity to trigger a prefetch.
 If it does so, it will also need to decide how many cache blocks to
 prefetch.  These blocks can be either placed in the L2 or L3 cache
 according to the confidence of the prefetching mechanism.  Once the
 base prefetcher is triggered, the suggested prefetch candidates are
 fed to the perceptron filter to determine the usefulness of these
 prefetches. The filter ultimately decides whether to issue the
-prefetch suggestions of the base prefetcher. To make the decision,
+prefetch suggestions of the base prefetcher. As shown in step 1
+of Figure~\ref{fig:PPF_Datapath}(a), to make the decision,
 each feature corresponding to a suggested prefetch is used to index a
 table and all the corresponding weights are summed. The sum denotes
 the confidence value for the suggested prefetch, and is thresholded
-against two different magnitudes: $\tau_{hi}$ and $\tau_{lo}$.
+against two different values: $\tau_{hi}$ and $\tau_{lo}$.
 
 Prefetches whose sum exceeds $\tau_{hi}$ are placed into the L2 cache.
 The higher confidence value hints the prefetch would be useful and
@@ -95,7 +97,7 @@ that a similar set of features are associated with non-useful
 prefetches.
 
 \noindent \textbf{Recording}\\
-As shown in step 2 of Figure~\ref{fig:PPF_Datapath} the prefetches
+As shown in step 2 of Figure~\ref{fig:PPF_Datapath}(a) the prefetches
 that make it through the inference stage are recorded in the
 ``Prefetch Table''. The prefetch table is a 1,024-entry, direct mapped
 structure that contains all metadata required to re-index the
@@ -110,7 +112,8 @@ reject the prefetch but the prefetch was proven to be useful based on
 the observed demand accesses to the L2.
 
 \noindent \textbf{Feedback and Data Retrieval}\\
-When there is an eviction or a demand access to the L2, training for
+As depicted in step 3, when there is an eviction or a demand access 
+to the L2, training for
 both the base prefetcher and our filter mechanism is triggered. The
 address of the cache block that triggered training is used to index
 both the Prefetch and Reject tables. 10 bits of the address are used
@@ -120,7 +123,8 @@ features are used to index the tables of weights.
 
 % Which bits? are the tables accesses sequentially?
 
-\noindent \textbf{Training}\newline The address from the demand
+\noindent \textbf{Training}\newline As can be seen in step 4 of, 
+the address from the demand
 request triggering the training is looked up in both tables. If the
 address is in the prefetch table and marked as valid, this hints the
 previous prediction was correct and this is a useful prefetch. We
@@ -152,13 +156,15 @@ filter. The perceptron filter learns from this and makes use of the
 corresponding features associated to the original prefetch request,
 which are stored in the reject table, to index the weights tables and
 adjust the weights accordingly.
-
-\pg{what prior work? this reference is too oblique to be useful,
-  either be specific or drop this paragraph} Prior work in this domain
-lacks the knowledge of which cache blocks should have been prefetched,
-but were not. The implementation of the reject table, allows us to
-have this information, which can be use to further optimize our
-prefetching mechanism.
+The implementation of the reject table, allows us to capture the 
+information of prefetches that were rejected, and that can be used 
+to further optimize our prefetching mechanism.
+%
+%\pg{what prior work? this reference is too oblique to be useful,
+%  either be specific or drop this paragraph} 
+% Prior work in this domain
+% lacks the knowledge of which cache blocks should have been prefetched,
+% but were not. 
 
 %Gino: rephrase below?
 %The Perceptron Filter is organized as tables of perceptron weights, with a
@@ -293,25 +299,24 @@ prefetching mechanism.
 \label{Arch-Generalizing}
 The above discussion of PPF shows that it is highly modular and can be
 adapted to be used over any base prefetcher for increased prefetch
-accuracy.  Only two hooks are required between PPF and the baseline
-prefetcher.  The first is to make sure that all the prefetch
-candidates of the prefetcher pass through the perceptron filter and if
-qualified, the metadata for perceptron indexing be stored. The second
-is needed when the feedback of a prior prefetch is available in form
-of a subsequent demand hit or cache eviction. In that case, the stored
+accuracy. As a first step, all the prefetch
+candidates of the prefetcher have to pass through the perceptron filter. 
+If qualified, the metadata for perceptron indexing has to be stored. 
+Next, when the feedback of a prior prefetch is available in form
+of a subsequent demand hit or cache eviction, the stored
 metadata needs to be retrieved to update the state of the perceptrons.
-\pg{this isn't quite right, I thought we were taking some metadata
-  from the prefetcher itself like confidence.  You should explicitly
-  mention that prefetcher metadata can be used, update the figure to
-  show that metadata passing from SPP to the prefetcher and point to
-  the figure to show where that connection is}
+% \pg{this isn't quite right, I thought we were taking some metadata
+%   from the prefetcher itself like confidence.  You should explicitly
+%   mention that prefetcher metadata can be used, update the figure to
+%   show that metadata passing from SPP to the prefetcher and point to
+%   the figure to show where that connection is}
 
 
 In general, PPF can be adapted to a new base prefetcher with only a
 few modifications:
 
-\noindent \textbf{Make Base Prefetcher More Aggressive:} Tune down any
-internal thresholds or throttling mechanisms to increase its
+\noindent \textbf{Making Base Prefetcher More Aggressive:} By Tuning 
+down any internal thresholds or throttling mechanisms to increase its
 aggressiveness.
 
 \noindent \textbf{Inferencing and Storing:} All prefetch
@@ -335,6 +340,12 @@ the features we developed use information derived directly from
 program execution, agnostic to the baseline prefetcher.  Beyond that,
 the feature set can be expanded to convey any useful information or
 metadata available in the baseline prefetcher.
+
+\noindent \textbf{Using Metadata from the Prefetcher:} Some of the 
+internal counters specific to the underlying prefetcher can be suitable candidates
+for the perceptron features. To make sure that the perceptron layer sees that, 
+the relevant meta-data must be exported from the prefetcher to PPF. This way,
+PPF can be optimized to work tightly-knit with the base prefetcher.
 
 % %[EB] This statement fits better in the next section 'Features used by
 % Perceptron' %The methodology explained in %Section~\ref{Method-Features}

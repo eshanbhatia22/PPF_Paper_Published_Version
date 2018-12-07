@@ -130,13 +130,14 @@ compare their speedups taking no prefetching as the baseline.
 \subsection{Developing Features for PPF}
 \label{Method-Features}
 This section describes the intuition and analysis that went behind developing
-the features. As noted earlier, we developed a set of nine features that allow
-the perceptron layer to correlate prefetching decision with the program
-context. To study the correlation across each feature, we study statistically
-the perceptron weights and try to interpret their distribution. \\ \\
+the perceptron features. As noted earlier, we developed a set of 
+nine features that allows the perceptron layer to correlate prefetching decision 
+with the program behaviour. To study the correlation across each feature, 
+we statistically examine the perceptron weights and try to 
+interpret their distribution. \\ \\
 %
 \textbf{Global Pearson's Correlation}\newline 
-For this experiment, we examine
+Here we examine
 the perceptron weights at the end of all trace execution by which time the
 weights have settled to steady values. The weights obtained from running all
 the SPEC CPU 2017 traces are concatenated. The feature with bulk of the
@@ -208,7 +209,9 @@ For simplicity, the traces are arranged in an
 increasing order of contribution made by the feature. 
 It can be seen that even features with a low
 overall correlation provide useful correlation (magnitude > 0.5) for
-a significant number of traces. \\ \\
+a significant number of traces. This study motivated us to choose \textit{PC XOR DELTA}
+over \textit{Last Signature} as it provided useful correlation in at least some of the
+traces.\\ \\
 %
 \textbf{Trimming Features Using Cross-correlation} \newline Beside
 providing interesting insights into prefetching behavior, P-value can
@@ -222,7 +225,8 @@ in other features.
 We initially came up a set of 23 features. By studying
 cross correlation of each of these features against others in a 23$\times$23
 matrix, we identified pairs of features with correlation factor > 0.9 in
-magnitude and eliminated redundant features, reducing the feature count to 9.
+magnitude and eliminated redundant features, using guidance from Global and per-trace
+Pearson's factor of those features. By doing this, we reduced the feature count to 9.
 Thus, in the final implementation of PPF, no two features have a high
 correlation between them. This way we can be sure that each feature makes a
 contribution that cannot be captured using other features.

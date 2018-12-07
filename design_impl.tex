@@ -10,13 +10,20 @@ prefetches.  Here, we have selected SPP as the base engine prefetcher.
 To modify the SPP design to suit our scheme, the following changes
 were made:
 
+\noindent \textbf{Exporting Features from SPP:} PPF uses the meta-data 
+specific to SPP, to build some of the perceptron features. These include
+the lookahead depth, signature and the confidence counter. These features 
+were made visible to PPF\\
+%
 \noindent \textbf{Original Thresholds Discarded:} In PPF, the
 perceptron sum is used to decide whether to prefetch or not, and the
-fill-level in case of prefetch.  Thus, the confidence thresholds --
-T\textsubscript{f} and T\textsubscript{p} are no longer needed to
-throttle the prefetcher.  \pg{Note, however, as we discuss later, we
-  use these confidence thresholds a feature in PPF so the mechanism is
-  retained. -- right?}
+fill-level in case of prefetch.  Thus, the confidence thresholds used 
+by SPP -- T\textsubscript{f} and T\textsubscript{p} are no longer needed to
+throttle the prefetcher and can be discarded.
+%
+%\pg{Note, however, as we discuss later, we
+%use these confidence thresholds a feature in PPF so the mechanism is
+%retained. -- right?}
 % djimenez: keeping comments on every line here so it doesn't screw up my
 %"roll-your-own" itemized list. don't put in any newlines.
 %
@@ -37,22 +44,22 @@ throttle the prefetcher.  \pg{Note, however, as we discuss later, we
 %    this a big deal?  Seems like a detail}
 %
 
-\pg{since you actually moved this table into PPF, most this discussion
-  should actually go in the PPF arch section, I think its generic to
-  all PPFs likely anyways.  Instead here I'd talk about how you
-  removed the prefetch filter that was part of SPP since its redundant
-  with the function of PPF}
-\noindent \textbf{Enhanced Prefetch Table:} The prefetch table
-introduced in the original SPP keeps track of up to 1024 L2 cache
-prefetch suggestions. For PPF, the prefetch table is modified to store
-the features used for perceptron indexing.  This metadata is needed to
-retrieve the values of the features to train the perceptron at a later
-stage in time. The prefetch table mentioned above keeps track of the
-prefetches that actually happened in the L2 Cache.  We introduce the
-reject table to keep a track of the prefetches that were suggested by
-the base SPP engine but were rejected by PPF. In case it is detected
-that a future demand fetch could have used this rejected prefetch, the
-perceptron weights are updated to reflect that misprediction.
+%% \pg{since you actually moved this table into PPF, most this discussion
+%%   should actually go in the PPF arch section, I think its generic to
+%%   all PPFs likely anyways.  Instead here I'd talk about how you
+%%   removed the prefetch filter that was part of SPP since its redundant
+%%   with the function of PPF}
+%% \noindent \textbf{Enhanced Prefetch Table:} The prefetch table
+%% introduced in the original SPP keeps track of up to 1024 L2 cache
+%% prefetch suggestions. For PPF, the prefetch table is modified to store
+%% the features used for perceptron indexing.  This metadata is needed to
+%% retrieve the values of the features to train the perceptron at a later
+%% stage in time. The prefetch table mentioned above keeps track of the
+%% prefetches that actually happened in the L2 Cache.  We introduce the
+%% reject table to keep a track of the prefetches that were suggested by
+%% the base SPP engine but were rejected by PPF. In case it is detected
+%% that a future demand fetch could have used this rejected prefetch, the
+%% perceptron weights are updated to reflect that misprediction.
 
 \subsection{Features used by Perceptron}
 \label{Impl-Features}
@@ -74,13 +81,16 @@ yet relevant set of features.
 % [EB] Tried addressing. Does it look redundant when read after 'Feature Selection'
 % bullet from the previous section?
 
-\noindent \textbf{Base Address}: The base address of the demand access
-that triggers the prefetch corresponds to a stream of future accesses
-that SPP and the PPF have seen before. Therefore, PPF will correlate
-the past behavior of this address to the confidence of a
-prefetch. \pg{what do you mean by ``base address'' the full physical
-  address?  Be specific.  Which bits and why? You should probably also
-  talk about what you do when the number of bits is unwieldy.}
+\noindent \textbf{Physical Address}: Here we use the lower bits 
+of the physical address of 
+the demand access that triggers the prefetch. This address corresponds 
+to a  stream of accesses that SPP and the PPF have seen before. 
+Therefore, PPF will correlate the past behavior of this address 
+to the prefetch outcome. 
+%
+%\pg{what do you mean by ``base address'' the full physical
+%  address?  Be specific.  Which bits and why? You should probably also
+%  talk about what you do when the number of bits is unwieldy.}
 
 \noindent \textbf{Cache Line} and \textbf{Page Address}: These two
 separate features are derived from the base address that triggered the
