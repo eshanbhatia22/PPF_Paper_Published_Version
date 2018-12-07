@@ -33,7 +33,10 @@ but only 800 of them are used by the application, then that prefetcher's accurac
 
 \begin{figure}[t]
 \includegraphics[width=\columnwidth]{Motivation}
-\caption{Variation of IPC, Total Prefetches and Useful Prefetches}
+\caption{Impact of aggressive prefetching on performance. X-asis represents increasingly 
+	 aggressive prefetch lookahead depth. All the metrics have been normalized
+	 to the least aggressive configuration. As can be seen, total number of prefetches increases at a
+	 higher rate than the number of good prefetches, leading to IPC reduction.}
 \label{Fig:Motivation}
 \end{figure}
 
@@ -56,7 +59,8 @@ all have been normalized to the least aggressive version of the prefetcher.
 As the look-ahead depth of the prefetch suggestions increase, so do useful prefetches. 
 But that comes at a cost of total prefetches increasing at an even higher rate. This leads 
 to cache pollution and bandwidth contention, as is clearly visible with the reduction in 
-the IPC. Similar behavior was observed in 12 other SPEC CPU 2017 simpoints. 
+the IPC. 
+%%Similar behavior was observed in 12 other SPEC CPU 2017 simpoints. 
 
 Therefore, a delicate balance between coverage and accuracy is required for a prefetcher to maximize
 its performance impact. Prefetchers are generally designed with internal mechanisms to
@@ -100,8 +104,7 @@ In this design, PPF replaces SPP's existing confidence-based throttling mechanis
 which itself was a highly tuned feature of that prefetcher. Because PPF is
 so much more effective at rejecting inaccurate prefetches than SPP's baseline
 mechanism, we are free to re-tune the rest of SPP's design around maximizing
-coverage. The result is an increase in both accuracy and coverage, and
-a notable increase in performance.
+coverage. This results in a notable increase in system performance.
 
 %We propose Perceptron-based Prefetch Filtering (PPF) as an enhancement to
 %the existing state of the art prefetchers to robustly overcome the coverage
@@ -127,21 +130,21 @@ outlines the scope for future research. Its contributions are:
 work in this area either relied on program semantics~\cite{Semantics} or were
 application specific~\cite{Datacenter}.
 
-\item Implementing PPF filtering a state-of-the-art prefetchier, giving a
+\item Implementing PPF filtering on a state-of-the-art prefetcher, giving a
 significant performance improvement compared to previous work. PPF learns to
 adapt itself to shared resource constraints, leading to further increased
-performance in multi-core and bandwidth-constrained environments.
+performance in multi-core and small LLC environments.
 
-\item A methodology for determining an appropriate set of features for
+\item A methodology to determine an appropriate set of features for
 prediction, regardless of the underlying prefetcher used. More details are
 explained in Section \ref{Method-Features}.
 
 \end{itemize}
 
-In a single core configuration, PPF increases performance by 6.84\%
+In a single core configuration, PPF increases performance by 3.78\%
 compared to the underlying prefetcher, SPP. In a multi-core system running a
 mixes of memory intensive SPEC CPU 2017 traces, PPF saw an improvement
-of 11.9\% over SPP for a 4-core system, and 10.67\% for an 8-core system.
+of 11.4\% over SPP for a 4-core system, and 9.65\% for an 8-core system.
 
 % djimenez - cutting this
 %The paper is organized as follows. Section~\ref{Background} describes

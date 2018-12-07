@@ -48,19 +48,16 @@ from \textbf{10\% to 25\%}.
 % [EB] Resolved
 On the full SPEC CPU 2017 suite, PPF improves the geometric mean IPC of 
 the baseline by \textbf{15.24\%}, which is \textbf{2.27\%} better 
-than the next best prefetcher -- SPP.
-\newline
-
+than the next best prefetcher -- SPP.\\ \\
+%
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{Coverage}
 \caption{Fraction of Cache Misses Covered}
 \label{Fig:Coverage}
 \end{figure}
-
+%
 % djimenez: this is a weird way to make a header for a section. use \paragraph or \subsection
-
-\noindent \textbf{COVERAGE}
-\newline
+\noindent \textbf{Coverage:}
 Prefetcher coverage is defined as the ratio of the number of misses avoided
 through prefetching to the number of misses with no prefetching.
 
@@ -90,36 +87,26 @@ does not lead to increased cache pollution.
 \subsection{Multi-core Results}
 \label{Results-Multi}
 In this section, we demonstrate the improvement achieved by PPF for a mix of
-multi-programmed workloads.
-\newline
-
-\noindent \textbf{4-CORE ENVIRONMENT}
-\newline
+multi-programmed workloads.\\ \\
+%
+\noindent \textbf{4-Core Environment:}
 Figure~\ref{Fig:4Core_SPEC2017} shows a comparison of speedups obtained on
 4-core mixes of a memory intensive subset SPEC CPU 2017. We plot all 4
 prefetchers, normalized to the baseline. The workloads have been sorted in
 increasing order of the speedup. PPF offers a speedup of \textbf{51.2\%} on
 these traces, and improvement of \textbf{11.4\%} over the baseline SPP,
 \textbf{9.7\%} over the next DA-AMPM, and \textbf{16.9\%} over BOP.
-
 On a different set of fully random SPEC CPU 2017 4-core mixes (not illustrated
 for space reasons), PPF provides an IPC speedup of \textbf{26.07}\% over the
-baseline, which is an improvement of \textbf{5.6}\% over SPP.
-
-%\begin{figure*}[ht]
-%\includegraphics[width=\textwidth]{8Core_SPEC2017}
-%\caption{Normalized Speedup for 8-core SPEC CPU 2017 Workloads}
-%\label{Fig:8Core_SPEC2017}
-%\end{figure*}
-
+baseline, which is an improvement of \textbf{5.6}\% over SPP.\\ \\
+%
 \begin{figure}[ht]
 \includegraphics[width=2.75in]{8Core_SPEC2017}
 \caption{Speedup for 8-core SPEC CPU 2017}
 \label{Fig:8Core_SPEC2017}
 \end{figure}
-
-\noindent \textbf{8-CORE ENVIRONMENT}
-\newline
+%
+\noindent \textbf{8-Core Environment:}
 The sorted comparison of speedups on the memory intensive 8-core mixes is
 shown in Figure~\ref{Fig:8Core_SPEC2017}. PPF improves baseline performance
 by \textbf{37.6\%}, an improvement of \textbf{9.7\%} over SPP. For a random
@@ -129,7 +116,6 @@ performance by \textbf{23.4\%} over the baseline, corresponding to
 base engine SPP in a multi-core environment is expected as PPF has a very
 accurate filter, it eliminates useless prefetches before they can cause
 pollution in the shared LLC.
-
 BOP offers a better improvement than SPP for the memory intensive mixes. This
 superiority can be attributed to BOP's inherent aggressive nature. DA-AMPM is
 also ahead of SPP in both the mixes. Interestingly, in all these cases, PPF
@@ -162,16 +148,33 @@ gives a better improvement under small LLC condition and matches the best
 prefetcher, BOP, under low DRAM bandwidth conditions.
 
 \begin{figure}[ht]
-\includegraphics[width=\columnwidth]{SPEC2006}
+\includegraphics[width=0.8\columnwidth,height=4cm,keepaspectratio]{SPEC2006}
 \caption{SPEC CPU 2006 Single-Core IPC Speedup}
 \label{Fig:SPEC2006_1core}
 \end{figure}
 
 \begin{figure}[ht]
-\includegraphics[width=\columnwidth,]{CloudSuite}
-\caption{IPC Speedup for Multi-core CloudSuite Workloads}
+\includegraphics[width=0.9\columnwidth,height=3.5cm,keepaspectratio]{CloudSuite}
+\caption{IPC Speedup for CloudSuite Workloads}
 \label{Fig:CloudSuite}
 \end{figure}
+
+%% \begin{figure}[ht]
+%%   \centering
+%%   \begin{subfigure}{0.5\columnwidth}
+%%     \centering
+%%     \includegraphics[width=0.45\columnwidth]{CloudSuite}
+%%     \caption{CloudSuite Workloads}
+%%   \end{subfigure}
+%%   %
+%%   \begin{subfigure}{0.5\columnwidth}
+%%     \centering
+%%     \includegraphics[width=0.45\columnwidth]{SPEC2006}
+%%     \caption{Single Core SPEC CPU 2006}
+%%   \end{subfigure}
+%%   \caption{Performance with Unseen Benchmarks}
+%%   \label{Fig:CrossVal}
+%% \end{figure}
 
 \subsection{Cross Validation}
 \label{Results-CrossVal}
@@ -179,10 +182,10 @@ prefetcher, BOP, under low DRAM bandwidth conditions.
 % djimenez: cite cloudsuite here? do we have a reference?
 % [EB]: Resolved. Cited "Clearing the clouds: A study of emerging 
 %        scale-out workloads on modern hardware" in methodology
-
-Here we demonstrate the robustness of PPF by testing it on different
-benchmarks: SPEC CPU 2006 and CloudSuite.
-
+%
+% Here we demonstrate the robustness of PPF by testing it on different
+% benchmarks: SPEC CPU 2006 and CloudSuite.
+%
 % djimenez: is the improvement over BOP and DA-AMPM exactly the same 9.86%
 % here? that's weird.
 % [EB] Resolved. Increased precision of values. But yes, BOP / DA-AMPM 
