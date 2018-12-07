@@ -34,8 +34,20 @@ PPF yields a geometric mean speedup of \textbf{26.95\%} over the baseline.
 This is equivalent to \textbf{4.63\%} over DA-AMPM, \textbf{4.61\%} over BOP 
 and \textbf{3.78\%} over SPP. Out of the 95 simpoints developed for SPEC 
 CPU 2017, PPF nearly matches or outperforms most of the prefetchers on 91 
-simpoints. PPF fails to match the improvement offered by BOP only for 
-{\tt 607.cactuBSSN\_s} and {\tt 654.roms\_s} traces.
+simpoints. 
+An interesting case to see here is {\tt 623.xalancbmk}. Despite SPP 
+underperforming on that application, PPF manages to considerably outperform 
+the next best prefetcher -- BOP. Since this benchmark has varying prefetch 
+deltas, SPP's conservative throttling mechanism catches that and quickly halts 
+prefetching at an average depth of 2.1. On the other hand, PPF's more efficient 
+accuracy check enables it to prefetch upto a lookahead depth of 3.3. Doing this, PPF 
+suggests 1.61 times more total prefetches and 2.53 times more 
+useful prefetches than SPP.
+
+The only benchmark where PPF fails to match the improvement offered by other prefetchers 
+is {\tt 607.cactuBSSN\_s}. \newline Based on our observation of prefetching behavior, we gather that
+BOP's aggressive and localised nature can tackle this workload really well; as opposed
+to SPPs lookahead nature. As a result, SPP, and hence PPF, underperform on this benchmark. 
 
 At its peak, PPF manages a speedup of a factor of over \textbf{3.39x} on one of the
 {\tt 602.gcc\_s} traces. This also corresponds to speedup gain of
