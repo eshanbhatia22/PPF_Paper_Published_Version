@@ -38,12 +38,10 @@ that prefetcher's accuracy is 66.7\%.
 
 \begin{figure}[t]
 \includegraphics[width=\columnwidth]{Motivation}
-\caption{Impact of aggressive prefetching on performance. X-axis
-  represents increasingly aggressive prefetch lookahead depth. All the
-  metrics have been normalized to the least aggressive
-  configuration. As can be seen, total number of prefetches increase
-  at a higher rate than the number of good prefetches, leading to IPC
-  reduction.}
+\caption{The impact of aggressive prefetching on performance for {\tt 603.bwaves\_s}. 
+The number of useful prefetches increases with aggressiveness
+slower than total prefetches, which wastes bandwidth and 
+harms performance.}
 \label{Fig:Motivation}
 \end{figure}
 
@@ -54,7 +52,7 @@ na\"ive prefetcher may predict that all data in that region will be
 used by the application.  This will clearly result in 100\% coverage
 for that region, but with possibly a very low accuracy.  In fact, so
 much cache capacity and bandwidth may be wasted prefetching unused
-data that performance can ultimately be harmed by this strategy. On
+data that performance can ultimately be harmed by this strategy. At
 the other extreme, another prefetcher may be overly conservative and
 never prefetch anything, wasting no capacity or bandwidth, and
 achieving 0\% prefetch coverage.
@@ -66,16 +64,16 @@ arbitrary number of references ahead of the initial triggering miss.
 In SPP, a throttling confidence threshold is then used to ensure that
 the lookahead stops when confidence falls too low to ensure that
 prefetches are accurate.  In the figure, we iteratively re-tuned 
-this threshold and allowed the prefetcher to lookahead an of 
-arbitrary depth from 7 to 15. The figure depicts the behavior 
+this threshold to allow the prefetcher to lookahead a fixed
+depth from 7 to 15. The figure depicts the behavior 
 of the {\tt 603.bwaves\_s} SPEC CPU 2017 benchmark. The IPC, the 
-total number of prefetches suggested by the prefetcher (TOTAL\_PF) 
+total number of prefetches issued by the prefetcher (TOTAL\_PF), 
 and the actual useful predictions (GOOD\_PF), all have been normalized 
-to the least aggressive version of the prefetcher. As the look-ahead
+to lookahead depth 7. As the lookahead
 depth increases, so do useful prefetches, and hence coverage. This
-coverage, however, comes at a cost of total prefetches increasing at
+coverage, however, comes at the cost of total prefetches increasing at
 an even higher rate. This leads to cache pollution and bandwidth
-contention, as is clearly visible with the reduction in IPC.  
+contention, and leads to a reduction in IPC.  
 %Similar behavior was observed in 12 other SPEC CPU 2017 benchmarks.
 
 Therefore, a delicate balance between coverage and accuracy is
