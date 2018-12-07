@@ -4,7 +4,7 @@ README for SPP-Perceptron Project documentation and paper
 Steps:
 - git clone https://github.com/eshanbhatia22/spp_perceptron/
 - git pull
-- ## Edit
+- vi <file> ## Edit
 - make ## Build
 - open main.pdf ## View
 - git add \<files touched\>
