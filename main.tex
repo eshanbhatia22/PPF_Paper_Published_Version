@@ -19,6 +19,7 @@
 \usepackage{color}
 \usepackage{flushend}
 \usepackage{adjustbox}
+\usepackage{setspace}
 \graphicspath{ {./graphs/}{./figures/} }
 \newcommand{\pg}[1]{{{\color{blue}PG: {#1}}}}
 
@@ -53,6 +54,7 @@
 \thispagestyle{firstpage}
 \pagestyle{plain}
 
+\begin{spacing}{0.99}
 \input{abs}
 \input{intro}
 \input{back}
@@ -62,6 +64,7 @@
 \input{results}
 \input{related}
 \input{conc}
+\end{spacing}
 
 %%%%%%% -- PAPER CONTENT ENDS -- %%%%%%%%
 
