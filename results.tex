@@ -33,9 +33,14 @@ been normalized to the baseline of no prefetching.
 
 PPF yields a geometric mean speedup of \textbf{26.95\%} over the
 baseline.  This is equivalent to \textbf{4.63\%} over DA-AMPM,
-\textbf{4.61\%} over BOP and \textbf{3.78\%} over SPP.  Out of the 95
-simpoints developed for SPEC CPU 2017, PPF nearly matches or
-outperforms most of the prefetchers on 91 simpoints.  One interesting
+\textbf{4.61\%} over BOP and \textbf{3.78\%} over SPP.  Out of the 20
+SPEC CPU 2017 applications, PPF nearly matches or
+outperforms all the other prefetchers on 19 applications.  
+Benchmarks {\tt 603.bwaves\_s}, {\tt 605.mcf\_s}, {\tt{623.xalancbmk}\_s} 
+and {\tt 649. fotonik3d\_s} benefit the most from PPF, with the 
+speedup over SPP ranging from \textbf{10\% to 25\%}.
+
+One interesting
 case here is {\tt 623.xalancbmk}.  Despite SPP under performing on that
 application, PPF manages to considerably outperform all prefetchers.
 Since this benchmark has varying prefetch deltas, SPP's conservative
@@ -52,14 +57,10 @@ nature fits this workload very well; as opposed to SPPs lookahead
 nature.  As a result, SPP, and hence PPF, underperform on this
 benchmark.
 
-\pg{is the following text old? doesn't look right:} At its peak, PPF
-manages a speedup of a factor of over \textbf{3.39x} on one of the
-{\tt 602.gcc\_s} traces. This also corresponds to speedup gain of
-\textbf{60\%} over the next best prefetcher for that trace -- BOP. In
-general, benchmarks {\tt 603.bwaves\_s}, {\tt 605.mcf\_s}, {\tt
-  {623.xalancbmk}\_s}~~and~~{\tt 649.fotonik3d\_s} benefit the most
-from PPF, with the speedup over SPP ranging from \textbf{10\% to
-  25\%}.
+% \pg{is the following text old? doesn't look right:} At its peak, PPF
+% manages a speedup of a factor of over \textbf{3.39x} on one of the
+% {\tt 602.gcc\_s} traces. This also corresponds to speedup gain of
+% \textbf{60\%} over the next best prefetcher for that trace -- BOP. 
 
 % djimenez: is this geometric mean? if so, say so.
 % [EB] Resolved
@@ -129,7 +130,7 @@ baseline, which is an improvement of \textbf{5.6}\% over SPP.
 \noindent \textbf{8-Core:} The sorted comparison of speedups on the
 memory intensive 8-core mixes is shown in
 Figure~\ref{Fig:8Core_SPEC2017}.  PPF improves baseline performance by
-\textbf{37.6\%}, an improvement of \textbf{9.7\%} over SPP. For a
+\textbf{37.6\%}, an improvement of \textbf{9.65\%} over SPP. For a
 random set of SPEC CPU 2017 mixes (not illustrated for space reasons),
 PPF improves performance by \textbf{23.4\%} over the baseline,
 corresponding to \textbf{4.6\%} over SPP. This increased improvement
