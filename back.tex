@@ -96,7 +96,7 @@ the signature holds up to 4 unique delta predictions.
 
 \noindent \textbf{Lookahead Prefetching:} On each trigger, SPP goes
 down the program speculation path using its own prefetch suggestion.
-Using current prefetch as a starting point, it re-accesses the Pattern
+Using the current prefetch as a starting point, it re-accesses the Pattern
 Table to generate further prefetches.  As illustrated in
 Figure~\ref{fig:spp_structure}, it repeats the cycle of accessing
 Pattern Table and updating the signature based on highest confidence
@@ -186,7 +186,7 @@ and 90 respectively, on the scale of 0 to 100.
 
 % EB: This remains one of the untouched subsections of the paper
 
-As was noted in Figure~\ref{Fig:Motivation}, an aggressive lookahead
+As was noted in Figure~\ref{Fig:Motivation}, aggressive lookahead
 prefetching, if done without any accuracy check, can harm the
 performance of the system. As the figure shows, aggressive lookahead
 and its accompanied loss of accuracy degrades performance by almost
