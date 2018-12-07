@@ -20,18 +20,20 @@
 %a reduced associativity, but the LLC may be managed by any policy. 
 %The paper applies its predictor to do block replacement and bypass for LLC.
 
-In addition to branch prediction~\cite{PerceptronPredictor}, perceptron-based
-learning has been applied to the area of cache management.
-Teran \textit{et al.} propose using perceptrons to predict cache line resuse, 
-bypass, and replacement~\cite{Perc_Reuse}. Perceptron Learning trains weights
-selected by hashes of multiple features, including the PC of the memory
-access instruction, some other recent PCs, and two different shifts of the tag of
-the referenced block. These features are used to index into weight tables, and
-the weights are then thresholded to generate a prediction. When a block from one
-of a few sampled sets~\cite{sdbp} is reused or evicted, the corresponding weights
-are decremented or incremented, according to the perceptron
-learning rule. Multiperspective Reuse Prediction~\cite{Multiperspective}
-improves on Perceptron Learning by contributing many new features.
+In addition to branch prediction~\cite{PerceptronPredictor},
+perceptron-based learning has been applied to the area of cache
+management.  Teran \textit{et al.} propose using perceptrons to
+predict cache line resuse, bypass, and replacement~\cite{Perc_Reuse}.
+Perceptron Learning trains weights selected by hashes of multiple
+features, including the PC of the memory access instruction, some
+other recent PCs, and two different shifts of the tag of the
+referenced block. These features are used to index into weight tables,
+and the weights are then thresholded to generate a prediction. When a
+block from one of a few sampled sets~\cite{sdbp} is reused or evicted,
+the corresponding weights are decremented or incremented, according to
+the perceptron learning rule. Multiperspective Reuse
+Prediction~\cite{Multiperspective} improves on Perceptron Learning by
+contributing many new features.
 
 %features. Compared to previous work that focuses on one or two features at a
 %time, Multiperspective prediction uses many features, each contributing to the
@@ -40,38 +42,43 @@ improves on Perceptron Learning by contributing many new features.
 
 \subsection{Spatial Prefetchers}
 
-%Two widely used prefetchers are Next-$n$ Lines~\cite{nextn} and
-%Stride~\cite{stride} prefetchers. Both capture regular memory access patterns
-%with low overhead. The Next-$n$ Lines prefetcher queues prefetches for the
-%next $n$ blocks after any given miss, expecting that the principle of spatial
-%locality will hold and those cache blocks after a missed block are likely to
-%be used in the future. The stride prefetcher identifies strided reference
-%patterns in programs based on past behavior of missing loads.  When a load
-%misses, cache blocks ahead of that miss are fetched in the pattern following
-%the previous behavior in the hope of avoiding future misses.  Without further
-%knowledge about temporal locality and application characteristics, these
-%prefetchers cannot do more than detecting and prefetching regular memory
-%access patterns with limited spatial locality.
+% Two widely used prefetchers are Next-$n$ Lines~\cite{nextn} and
+% Stride~\cite{stride} prefetchers. Both capture regular memory access
+% patterns with low overhead. The Next-$n$ Lines prefetcher queues
+% prefetches for the next $n$ blocks after any given miss, expecting
+% that the principle of spatial locality will hold and those cache
+% blocks after a missed block are likely to be used in the future. The
+% stride prefetcher identifies strided reference patterns in programs
+% based on past behavior of missing loads.  When a load misses, cache
+% blocks ahead of that miss are fetched in the pattern following the
+% previous behavior in the hope of avoiding future misses.  Without
+% further knowledge about temporal locality and application
+% characteristics, these prefetchers cannot do more than detecting and
+% prefetching regular memory access patterns with limited spatial
+% locality.
 
-Spatial prefetchers include such well-understood examples as the next-line (or
-next-$n$-line) prefetcher, and the stream prefetcher, and are distinguished by prefetching
-data without regard for the order in which the data will be accessed.
-In addition to simpler these, Somogyi \textit{et al.} 
-propose Spatial Memory Streaming (SMS)~\cite{SMS}. SMS works by learning
-the spatial footprint of all data used by a program within a region of memory,
-and when that region is revisited by the program, the same spatial footprint
-is prefetched. Ishii \textit{et al.} propose the Access Map Pattern Matching 
-prefetcher (AMPM)~\cite{AMPM}, which creates a map of all accessed lines within a region
-of memory, and then analyzes this map on every access to see if any 
-fixed-stride pattern can be identified and prefetched that is centered on 
-the current access. DRAM-Aware AMPM (DA-AMPM)~\cite{DA_AMPM}
-is a variant of AMPM that delays some prefetches so they can be issued 
-together with others in the same DRAM row, increasing bandwidth utilization.
-Pugsley \textit{et al.} propose the Sandbox Prefetcher~\cite{Sandbox},
-which analyzes candidate fixed-offset prefetchers in a sandboxed environment
-to determine which is most suitable for the current program phase. Michaud
-proposes the Best-Offset Prefetcher~\cite{BOP}, which determines the optimal
-offset to prefetch while considering memory latency and prefetch timeliness.
+Spatial prefetchers include such well-understood examples as the
+next-line (or next-$n$-line) prefetcher, and the stream prefetcher,
+and are distinguished by prefetching data without regard for the order
+in which the data will be accessed.  In addition to these simpler
+examples, Somogyi \textit{et al.}  propose Spatial Memory Streaming
+(SMS)~\cite{SMS}.  SMS works by learning the spatial footprint of all
+data used by a program within a region of memory around a given
+missing load, and when the load that causes an new miss elsewhere, the
+same spatial footprint is prefetched.  Ishii \textit{et al.} propose
+the Access Map Pattern Matching prefetcher (AMPM)~\cite{AMPM}, which
+creates a map of all accessed lines within a region of memory, and
+then analyzes this map on every access to see if any fixed-stride
+pattern can be identified and prefetched that is centered on the
+current access. DRAM-Aware AMPM (DA-AMPM)~\cite{DA_AMPM} is a variant
+of AMPM that delays some prefetches so they can be issued together
+with others in the same DRAM row, increasing bandwidth utilization.
+Pugsley \textit{et al.}  propose the Sandbox
+Prefetcher~\cite{Sandbox}, which analyzes candidate fixed-offset
+prefetchers in a sandboxed environment to determine which is most
+suitable for the current program phase.  Michaud proposes the
+Best-Offset Prefetcher~\cite{BOP}, which determines the optimal offset
+to prefetch while considering memory latency and prefetch timeliness.
 
 %Somogyi et al. proposed a practical, low-overhead prefetcher: Spatial Memory
 %Streaming (SMS) prefetcher~\cite{SMS}. SMS leverages code-based correlation to
@@ -93,18 +100,19 @@ offset to prefetch while considering memory latency and prefetch timeliness.
 
 \subsection{Lookahead Prefetchers}
 
-Unlike spatial prefetchers, lookahead prefetchers take program order into
-account when they make predictions. Shevgoor \textit{et al.} propose the Variable 
-Length Delta Prefetcher (VLDP)~\cite{VLDP}, which correlates histories of
-deltas between cache line accesses within memory pages with the next delta
-within that page. SPP~\cite{SPP} and KPC's prefetching component~\cite{KPC} are
-more recent examples of lookahead prefetchers. They try to predict not only what
-data will be used in the future, but also the precise order in which the data
-will be used, within a given page. Predictions made by lookahead prefetchers can
-be fed back into their prediction mechanisms to predict even further down 
-a speculative path of memory acesses. These prefetchers can also generalize their
-learned patterns from one page, and use those patterns to make predictions in 
-other pages.
+Unlike spatial prefetchers, lookahead prefetchers take program order
+into account when they make predictions.  Shevgoor \textit{et al.}
+propose the Variable Length Delta Prefetcher (VLDP)~\cite{VLDP}, which
+correlates histories of deltas between cache line accesses within
+memory pages with the next delta within that page. SPP~\cite{SPP} and
+KPC's prefetching component~\cite{KPC} are more recent examples of
+lookahead prefetchers. They try to predict not only what data will be
+used in the future, but also the precise order in which the data will
+be used, within a given page. Predictions made by lookahead
+prefetchers can be fed back into their prediction mechanisms to
+predict even further down a speculative path of memory acesses. These
+prefetchers can also generalize their learned patterns from one page,
+and use those patterns to make predictions in other pages.
 
 %Previous prefetchers have only limited ability to capture memory delta
 %patterns. Moreover, a good prefetch proves to be useful only if the prefetcher
@@ -123,26 +131,29 @@ other pages.
 
 %not sure this is where this section was going, I just kidna went with it. 
 
-A low-accuracy aggressive prefetcher can significantly harm performance. To
-minimize interference from prefetching, Wu \textit{et al.} propose
-PACMan~\cite{pacman}, a prefetch-aware cache management policy. PACMan
-dedicates some LLC sets to each of three competing policies that treat demand
-and prefetch requests differently, using the policy in the rest of the cache that shows the fewest
-misses. Seshadri \textit{et al.} propose ICP~\cite{icp}, which
-demotes a prefetch to the lowest reuse priority on a demand hit, based on the
-observation that most prefetches are dead after their first hit. To address
-prefetcher-caused cache pollution, it also uses a variation of EAF~\cite{eaf}
-to track prefetching accuracy, and inserts only accurate prefetches to the
-higher priority position in the LRU stack. Jain \textit{et al.} propose
-Harmony~\cite{Harmony} to accomodate prefetches in their MIN 
-algorithm-inspired Hawkeye cache management system.
+A low-accuracy aggressive prefetcher can significantly harm
+performance.  To minimize interference from prefetching, Wu \textit{et
+  al.} propose PACMan~\cite{pacman}, a prefetch-aware cache management
+policy. PACMan dedicates some LLC sets to each of three competing
+policies that treat demand and prefetch requests differently, using
+the policy in the rest of the cache that shows the fewest
+misses. Seshadri \textit{et al.} propose ICP~\cite{icp}, which demotes
+a prefetch to the lowest reuse priority on a demand hit, based on the
+observation that most prefetches are dead after their first hit. To
+address prefetcher-caused cache pollution, it also uses a variation of
+EAF~\cite{eaf} to track prefetching accuracy, and inserts only
+accurate prefetches to the higher priority position in the LRU
+stack. Jain \textit{et al.} propose Harmony~\cite{Harmony} to
+accomodate prefetches in their MIN algorithm-inspired Hawkeye cache
+management system.
 
 \subsection{Machine Learning for Prefetching}
 
-Peled \textit{et al.} introduce interesting ideas for on-line Reinforcement
-Learning and dynamically scaling the magnitude of feedback given to the
-baseline prefetcher~\cite{Semantics}. The prefetcher relies on compiler
-support for getting features to build the context. Liao \textit{et al.}
-focuse on prefetching for data center applications~\cite{Datacenter}. They
-use offline machine learning algorithms such as SVMs and logistic regression
-to do a parametric search for an optimal prefetcher configuration.
+Peled \textit{et al.} introduce interesting ideas for on-line
+Reinforcement Learning and dynamically scaling the magnitude of
+feedback given to the baseline prefetcher~\cite{Semantics}. The
+prefetcher relies on compiler support to receive features and build
+the context.  Liao \textit{et al.}  focus on prefetching for data
+center applications~\cite{Datacenter}.  They use offline machine
+learning algorithms such as SVMs and logistic regression to do a
+parametric search for an optimal prefetcher configuration.
