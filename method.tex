@@ -146,7 +146,7 @@ prefetching decision with the program behavior.  To study the
 correlation across each feature, we statistically examine the
 perceptron weights and try to interpret their distribution.
 
-\noindent \textbf{Global Pearson's Correlation} Here we examine the
+\noindent \textbf{Global Pearson's Correlation:} Here we examine the
 perceptron weights at the end of all trace execution by which time the
 weights have settled to steady values. The weights obtained from
 running all the SPEC CPU 2017 traces are concatenated.  Features with
@@ -210,7 +210,7 @@ with the magnitude of P-value > 0.6. The single most important
 feature, \textit{Confidence XOR Page address} helps provide
 a correlation to prefetch outcome with a factor of 0.90. 
 
-\noindent \textbf{Per Trace Correlation} Another important way to look
+\noindent \textbf{Per Trace Correlation:} Another important way to look
 at the perceptron features is to see how much their contribution
 varies across the traces. Here we give special attention to features
 with low P-values in. Figure~\ref{Fig:Pvals_Trace} shows the variation
@@ -224,7 +224,7 @@ study motivated us to choose \textit{PC XOR DELTA} over \textit{Last
   Signature} as it provided useful correlation in at least some of the
 traces.
 
-\noindent \textbf{Trimming Features Using Cross-correlation} Beside
+\noindent \textbf{Trimming Features Using Cross-correlation:} Beside
 providing interesting insights into prefetching behavior, P-value can
 also be used for feature selection and prefetcher tuning.
 
