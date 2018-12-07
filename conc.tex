@@ -1,7 +1,12 @@
 \section{Conclusion}
 \label{Conclusion}
-In this paper, we introduce perceptron-based learning for prefetching. The
-perceptron filter acts independently as a check on the underlying prefetch
-engine. PPF improves performance over the base prefetcher by up to 11.4\%. 
-We believe that this is a robust and adaptable technique that can be used 
-to enhance any existing and upcoming prefetchers.
+In this paper, we introduce Perceptron-Based Prefetch Filtering (PPF). PPF 
+acts as an independent check on the quality of predictions made by the
+underlying prefetch engine.  We evaluate PPF in the context of using SPP
+as the baseline prefetch engine, but in principle other prefetchers could
+be used.  PPF is so effective at filtering bad prefetches, that it enables
+prefetcher design to focus more on increasing coverage, and allows existing
+prefetchers to be re-tuned for higher coverage.  PPF improves performance 
+over the base prefetcher by up to 11.4\%. We believe that PPF is a robust
+and adaptable technique that can be used to enhance any existing prefetchers
+and can be a valuable tool in the design of future prefetchers.
