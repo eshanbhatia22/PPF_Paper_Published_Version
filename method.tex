@@ -358,13 +358,6 @@ decrease features depending on the permitted budget.
 \end{table}
 
 
-\footnotetext[1]{Components of Prefetch Table can be found in Table
-  \ref{tab:PTable_metadata}.}
-
-\footnotetext[2]{The Reject Table does not need to maintain the useful
-  bit as that only applies for prefetches that ultimately made
-  through.}
-
 
 In terms of computations, the perceptron mechanism only introduces an
 extra adder tree. The hash perceptron mechanism makes sure than there
@@ -376,3 +369,9 @@ update by +1 or -1. Thus, all the operations required for perceptron
 inferencing or updating the states of the perceptrons can be easily
 done in the time constraints of L2 Cache Accesses.
 
+\footnotetext[1]{Components of Prefetch Table can be found in Table
+  \ref{tab:PTable_metadata}.}
+
+\footnotetext[2]{The Reject Table does not need to maintain the useful
+  bit as that only applies for prefetches that ultimately made
+  through.}
