@@ -21,7 +21,8 @@ Review #34A
 
 	- Cache access latencies: 12-cycle hit latency seems low? DRAM access latencies?
 	  @ 	If it's not clear, total time will be 4+8+12=24 cycles (L1 and L2 misses)
-		DRAM Latency --??
+		-(G) This makes sense.
+		DRAM Latency -- Will be on the order of 100-200 cycles depending on contention.
 
 	- Justify the performance improvement of the required hardware overhead?
 	  @	Didn't we do it?
@@ -53,8 +54,10 @@ Review #34B
 	- A core might combine multiple L1D cache misses when sending a request to the L2 cache 
 	  (first miss might initiate the L2 cache access, and subsequent misses would piggy back on it). 
 	  How do you associate a program counter to an L2 cache access?
-	  @	Do we account for this in ChamSim --??
+	  @	Do we account for this in ChamSim --?? -(G) I don't believe we do.
 		Looks to me that if first miss is the primary miss then its PC should be associated--??
+			-(G) I agree, it wouldn't make sense to as the primary miss indicates the true demand
+			access.
 
 	- Datacenter processors with 50-100 of cores prefetching individually 
 	  can have a major impact on saturating interconnect link bandwidth, 
@@ -98,6 +101,8 @@ Review #34D
 
 	- The SPP paper's performance prediction with BOP for mcf doesn't line up with this paper. Something is off. 
 	  @	SPEC 2006 vs SPEC 2017 --??
+		-(G) I think this is due to it being 17 vs 06. According to the documentation, mcf in 06 is a
+		"combinatorial optimization" and 17 is a "route planning" algorithm. 
 
 	- Unless I am mistaken, PPF filters prefetches after they are generated.  
 	  Is it possible to generate prefetch requests using PPF itself?
@@ -187,3 +192,7 @@ Review #34F
 	  cache pollution aspects of overall performance in prefetchers? 
 	  Is there a way to describe the full taxonomy of prefetch effects?
 	  @	Is there more to it than the two metrics we talk about -??
+		-(G) These are the most useful other than perhaps timeliness.
+		Coverage would indicate the misses "covered" and accuracy 
+		is that the prefetches are useful. Coverage and accuracy 
+		will overlap some but I *think* it covers everything we care about.
