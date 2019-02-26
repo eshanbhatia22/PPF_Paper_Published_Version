@@ -7,9 +7,9 @@ Review #34A
 	- Differentiating accurate but un-timely prefetches from those that are accurate and timely? 
 	  @ 	In this case, usefulnes and timeliness aren't two mutually exclusive things. 
 	     	An untimely prefetch will lead to a cache miss (or else it wasn't untimely).
-		This is the same as usefulness. 
+		This is the same as usefulness/uselessness. 
 		So, the probability of leading to a cache hit encompasses everything
-		=> High probability of hit means accurate in value AND donw at the right time.
+		=> High probability of hit means accurate in value AND done at the right time.
 
 	- Why combined features, instead of having independent features? 
 	  @	Written in the paper!!
@@ -17,7 +17,7 @@ Review #34A
 
 	- Cache access latencies: 12-cycle hit latency seems low? DRAM access latencies?
 	  @ 	If it's not clear, total time will be 4+8+12=24 cycles (L1 and L2 misses)
-		DRAM Latency??
+		DRAM Latency --??
 
 	- Justify the performance improvement of the required hardware overhead?
 	  @	Didn't we do it?
@@ -37,20 +37,20 @@ Review #34A
 ===========================================================================
 ===========================================================================
 Review #34B
-	- Evaluate performance in conjunction with an L1D prefetcher
-	- Evaluate multi-threaded applications.
+	Evaluate performance in conjunction with an L1D prefetcher
+	Evaluate multi-threaded applications.
 
 	- Is your design applicable only to the L2 level and beyond (i.e. for physical addresses only)? 
 	  Can you apply your design to an L1 prefetcher where you have more program information available to be used as features?
 	  @	Theoretically, yes. And with right tuning, it can be a beast of a prefetcher.
-		The hardware budget for L1D can't be justified. 39KB for a 32KB cache!!
-		Even if states can be reduced: combinational logic (SPP+PPF) can't be done in 2 cycles latency
+		BUT, the hardware budget for L1D can't be justified. 39KB for a 32KB cache!!
+		Even if states can be reduced: combinational logic (SPP+PPF) can't be done in 1-2 cycles latency
 
 	- A core might combine multiple L1D cache misses when sending a request to the L2 cache 
 	  (first miss might initiate the L2 cache access, and subsequent misses would piggy back on it). 
 	  How do you associate a program counter to an L2 cache access?
 	  @	Do we account for this in ChamSim?
-		Looks to me that if first miss is the primary miss then it's PC should be associated?
+		Looks to me that if first miss is the primary miss then its PC should be associated--??
 
 	- Datacenter processors with 50-100 of cores prefetching individually 
 	  can have a major impact on saturating interconnect link bandwidth, 
@@ -76,6 +76,7 @@ Review #34C
 	  in terms of the negative effects of extraneous prefetch operations?
 	  @	Isn't this what the first graph in the paper all about
 		(The motivation graph: variation of performance with SPP depth)
+		Do they want us to repeat the experiment for BW constrained environment too? 
 
 	- There is some related work in this area you may want to reference 
 	  (https://arxiv.org/pdf/1803.02329.pdf)
@@ -92,7 +93,7 @@ Review #34D
 		Still, using it as a feature for perceptron
 
 	- The SPP paper's performance prediction with BOP for mcf doesn't line up with this paper. Something is off. 
-	  @	SPEC 2006 vs SPEC 2017?
+	  @	SPEC 2006 vs SPEC 2017 --??
 
 	- Unless I am mistaken, PPF filters prefetches after they are generated.  
 	  Is it possible to generate prefetch requests using PPF itself?
@@ -115,9 +116,10 @@ Review #34F
 	- What happens if there's a dense set of prefetch-worthy demand fetches. 
 	  Is there a queue of requests, and is there a heuristic for when to drop prefetch calculations because the prefetcher isn't keeping up? 
 	  @	This is one question that always baffles me too :P
-		The job of the prefetcher is to keep making reccommendations. 
-		SPP (and hence SPP+PPF) maintain an internal queue to mimic the L2C MSHR. 
-		So it stops recommending when it sees that it's filling up that queue.
+		The job of the prefetcher is to keep making reccommendations and the
+		memory controller can drop when the time runs out (i.e., next demand).
+		In this case, SPP (and hence SPP+PPF) maintain an internal queue to mimic the L2C MSHR. 
+		So it stops reccommending when it sees that it has filled up that queue.
 
 	- It seemed like the treatment was missing a term for additional misses induced by prefetching, 
 	  where a prefetched value ejects something that would otherwise have been resident and used. 
@@ -130,8 +132,8 @@ Review #34F
 
 	- When you say "inaccurate prefetch", I'm guessing that means "prefetch that was brought into the cache but not used." 
 	  Is there a term for "prefetch that was brought in and displaces a value that would have been used"? 
-	  @	I don't know of any. If a prefetch displaces a could-have-been-used value, two cases arise
-		Prefetch leads to a subsequent hit: Overall hits still remain the same
+	  @	I don't know of any. If a prefetch displaces a could-have-been-used value, two cases arise:
+		Prefetch leads to a subsequent hit: Overall hit count still remains the same.
 		Prefetch is evicted without getting hit: It gets counted as a bad prefetch.
 
 	- It might be worth saying somewhere that you think of IPC as being equivalent to performance.
@@ -148,7 +150,7 @@ Review #34F
 
 	More minor points:
 	- Figure 1 has the first use of SPP, but doesn't define it. 
-	  @	The text allusing to the figure does.
+	  @	The text alluding to the figure does.
 
 	- You say "adjusted accordingly" twice on page 5, but it's not until much later 
 	  that you say that this is (the expected) incrementing or decrementing. 
@@ -158,7 +160,7 @@ Review #34F
 	- The end of section 3.2 hints that "some" features are exposed, leading me to ask which ones, 
 	  but then you give exapmles of exactly what in section 4. 
 	  Perhaps add a forward reference?
-	  @	Can do.
+	  @	Can do
 
 	- I would have expected Figure 5 to contain the Reject Table somewhere.
 	  @	Yeah, can show it as stacked behind the Prefetch Table
