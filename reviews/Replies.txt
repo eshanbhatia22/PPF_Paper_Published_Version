@@ -36,7 +36,7 @@ Review #34A
 	  @	Need to read it.
 
 	- Reference [24] is inaccurate. (Calling the feature PC^Depth similar to Virtual PC Branch Predictor)
-	  @ 	Is it? I found it pretty intuitive.
+	  @ 	Is it --?? I found it pretty intuitive.
 ===========================================================================
 ===========================================================================
 ===========================================================================
@@ -53,7 +53,7 @@ Review #34B
 	- A core might combine multiple L1D cache misses when sending a request to the L2 cache 
 	  (first miss might initiate the L2 cache access, and subsequent misses would piggy back on it). 
 	  How do you associate a program counter to an L2 cache access?
-	  @	Do we account for this in ChamSim?
+	  @	Do we account for this in ChamSim --??
 		Looks to me that if first miss is the primary miss then its PC should be associated--??
 
 	- Datacenter processors with 50-100 of cores prefetching individually 
@@ -186,4 +186,4 @@ Review #34F
 	- Can you please clarify how coverage and accuracy relate to the 
 	  cache pollution aspects of overall performance in prefetchers? 
 	  Is there a way to describe the full taxonomy of prefetch effects?
-	  @	Is there more to it than the two metrics we talk about?
+	  @	Is there more to it than the two metrics we talk about -??
