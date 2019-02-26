@@ -4,6 +4,10 @@ Contains individual comments / responses
 
 Review #34A
 	- Data placement into L2C vs LLC done based on usefulness and not timeliness. Rationale?
+	  @ The usefulness reflects the frequency of use. The timeliness of more frequently used
+		data would provide more performance improvements than the improved timeliness of less
+		frequently accessed data.
+
 	- Differentiating accurate but un-timely prefetches from those that are accurate and timely? 
 	  @ 	In this case, usefulnes and timeliness aren't two mutually exclusive things. 
 	     	An untimely prefetch will lead to a cache miss (or else it wasn't untimely).
@@ -98,7 +102,8 @@ Review #34D
 	- Unless I am mistaken, PPF filters prefetches after they are generated.  
 	  Is it possible to generate prefetch requests using PPF itself?
 	  @	That's a different problem altogether. We'll have to use more complicated ML models (RNN/LSTM).
-		May not work given the hardware constraints.
+		May not work given the hardware constraints. RNN/LSTM would require more training before 
+		generating accurate prefetches.
 ===========================================================================
 ===========================================================================
 ===========================================================================
@@ -115,7 +120,10 @@ Review #34E
 Review #34F
 	- What happens if there's a dense set of prefetch-worthy demand fetches. 
 	  Is there a queue of requests, and is there a heuristic for when to drop prefetch calculations because the prefetcher isn't keeping up? 
-	  @	This is one question that always baffles me too :P
+	  @	This is one question that always baffles me too :P 
+			- (G) I believe this queue is represented in the 
+			signature generation part of SPP. As it moves down the path, the prefetches it generates should
+			represent the order they appear according to the patterns its learned from.
 		The job of the prefetcher is to keep making reccommendations and the
 		memory controller can drop when the time runs out (i.e., next demand).
 		In this case, SPP (and hence SPP+PPF) maintain an internal queue to mimic the L2C MSHR. 
@@ -135,6 +143,8 @@ Review #34F
 	  @	I don't know of any. If a prefetch displaces a could-have-been-used value, two cases arise:
 		Prefetch leads to a subsequent hit: Overall hit count still remains the same.
 		Prefetch is evicted without getting hit: It gets counted as a bad prefetch.
+			-(G) This would be cache pollution. You're polluting the cache with unneccessary data that 
+			displaces useful data and degrades performance.
 
 	- It might be worth saying somewhere that you think of IPC as being equivalent to performance.
 	  @	Sure
