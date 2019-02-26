@@ -90,3 +90,4 @@ Review #34F
 	More Questions:
 	- Can you please clarify how coverage and accuracy relate to the cache pollution aspects of overall performance in prefetchers? 
 	- Is there a way to describe the full taxonomy of prefetch effects?
+
