@@ -1,0 +1,177 @@
+===========================================================================
+Contains individual comments / responses 
+===========================================================================
+
+Review #34A
+	- Data placement into L2C vs LLC done based on usefulness and not timeliness. Rationale?
+	- Differentiating accurate but un-timely prefetches from those that are accurate and timely? 
+	  @ 	In this case, usefulnes and timeliness aren't two mutually exclusive things. 
+	     	An untimely prefetch will lead to a cache miss (or else it wasn't untimely).
+		This is the same as usefulness. 
+		So, the probability of leading to a cache hit encompasses everything
+		=> High probability of hit means accurate in value AND donw at the right time.
+
+	- Why combined features, instead of having independent features? 
+	  @	Written in the paper!!
+		Short answer: Conveys some information not entirely captured in features individually.
+
+	- Cache access latencies: 12-cycle hit latency seems low? DRAM access latencies?
+	  @ 	If it's not clear, total time will be 4+8+12=24 cycles (L1 and L2 misses)
+		DRAM Latency??
+
+	- Justify the performance improvement of the required hardware overhead?
+	  @	Didn't we do it?
+		It's XX% better than the winner of DPC while taking some (22%) extra hardware
+
+	- Compare the paper to [4] and/or [5]. (Two ML based prefetch papers)
+	  @	The only thing common is that the words: ML and prefetching appear in these papers
+		[4] uses compiler semantics - so not a HW only prefetcher
+		[5] uses ML based search techniques for parameter exploration
+
+	- For milti-core, compare with Coordinated Control of Multiple Prefetchers in Multi-Core Systems. Ebrahimi et al. MICRO-2009?
+	  @	Need to read it.
+
+	- Reference [24] is inaccurate. (Calling the feature PC^Depth similar to Virtual PC Branch Predictor)
+	  @ 	Is it? I found it pretty intuitive.
+===========================================================================
+===========================================================================
+===========================================================================
+Review #34B
+	- Evaluate performance in conjunction with an L1D prefetcher
+	- Evaluate multi-threaded applications.
+
+	- Is your design applicable only to the L2 level and beyond (i.e. for physical addresses only)? 
+	  Can you apply your design to an L1 prefetcher where you have more program information available to be used as features?
+	  @	Theoretically, yes. And with right tuning, it can be a beast of a prefetcher.
+		The hardware budget for L1D can't be justified. 39KB for a 32KB cache!!
+		Even if states can be reduced: combinational logic (SPP+PPF) can't be done in 2 cycles latency
+
+	- A core might combine multiple L1D cache misses when sending a request to the L2 cache 
+	  (first miss might initiate the L2 cache access, and subsequent misses would piggy back on it). 
+	  How do you associate a program counter to an L2 cache access?
+	  @	Do we account for this in ChamSim?
+		Looks to me that if first miss is the primary miss then it's PC should be associated?
+
+	- Datacenter processors with 50-100 of cores prefetching individually 
+	  can have a major impact on saturating interconnect link bandwidth, 
+	  as well as take several 1000s of cycles to get data back.
+	  This would increase the training time of the perceptron filter. 
+	  How sensitive is the perceptron filter to the training delay?
+	  @	Has been shown in Prof. Jimenez's paper that for Branch Prediction at least, 
+		perceptron training works faster than gshare style training
+		Or we can say that as a program starts, weights can be biased: 
+		to strong accept, weak accept, strong reject. 
+		Right now it's weak prefetch.
+	
+	- With multi-threaded workloads, there may be constructive or destructive interference 
+	  due to prefetches issued for each thread (depending on control flow patterns of various threads). 
+	  Would it be possible to tweak your perceptron-based filter to minimize destructive interference?
+	  @	If that destructive interferance reflects as increased cache misses, then yes, 
+		Beside that, it is out of the scope of this paper to cater to multi-threaded workloads. 
+===========================================================================
+===========================================================================
+===========================================================================
+Review #34C
+	- Provide some insight into how cache pollution and bandwidth constraints compare 
+	  in terms of the negative effects of extraneous prefetch operations?
+	  @	Isn't this what the first graph in the paper all about
+		(The motivation graph: variation of performance with SPP depth)
+
+	- There is some related work in this area you may want to reference 
+	  (https://arxiv.org/pdf/1803.02329.pdf)
+	  @	Need to read it
+===========================================================================
+===========================================================================
+===========================================================================
+Review #34D
+	- Why did the authors ignore the confidence predictor in SPP?   
+	  At least, they should have presented it and then they could argue that may be that is not practical.   
+	  @	Didn't completely ignore it
+		Presented it in Section 2.1, under Confidence Tracking
+		Called it rudimentary and NOT impractical
+		Still, using it as a feature for perceptron
+
+	- The SPP paper's performance prediction with BOP for mcf doesn't line up with this paper. Something is off. 
+	  @	SPEC 2006 vs SPEC 2017?
+
+	- Unless I am mistaken, PPF filters prefetches after they are generated.  
+	  Is it possible to generate prefetch requests using PPF itself?
+	  @	That's a different problem altogether. We'll have to use more complicated ML models (RNN/LSTM).
+		May not work given the hardware constraints.
+===========================================================================
+===========================================================================
+===========================================================================
+Review #34E
+	- How did the use of PPF affect the lookahead values?  (beyond "allowed it to be more aggressive")
+	  @	From what I remember, on average it increased by 20%.
+		I can get this number again.
+
+	- What happens if there is a multi-core workload that has sharing?
+	  @	Refer to #34B
+===========================================================================
+===========================================================================
+===========================================================================
+Review #34F
+	- What happens if there's a dense set of prefetch-worthy demand fetches. 
+	  Is there a queue of requests, and is there a heuristic for when to drop prefetch calculations because the prefetcher isn't keeping up? 
+	  @	This is one question that always baffles me too :P
+		The job of the prefetcher is to keep making reccommendations. 
+		SPP (and hence SPP+PPF) maintain an internal queue to mimic the L2C MSHR. 
+		So it stops recommending when it sees that it's filling up that queue.
+
+	- It seemed like the treatment was missing a term for additional misses induced by prefetching, 
+	  where a prefetched value ejects something that would otherwise have been resident and used. 
+	  You hint at this at the top of page 2 when you say "cache pollution", but I wonder if 
+	  there's a better way to explain the entire trade-off space. 
+	  I don't think you're putting your prefetches into a separate buffer in the proposal. 
+	  @	How do you figure out the misses caused by the prefetcher only?
+		But on a macro level, if prefetcher causes a lot of misses, 
+		the increase in the overall miss count will reflect in poor coverage numbers.
+
+	- When you say "inaccurate prefetch", I'm guessing that means "prefetch that was brought into the cache but not used." 
+	  Is there a term for "prefetch that was brought in and displaces a value that would have been used"? 
+	  @	I don't know of any. If a prefetch displaces a could-have-been-used value, two cases arise
+		Prefetch leads to a subsequent hit: Overall hits still remain the same
+		Prefetch is evicted without getting hit: It gets counted as a bad prefetch.
+
+	- It might be worth saying somewhere that you think of IPC as being equivalent to performance.
+	  @	Sure
+
+	- Your abstract is entirely fine, but at some points in the exposition, 
+	  I wondered whether you were comparing to the baseline of no prefetching versus the baseline of the SPP predictor. 
+	  @	Can work on this
+
+	- Do you have explanations for why your prefetcher gives better benefits in the 4- and 8-core cases? 
+	  @	We do talk about it in the paper.
+		LLC is a shared resource but each core sees a bigger LLC too. So more potential for an aggressive
+		prefetching to hog otherwise useful resources for another core. Effective filtering can help avoid that. 
+
+	More minor points:
+	- Figure 1 has the first use of SPP, but doesn't define it. 
+	  @	The text allusing to the figure does.
+
+	- You say "adjusted accordingly" twice on page 5, but it's not until much later 
+	  that you say that this is (the expected) incrementing or decrementing. 
+	  Perhaps just say increment/decrement?
+	  @	Yeah, makes sense
+	
+	- The end of section 3.2 hints that "some" features are exposed, leading me to ask which ones, 
+	  but then you give exapmles of exactly what in section 4. 
+	  Perhaps add a forward reference?
+	  @	Can do.
+
+	- I would have expected Figure 5 to contain the Reject Table somewhere.
+	  @	Yeah, can show it as stacked behind the Prefetch Table
+
+	- Were there any features with negative Pearson's factor? 
+	  If so, it would be cool to see them and understand why they inversely correlated.
+	  @	There was one with a small magnitude (~0.1). Not enough to infer anything.
+
+	- Does section 6.3 have no corresponding graphs because of lack of space?
+	  @	Yup
+
+	More Questions:
+	- Can you please clarify how coverage and accuracy relate to the 
+	  cache pollution aspects of overall performance in prefetchers? 
+	  Is there a way to describe the full taxonomy of prefetch effects?
+	  @	Is there more to it than the two metrics we talk about?
