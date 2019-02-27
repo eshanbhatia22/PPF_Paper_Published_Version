@@ -2,68 +2,73 @@
 THE REBUTTAL DRAFT
 ===========================================================================
 
+We thank the reviewers for their thoughtful comments.
+
 *Performance Benefits*
-The prefetcher gives better benefits in 4/8-core systems primarily due to effective 
-shared resource (LLC) utilization. Each core sees a bigger total LLC, so more 
-potential for an aggressive prefetching to hog the useful resources of another 
-core. Effective filtering can help avoid that. (#34F)
+(#34F) The prefetcher performs better in 4/8-core systems due to effective
+shared resource (LLC) utilization. Each core sees a larger LLC, so there is
+more potential for aggressive prefetching to monopolize the useful resources
+of another core. Effective filtering can help avoid that.
 
 *Overheads*
-An additional 39KB of hardware (7KB more than most) leads to a significant improvement 
-over state-of-the-art prefetchers, especially in the multi-core case. There are no
-significant logic overheads. (#34A)
+(#34A) An additional 39KB of state (7KB more than most) leads to significant
+improvement over state-of-the-art prefetchers, especially for the multi-core
+case. The logic overhead is minimal.
 
 *Timeliness*
-We think of SPP’s confidence and PPF’s perceptron sum as a measure of usefulness, 
-which is a combination of accuracy and timeliness. An untimely prefetch will lead to 
-a cache miss, which renders the prefetch useless, in term of prefetcher learning. 
-Maximizing the probability of usefulness leads to increased timeliness (#34A)
+(#34A) We think of SPP's confidence and PPF's perceptron sum as a measure of
+usefulness, which is a combination of accuracy and timeliness. An untimely
+prefetch will lead to a cache miss, rendering the prefetch useless in term of
+prefetcher learning.  Maximizing the probability of usefulness leads to
+increased timeliness.
 
 *Cache Pollution*
-Overly aggressive (hence less accurate) prefetching leads to cache pollution and 
-a decline of system performance, as shown in Sec1/Fig1 (#34C)
-It is an interesting and equally difficult problem to infer and segregate 
-cache misses introduced by prefetches, other than reduced coverage. Same for 
-prefetches which evict an otherwise useful block. These behaviors are reflected in 
-overall performance, especially in multi-core systems. (#34F)
+(#34C) Overly aggressive (hence less accurate) prefetching leads to cache
+pollution and reduced performance, as shown in Sec1/Fig1.
+
+(#34F) An equally difficult problem is inferring and segregating cache misses
+introduced by prefetches, other than reduced coverage. Also interesting are
+prefetches that evict otherwise useful blocks. These behaviors affect overall
+performance, especially in multi-core systems.
 
 *Scheduling Prefetches*
-On a demand-fetch, the prefetcher recommends only as many prefetches as the L2C MSHR 
-can accommodate. Any pending prefetches i.e., recommended but not issued, get dropped 
-by the cache controller if a new demand fetch is seen. Basically, giving up speculation 
-in favor of ground truth. (#34F)
+(#34F) On a demand access, the prefetcher recommends only as many prefetches
+as the L2C MSHR can accommodate. Any pending prefetches, i.e., recommended but
+not issued, are dropped by the cache controller after a new demand access,
+giving up speculation in favor of ground truth.
 
 *L1 Prefetcher*
-Nothing prevents implementing SPP+PPF as an L1D Prefetcher. However, having a 39KB 
-overhead for an 32KB cache is impractical and combinational logic can’t be implemented 
-within L1 latency frame (#34B)
+(#34B) Nothing prevents implementing SPP+PPF as an L1D Prefetcher. However,
+having a 39KB overhead for a 32KB cache seems impractical.
 
 *Training Sensitivity*
-It has been demonstrated in "Dynamic Branch Prediction with Perceptrons[Jimenez,HPCA-’01]" 
-that perceptron training is faster than Gshare style training. Additionally, we can 
-bias the weights, offline, towards accept/reject tendency for a given application. (#34B)
+(#34B) It has been demonstrated that perceptron training is faster than
+gshare-style training[Jimenez,HPCA2001]. Additionally, we can bias the
+weights, offline, towards accept/reject tendency for a given application.
 
 *Prior Work*
-Comparison with [4] and [5] doesn’t make sense as they target different space -- compiler-driven [4] 
-and offline parametric search for datacenter applications[5]. We will investigate comparing with 
-Coordinated Control [Ebrahimi, MICRO-’09] (#34A)
+(#34A) References [4] and [5] target different spaces -- compiler-driven[4]
+and offline parametric search for datacenter applications[5]. We will
+investigate comparing with Coordinated Control[Ebrahimi,MICRO2009].
 
 *Paper Edits*
-Cite "Learning Memory Access Patterns" (#34C)
-Effect of PPF on look-ahead values -- increased by __% (#34E)
-Rectify confusion regarding baseline prefetcher and baseline of no-prefetching. 
-Showing the reject table in Fig5 (#34F)
+We will:
+- (#34C) cite "Learning Memory Access Patterns"
+- (#34E) quantify the effect of PPF on look-ahead values
+- (#34F) rectify confusion regarding baseline prefetcher and baseline of no-prefetching
+- (#34F) show the reject table in Fig5
 
 *Future Work*
-Using PPF to generate prefetches is an excellent idea that is worth looking into.
-Using PPF to give feedback to SPP (#34D)
-Multi-threaded version of PPF (#34B and #34E)
+(#34D) Using PPF to generate prefetches is an excellent idea that is worth looking into.
+(#34D) Using PPF to give feedback to SPP (#34D).  (#34B and #34E) Multi-threaded version of PPF.
 
 *Clarifications*
 Combined features convey some information not captured individually (Sec4.2). 
-Overall LLC Latency: 4+8+12=24 (Considering L1/L2 miss penalty)
-DRAM Latency: 100-200 cycles, depending on contention. (#34A)
-SPP’s confidence predictor hasn't been completely ignored. 
-Described in Sec2.1 and has been used as a pertinent feature for PPF. 
-Probably because the SPP paper uses SPEC 2006 while we use SPEC 2017. mcf uses different 
-input sets for these two -- combinatorial optimization vs route planning (#34D)
+(#34A) Overall LLC Latency: 4+8+12=24 (considering L1/L2 miss penalty).  DRAM
+Latency: 100-200 cycles, depending on contention in the detailed DRAM
+simulator.
+(#34D) SPP's confidence predictor hasn't been ignored; as described in Sec2.1
+it is used as a pertinent feature for PPF.
+(#34D) The SPP paper uses SPEC 2006 while we use SPEC 2017. mcf uses different
+input sets for these two -- combinatorial optimization vs route planning
+(#34D)
