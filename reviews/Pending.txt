@@ -1,0 +1,51 @@
+===========================================================================
+REPLIES NOT YET INCORPORATED INTO THE REBUTTAL DRAFT
+===========================================================================
+
+Review #34A
+
+- Reference [24] is inaccurate. (Calling the feature PC^Depth similar to Virtual PC Branch Predictor)
+	@ 	Is it --?? I found it pretty intuitive.
+	>> ignore this if it is wrong.
+===========================================================================
+===========================================================================
+===========================================================================
+Review #34B
+
+- A core might combine multiple L1D cache misses when sending a request to the L2 cache 
+  (first miss might initiate the L2 cache access, and subsequent misses would piggy back on it). 
+  How do you associate a program counter to an L2 cache access?
+	  @	Do we account for this in ChamSim --?? -(G) I don't believe we do.
+		Looks to me that if first miss is the primary miss then its PC should be associated--??
+		-(G) I agree, it wouldn't make sense to as the primary miss indicates the true demand
+		access.
+	  >> This seems trivial we can drop this one if we don't have space
+===========================================================================
+===========================================================================
+===========================================================================
+Review #34F
+
+- It might be worth saying somewhere that you think of IPC as being equivalent to performance.
+	  @	Sure
+	  >> Duh! who is this guy?
+
+More minor points:
+- Figure 1 has the first use of SPP, but doesn't define it. 
+	  @	The text alluding to the figure does.
+
+- You say "adjusted accordingly" twice on page 5, but it's not until much later 
+	  that you say that this is (the expected) incrementing or decrementing. 
+	  Perhaps just say increment/decrement?
+	  @	Yeah, makes sense
+	
+- The end of section 3.2 hints that "some" features are exposed, leading me to ask which ones, 
+	  but then you give exapmles of exactly what in section 4. 
+	  Perhaps add a forward reference?
+	  @	Can do
+
+- Were there any features with negative Pearson's factor? 
+	  If so, it would be cool to see them and understand why they inversely correlated.
+	  @	There was one with a small magnitude (~0.1). Not enough to infer anything.
+
+- Does section 6.3 have no corresponding graphs because of lack of space?
+	  @	Yup
