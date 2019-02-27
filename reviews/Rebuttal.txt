@@ -43,7 +43,7 @@ truth.
 
 *L1 Prefetcher*
 (#34B) Nothing prevents implementing SPP+PPF as an L1D Prefetcher.
-However, having a 39KB overhead for a 32KB might seem extravagant.
+However, having a 39KB overhead for a 32KB cache might seem extravagant.
 
 *Training Sensitivity*
 (#34B) It has been demonstrated that perceptron training is faster
@@ -85,6 +85,6 @@ the detailed DRAM simulator.
 Sec2.1 it is used as a pertinent feature for PPF.
 
 (#34D) Performance of mcf: SPP uses SPEC 2006 while we use SPEC 2017,
-though the same original application the code has evolved and the
+though the same original application code has evolved and the
 input set is different.
 
