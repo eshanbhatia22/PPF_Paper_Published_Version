@@ -29,8 +29,8 @@ they both impact performance, as shown in Sec1/Fig1.
 
 (#34F) Inferring and segregating prefetch-induced cache misses, other
 than their impact on coverage, is a difficult problem.  Doing so
-likely requiring attaining a full trace of memory misses in each case
-and comparing traces.  Unfortunately that is untenable, thus we
+likely requires getting a full trace of memory misses in each case
+and comparing traces.  Unfortunately that is infeasible, so we
 typically rely upon coverage metrics and how prefetchers affect
 overall performance, especially in multi-core systems.
 
