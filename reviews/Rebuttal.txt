@@ -3,49 +3,50 @@ THE REBUTTAL DRAFT
 ===========================================================================
 
 *Performance Benefits*
-Prefetcher gives better benefits in 4/8-core systems primarily due to effective 
+The prefetcher gives better benefits in 4/8-core systems primarily due to effective 
 shared resource (LLC) utilization. Each core sees a bigger total LLC, so more 
-potential for an aggressive prefetching to hog otherwise useful resource of another 
+potential for an aggressive prefetching to hog the useful resources of another 
 core. Effective filtering can help avoid that. (#34F)
 
 *Overheads*
-39KB worth of hardware (7KB more than most) leads to a significant improvement 
-over state-of-the-art prefetchers, especially in multi-core case. No significant 
-combinational overhead. (#34A)
+An additional 39KB of hardware (7KB more than most) leads to a significant improvement 
+over state-of-the-art prefetchers, especially in the multi-core case. There are no
+significant logic overheads. (#34A)
 
 *Timeliness*
-We like to think SPP’s confidence and PPF’s perceptron sum as a measure of usefulness, 
+We think of SPP’s confidence and PPF’s perceptron sum as a measure of usefulness, 
 which is a combination of accuracy and timeliness. An untimely prefetch will lead to 
-a cache miss, which renders it useless, in term of prefetcher learning. So maximizing 
-probability of usefulness => maximizing timeliness (#34A)
+a cache miss, which renders the prefetch useless, in term of prefetcher learning. 
+Maximizing the probability of usefulness leads to increased timeliness (#34A)
 
 *Cache Pollution*
-Overly aggressive (hence less accurate) prefetching can lead to cache pollution and 
+Overly aggressive (hence less accurate) prefetching leads to cache pollution and 
 a decline of system performance, as shown in Sec1/Fig1 (#34C)
-It is definitely an interesting but an equally difficult problem to infer and segregate 
-cache misses introduced by prefetching only, other than reduced coverage. Same for 
-prefetches which evict an otherwise useful block. All this behavior gets reflected in 
-overall performance, especially in multi-core. (#34F)
+It is an interesting and equally difficult problem to infer and segregate 
+cache misses introduced by prefetches, other than reduced coverage. Same for 
+prefetches which evict an otherwise useful block. These behaviors are reflected in 
+overall performance, especially in multi-core systems. (#34F)
 
 *Scheduling Prefetches*
-On one demand-fetch, the prefetcher recommends prefetches only as much as the L2C MSHR 
+On a demand-fetch, the prefetcher recommends only as many prefetches as the L2C MSHR 
 can accommodate. Any pending prefetches i.e., recommended but not issued, get dropped 
 by the cache controller if a new demand fetch is seen. Basically, giving up speculation 
 in favor of ground truth. (#34F)
 
 *L1 Prefetcher*
-Nothing stops from having SPP+PPF as L1D Prefetcher. But having 39KB overheads for 32KB 
-cache is impractical and combinational logic can’t be implemented in L1 latency frame (#34B)
+Nothing prevents implementing SPP+PPF as an L1D Prefetcher. However, having a 39KB 
+overhead for an 32KB cache is impractical and combinational logic can’t be implemented 
+within L1 latency frame (#34B)
 
 *Training Sensitivity*
 It has been demonstrated in "Dynamic Branch Prediction with Perceptrons[Jimenez,HPCA-’01]" 
-that perceptron training is faster than Gshare style training. Additionally, we can offline 
-bias the weights towards accept/reject tendency for a given application. (#34B)
+that perceptron training is faster than Gshare style training. Additionally, we can 
+bias the weights, offline, towards accept/reject tendency for a given application. (#34B)
 
 *Prior Work*
-Comparison with [4] and [5] doesn’t make sense as they target different space -- compiler-driven[4] 
-and offline parametric search for datacentre applications[5]. Will look into comparison with 
-Coordinated Control[Ebrahimi, MICRO-’09] (#34A)
+Comparison with [4] and [5] doesn’t make sense as they target different space -- compiler-driven [4] 
+and offline parametric search for datacenter applications[5]. We will investigate comparing with 
+Coordinated Control [Ebrahimi, MICRO-’09] (#34A)
 
 *Paper Edits*
 Cite "Learning Memory Access Patterns" (#34C)
@@ -54,8 +55,8 @@ Rectify confusion regarding baseline prefetcher and baseline of no-prefetching.
 Showing the reject table in Fig5 (#34F)
 
 *Future Work*
-Using PPF to generate prefetches is an excellent idea, definitely worth looking into.
-In particular, using PPF to give feedback to SPP (#34D)
+Using PPF to generate prefetches is an excellent idea that is worth looking into.
+Using PPF to give feedback to SPP (#34D)
 Multi-threaded version of PPF (#34B and #34E)
 
 *Clarifications*
@@ -64,5 +65,5 @@ Overall LLC Latency: 4+8+12=24 (Considering L1/L2 miss penalty)
 DRAM Latency: 100-200 cycles, depending on contention. (#34A)
 SPP’s confidence predictor hasn't been completely ignored. 
 Described in Sec2.1 and has been used as a pertinent feature for PPF. 
-Probably because SPP paper uses SPEC 2006 while we use SPEC 2017. mcf uses different 
+Probably because the SPP paper uses SPEC 2006 while we use SPEC 2017. mcf uses different 
 input sets for these two -- combinatorial optimization vs route planning (#34D)
