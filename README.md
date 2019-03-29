@@ -17,3 +17,5 @@ TODO:
 - Add diagrams / graphs / charts
 - SPEC 2017 Characterization
 - Results / detailed analysis
+
+Creating Branch for archiving the ISCA submission version
