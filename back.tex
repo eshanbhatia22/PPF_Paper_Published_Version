@@ -22,7 +22,7 @@ Section~\ref{related} for other relevant work.
 % understand this:
 %% "and correlating these with the strides, by considering each new page in a vacuum."
 
-\subsection{Baseline Prefetcher: SPP}
+\subsection{{\color{red}Underlying Prefetcher: SPP}}
 \label{Background-SPP}
 
 Kim {\em et. al.} proposed Signature Path Prefetcher (SPP)~\cite{SPP},
@@ -33,8 +33,8 @@ patterns, SPP learns both simple and complicated memory access
 patterns quickly.  While the basic idea of perceptron based prefetch
 filtering is applicable to any lookahead prefetcher, we develop a
 practical implementation of our proposed perceptron prefetch filter
-using SPP as our baseline.  Here we describe the basic architecture of
-SPP.
+using SPP as our {\color{red}underlying mechanism}. 
+Here we describe the basic architecture of SPP.
 
 \noindent \textbf{Signature Table:} As shown on the left side of
 Figure~\ref{fig:spp_update}, the Signature Table keeps track of 256

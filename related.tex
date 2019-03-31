@@ -145,7 +145,10 @@ EAF~\cite{eaf} to track prefetching accuracy, and inserts only
 accurate prefetches to the higher priority position in the LRU
 stack. Jain \textit{et al.} propose Harmony~\cite{Harmony} to
 accomodate prefetches in their MIN algorithm-inspired Hawkeye cache
-management system.
+management system. {\color{red}Ebrahimi \textit{et al} introduce
+HPAC~\cite{HPAC} which provides a coordinated control between 
+multiple prefetchers present in A CMP by looking at the 
+prefetcher-induced inter-core interferance.}
 
 \subsection{Machine Learning for Prefetching}
 
@@ -156,4 +159,6 @@ prefetcher relies on compiler support to receive features and build
 the context.  Liao \textit{et al.}  focus on prefetching for data
 center applications~\cite{Datacenter}.  They use offline machine
 learning algorithms such as SVMs and logistic regression to do a
-parametric search for an optimal prefetcher configuration.
+parametric search for an optimal prefetcher configuration. 
+{\color{red}Hasheni \textit{et. al.}~\cite{LSTM} categorize prefetching as a 
+regression problem and use LSTM based Deep Learning approach.}

@@ -66,7 +66,10 @@ benchmark.
 % [EB] Resolved
 On the full SPEC CPU 2017 suite, PPF improves the geometric mean IPC
 of the baseline by \textbf{15.24\%}, which is \textbf{2.27\%} better
-than the next best prefetcher -- SPP.
+than the next best prefetcher -- SPP. {\color{red}For PPF, the average 
+lookahead depth over the full benchmark is 3.97, while it is 3.28 for just 
+SPP. It is evident that on average for SPP, our scheme allows the 
+prefetcher to speculate 21\% deeper.}
 
 \begin{figure}[ht]
 \includegraphics[width=\columnwidth]{Coverage}
@@ -134,10 +137,10 @@ Figure~\ref{Fig:8Core_SPEC2017}.  PPF improves baseline performance by
 random set of SPEC CPU 2017 mixes (not illustrated for space reasons),
 PPF improves performance by \textbf{23.4\%} over the baseline,
 corresponding to \textbf{4.6\%} over SPP. This increased improvement
-achieved by PPF over the base engine SPP in a multi-core environment
-is expected as PPF is a very accurate filter. Thus, it eliminates
-useless prefetches before they can cause pollution in the shared LLC.
-BOP offers a better improvement than SPP for the memory intensive
+achieved by PPF over the {\color{red}underlying prefetcher, SPP,} 
+in a multi-core environment is expected as PPF is a very accurate filter. 
+Thus, it eliminates useless prefetches before they can cause pollution in the 
+shared LLC. BOP offers a better improvement than SPP for the memory intensive
 mixes. This superiority can be attributed to BOP's inherent aggressive
 nature. DA-AMPM is also ahead of SPP in both the mixes. Interestingly,
 in all these cases, PPF consistently outperforms the best performing

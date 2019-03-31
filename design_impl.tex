@@ -66,11 +66,11 @@ throttle the prefetcher and can be discarded.
 Here we discuss the various features that correlate the prefetching
 decision with the program behavior.  All the features we used can be
 derived from the information available in the L2 Cache access stream
-or are taken as metadata derived from the baseline prefetcher.  Our
+or are taken as metadata derived from the {\color{red}underlying} prefetcher.  Our
 feature selection involved searching over a large space of relevant
 perceptron features.  Note that part of the process of tuning PPF to a
 specific prefetcher involves examining the available metadata in the
-prefetcher itself, and thus PPF is attuned to the baseline
+prefetcher itself, and thus PPF is attuned to the {\color{red}underlying}
 prefetcher's design. Using the statistical methodology outlined in
 Section~\ref{Method-Features}, we pruned the feature set to a minimal
 yet relevant set of features.
