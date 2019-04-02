@@ -118,7 +118,7 @@ $$P\textsubscript{d} \;=\; \alpha  \;.\;  C\textsubscript{d}  \;.\;
 P\textsubscript{d-1}$$ Here $\alpha$ represents the global accuracy,
 calculated as the ratio of the number of prefetches which led to a
 demand hit to the number of prefetches recommended in total. The range
-of $\alpha$ is [0,1].  $D$ is the lookahead depth. For $d = 1$, when
+of $\alpha$ is [0,1].  The lookahead depth is represented by $d. For $d = 1$, when
 SPP is in non-speculative mode, P\textsubscript{0} can be thought of
 as 1.  The final P\textsubscript{d} is thresholded against prefetch
 threshold (T\textsubscript{p}) to reject the low confidence
@@ -202,9 +202,9 @@ based on taking the ratio C\textsubscript{d} = C\textsubscript{delta}
 of whether to prefetch or not to prefetch; and which level to
 prefetch.  While this approximation was shown to work in the original
 implementation, we believe that a better form of generalized on-line
-decision making was possible. Hence, it was necessary to build a
+decision making is possible. Hence, it was necessary to build a
 robust and adaptable learning mechanism to accept / reject the
-prefetch suggestions; and to decide the fill level (L2 Cache vs Last
+prefetch suggestions, and to decide the fill level (L2 Cache vs Last
 Level Cache). Thus, we introduce an independent on-line perceptron
 based filtering mechanism.
 
