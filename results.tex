@@ -51,7 +51,7 @@ accuracy check enables it to prefetch upto a lookahead depth of
 2.53 times more useful prefetches than SPP.
 
 The only benchmark where PPF fails to match the improvement offered by
-other prefetchers is {\tt 607.cactuBSSN\_s}.  Based on our observation
+any other prefetcher is {\tt 607.cactuBSSN\_s}. Based on our observation
 of prefetching behavior, we gather that BOP's aggressive and localized
 nature fits this workload very well; as opposed to SPPs lookahead
 nature.  As a result, SPP, and hence PPF, underperform on this
@@ -66,7 +66,7 @@ benchmark.
 % [EB] Resolved
 On the full SPEC CPU 2017 suite, PPF improves the geometric mean IPC
 of the baseline by \textbf{15.24\%}, which is \textbf{2.27\%} better
-than the next best prefetcher -- SPP. {\color{red}For PPF, the average 
+than the next best prefetcher -- SPP. {For PPF, the average 
 lookahead depth over the full benchmark is 3.97, while it is 3.28 for just 
 SPP. It is evident that on average for SPP, our scheme allows the 
 prefetcher to speculate 21\% deeper.}
@@ -109,9 +109,10 @@ pollution.
 
 \subsection{Multi-core Results}
 \label{Results-Multi}
-In this section, we demonstrate the improvement achieved by PPF for a
+\noindent In this section, we demonstrate the improvement achieved by PPF for a
 mix of multi-programmed workloads.
-
+\newline
+\newline
 \noindent \textbf{4-Core:} Figure~\ref{Fig:4Core_SPEC2017}
 shows a comparison of speedups obtained on 4-core mixes of a memory
 intensive subset of SPEC CPU 2017. We plot all 4 prefetchers, normalized
@@ -123,13 +124,15 @@ On a different set of fully random SPEC CPU 2017 4-core mixes (not
 illustrated for space reasons), PPF provides an IPC speedup of
 \textbf{26.07}\% over the
 baseline, which is an improvement of \textbf{5.6}\% over SPP.
-
+%
 \begin{figure}[ht]
 \includegraphics[width=2.75in]{8Core_SPEC2017}
 \caption{Speedup for 8-core SPEC CPU 2017}
 \label{Fig:8Core_SPEC2017}
 \end{figure}
-
+%
+\newline
+\newline
 \noindent \textbf{8-Core:} The sorted comparison of speedups on the
 memory intensive 8-core mixes is shown in
 Figure~\ref{Fig:8Core_SPEC2017}.  PPF improves baseline performance by
@@ -137,7 +140,7 @@ Figure~\ref{Fig:8Core_SPEC2017}.  PPF improves baseline performance by
 random set of SPEC CPU 2017 mixes (not illustrated for space reasons),
 PPF improves performance by \textbf{23.4\%} over the baseline,
 corresponding to \textbf{4.6\%} over SPP. This increased improvement
-achieved by PPF over the {\color{red}underlying prefetcher, SPP,} 
+achieved by PPF over the {underlying prefetcher, SPP,} 
 in a multi-core environment is expected as PPF is a very accurate filter. 
 Thus, it eliminates useless prefetches before they can cause pollution in the 
 shared LLC. BOP offers a better improvement than SPP for the memory intensive

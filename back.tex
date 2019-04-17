@@ -22,7 +22,7 @@ Section~\ref{related} for other relevant work.
 % understand this:
 %% "and correlating these with the strides, by considering each new page in a vacuum."
 
-\subsection{{\color{red}Underlying Prefetcher: SPP}}
+\subsection{Underlying Prefetcher: SPP}
 \label{Background-SPP}
 
 Kim {\em et. al.} proposed Signature Path Prefetcher (SPP)~\cite{SPP},
@@ -32,12 +32,13 @@ accesses. By correlating the signature with future likely delta
 patterns, SPP learns both simple and complicated memory access
 patterns quickly.  While the basic idea of perceptron based prefetch
 filtering is applicable to any lookahead prefetcher, we develop a
-practical implementation of our proposed perceptron prefetch filter
-using SPP as our {\color{red}underlying mechanism}. 
+practical implementation of our proposed prefetch filter
+using SPP as our underlying mechanism. 
 Here we describe the basic architecture of SPP.
-
+\newline
+\newline
 \noindent \textbf{Signature Table:} As shown on the left side of
-Figure~\ref{fig:spp_update}, the Signature Table keeps track of 256
+Figure~\ref{fig:spp_update}, the Signature Table (ST) keeps track of 256
 most recently accessed pages. It is meant to capture memory access
 patterns within a page boundary. SPP indexes into an entry of the
 Signature Table using the page number. For each entry corresponding to
@@ -53,18 +54,19 @@ offset of the current and the previous memory access. In case a
 matching page entry is found, the stored signature retrieved and used
 to index into the Pattern Table.  This process is illustrated in
 Figure~\ref{fig:spp_update}.
-
-\noindent \textbf{Pattern Table:} The Pattern Table, shown on the right
+\newline
+\newline
+\noindent \textbf{Pattern Table:} The Pattern Table (PT), shown on the right
 side in Figure~\ref{fig:spp_update} is indexed by the signature
 generated from the Signature Table.  Pattern Table holds predicted
 delta patterns and their confidence estimates. Each entry indexed by
 the signature holds up to 4 unique delta predictions.
-
+%
 % djimenez: it does look like we're pushing it with all the stuff about SPP.
 % Let's describe it enough to give the reader the idea that he/she has a vague
 % understanding of how it works and can refer to the MICRO paper for more
 % details. (I'm not saying cut anything that's already there, just don't expand.)
-
+%
 %% NOTE: Can we do away with this example? 
 %% If it looks like we are writing too much about SPP
 %% EDIT: Decided to reorganize and remove this for now.
@@ -82,7 +84,7 @@ the signature holds up to 4 unique delta predictions.
 %% 	(+2 in this case). This, in turn generates the new memory pattern
 %% 	(New Signature). This newly learned signature pattern and the delta
 %% 	is stored in the Pattern Table.
-
+%
 %  -- This looks like a detail that is confusing and not necessary to
 %  understand SPP:
 % \noindent \textbf{Prefetch Table:} The Prefetch Table is a 1024 entry
@@ -93,19 +95,21 @@ the signature holds up to 4 unique delta predictions.
 % Prefetch Filter but since in our context filter refers to the
 % perceptron filter, we will be calling this structure as the Prefetch
 % Table to avoid any confusion.
-
+\newline
+\newline
 \noindent \textbf{Lookahead Prefetching:} On each trigger, SPP goes
 down the program speculation path using its own prefetch suggestion.
 Using the current prefetch as a starting point, it re-accesses the Pattern
 Table to generate further prefetches.  As illustrated in
 Figure~\ref{fig:spp_structure}, it repeats the cycle of accessing
-Pattern Table and updating the signature based on highest confidence
+the PT and updating the signature based on highest confidence
 prefetch from the last iteration.  The iteration counter on which SPP
 manages to predict prefetch entries in the lookahead manner is
 characterized as its `depth'. While doing so, SPP also keeps
 compounding the confidence in each depth. Thus as depth increases,
 overall confidence keeps decreasing.
-
+\newline
+\newline
 \noindent \textbf{Confidence Tracking}: As shown in
 Figure~\ref{fig:spp_structure}, the Pattern Table keeps a count of
 hits to each signature through a counter C\textsubscript{sig}. The
@@ -113,12 +117,13 @@ number of hits for a given delta per signature are tracked using a
 counter C\textsubscript{delta}.  The confidence for a given delta is
 approximated through C\textsubscript{d} = C\textsubscript{delta} /
 C\textsubscript{sig}.  When SPP enters into a lookahead mode, the path
-confidence P\textsubscript{d} is given as:
+confidence P\textsubscript{d} is:
 $$P\textsubscript{d} \;=\; \alpha  \;.\;  C\textsubscript{d}  \;.\;
 P\textsubscript{d-1}$$ Here $\alpha$ represents the global accuracy,
 calculated as the ratio of the number of prefetches which led to a
 demand hit to the number of prefetches recommended in total. The range
-of $\alpha$ is [0,1].  The lookahead depth is represented by $d. For $d = 1$, when
+of $\alpha$ is [0,1].  The lookahead depth is represented by $d$. 
+For $d = 1$, when
 SPP is in non-speculative mode, P\textsubscript{0} can be thought of
 as 1.  The final P\textsubscript{d} is thresholded against prefetch
 threshold (T\textsubscript{p}) to reject the low confidence

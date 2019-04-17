@@ -73,7 +73,8 @@ We use all the 20 workloads available in the SPEC CPU 2017
 suite~\cite{SPEC2017}. Using the SimPoint~\cite{SimPoint} methodology,
 we identified 95 different program segments of 1 Billion
 instructions each.
-
+\newline
+\newline
 \noindent \textbf{Single-core performance:} For single-core
 simulations, we use the first 200 million instructions to warm-up the
 microarchitectural structures and the next one billion instructions to
@@ -81,7 +82,8 @@ do detailed simulations and collect run-time statistics. We report the
 IPC speedup over the baseline of no prefetching.  The final numbers
 reported are the geometric mean of the weighted mean speedup achieved
 per application using the SimPoint methodology.
-
+\newline
+\newline
 \noindent \textbf{Multi-core performance:} For multi-application
 workloads, we generate 100 random mixes and another 100 mixes from the
 memory intensive subset of SPEC CPU 2017.  For 4-core workloads, 200
@@ -110,7 +112,8 @@ We repeat the same process for 8-core workloads, correspondingly with
 and 100 million full instructions are executed. This is done so as to
 keep the simulation run-time within reasonable limits as a single
 8-core mix takes up to 3 days to simulate one billion instructions.
-
+\newline
+\newline
 \noindent \textbf{Validation:} We cross-validated our PPF model using
 SPEC CPU 2006~\cite{SPEC2006} and CloudSuite~\cite{CloudSuite}
 benchmarks. For single-core SPEC CPU 2006, we developed 94 simpoints
@@ -145,7 +148,8 @@ set of nine features that allow the perceptron layer to correlate
 prefetching decision with the program behavior.  To study the
 correlation across each feature, we statistically examine the
 perceptron weights and try to interpret their distribution.
-
+\newline
+\newline
 \noindent \textbf{Global Pearson's Correlation:} Here we examine the
 perceptron weights at the end of all trace execution by which time the
 weights have settled to steady values. The weights obtained from
@@ -209,7 +213,8 @@ seen 5 out of the 9 features provide a moderate to high correlation,
 with the magnitude of P-value > 0.6. The single most important
 feature, \textit{Confidence XOR Page address} helps provide
 a correlation to prefetch outcome with a factor of 0.90. 
-
+\newline
+\newline
 \noindent \textbf{Per Trace Correlation:} Another important way to look
 at the perceptron features is to see how much their contribution
 varies across the traces. Here we give special attention to features
@@ -223,7 +228,8 @@ correlation (magnitude > 0.5) for a significant number of traces. This
 study motivated us to choose \textit{PC XOR DELTA} over \textit{Last
   Signature} as it provided useful correlation in at least some of the
 traces.
-
+\newline
+\newline
 \noindent \textbf{Trimming Features Using Cross-correlation:} Beside
 providing interesting insights into prefetching behavior, P-value can
 also be used for feature selection and prefetcher tuning.
@@ -233,7 +239,7 @@ also studied correlation between the features.  We used the above
 methodology to eliminate features providing little information that
 has already been captured in other features.
 
-We initially came up {\color{red}with} a set of 23 features.  By studying cross
+We initially came up {with} a set of 23 features.  By studying cross
 correlation of each of these features against others in a 23$\times$23
 matrix, we identified pairs of features with correlation factor > 0.9
 in magnitude and eliminated redundant features, using guidance from
@@ -286,7 +292,6 @@ low overall P-value were allocated fewer entries in the feature table.
     \caption{Metadata Stored in Prefetch Table}
     \label{tab:PTable_metadata}
 \end{table}
-
 
 \subsection{Overhead for PPF}
 \label{Method-Overheads}
@@ -362,9 +367,9 @@ decrease features depending on the permitted budget.
 In terms of computations, the perceptron mechanism only introduces an
 extra adder tree. The hash perceptron mechanism makes sure than there
 is no actual vector multiplication happening in the hardware.
-Obtaining the perceptron sum requires addition of {\color{red}nine} 
+Obtaining the perceptron sum requires addition of {nine} 
 5-bit numbers.
-Using an adder tree of {\color{red}four} 5-bit adders, this can be done in
+Using an adder tree of {four} 5-bit adders, this can be done in
 ceil($log_{2}9$) = 4 steps. Perceptron update only requires weight
 update by +1 or -1. Thus, all the operations required for perceptron
 inferencing or updating the states of the perceptrons can be easily

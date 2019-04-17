@@ -13,6 +13,15 @@ has been developed to minimize the effects of this trend.
 % memory accesses have a repeating and predictable pattern to speculatively fetch useful data from slower levels
 %of the cache hierarchy into faster higher levels of cache. %phrasing?
 
+\begin{figure}[t]
+\includegraphics[width=0.95\columnwidth]{Motivation}
+\caption{The impact of aggressive prefetching on performance for {\tt 603.bwaves\_s}. 
+The number of useful prefetches increases with aggressiveness
+slower than total prefetches, which wastes bandwidth and 
+harms performance.}
+\label{Fig:Motivation}
+\end{figure}
+
 An ideal prefetching scheme would perfectly capture a program's memory
 access pattern, and then predict and pre-load the needed data into the
 processor's caches in a timely manner.  Memory access patterns may be
@@ -34,16 +43,6 @@ accuracy refers to the fraction of prefetched cache lines that end up
 being used by the application. So if a prefetcher prefetches 1,200
 cache lines, but only 800 of them are used by the application, then
 that prefetcher's accuracy is 66.7\%.
-
-
-\begin{figure}[t]
-\includegraphics[width=\columnwidth]{Motivation}
-\caption{The impact of aggressive prefetching on performance for {\tt 603.bwaves\_s}. 
-The number of useful prefetches increases with aggressiveness
-slower than total prefetches, which wastes bandwidth and 
-harms performance.}
-\label{Fig:Motivation}
-\end{figure}
 
 Coverage and accuracy are generally at odds with one another, and as
 one metric improves, the other usually gets worse. For example, when
@@ -134,7 +133,7 @@ designed to benefit any prefetcher.  In this design, PPF replaces
 SPP's existing confidence-based throttling mechanism, which itself was
 a highly tuned feature of that prefetcher.  Because PPF is so much
 more effective at rejecting inaccurate prefetches than SPP's 
-{\color{red}internal} mechanism, we are free to re-tune the rest of 
+{internal} mechanism, we are free to re-tune the rest of 
 SPP's design around maximizing coverage. The result is an increase 
 in both accuracy and coverage, and a notable increase in performance.
 

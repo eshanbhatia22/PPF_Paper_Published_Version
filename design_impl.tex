@@ -7,14 +7,17 @@ prefetches.  Here, we have selected SPP as the underlying prefetcher.
 
 \subsection{Changes Made to SPP}
 \label{Impl-Changes}
-To modify the SPP design to suit our scheme, the following changes
+\noindent To modify the SPP design to suit our scheme, the following changes
 were made:
-
+\newline
+\newline
 \noindent \textbf{Exporting Features from SPP:} PPF uses the metadata 
 specific to SPP, to build some of the perceptron features. These include
 the lookahead depth, signature and the confidence counter. These features 
-were made visible to PPF\\
+were made visible to PPF.
 %
+\newline
+\newline
 \noindent \textbf{Original Thresholds Discarded:} In PPF, the
 perceptron sum is used to decide whether to prefetch or not, and the
 fill-level in case of prefetch.  Thus, the confidence thresholds used 
@@ -66,11 +69,11 @@ throttle the prefetcher and can be discarded.
 Here we discuss the various features that correlate the prefetching
 decision with the program behavior.  All the features we used can be
 derived from the information available in the L2 Cache access stream
-or are taken as metadata derived from the {\color{red}underlying} prefetcher.  Our
+or are taken as metadata derived from the {underlying} prefetcher.  Our
 feature selection involved searching over a large space of relevant
 perceptron features.  Note that part of the process of tuning PPF to a
 specific prefetcher involves examining the available metadata in the
-prefetcher itself, and thus PPF is attuned to the {\color{red}underlying}
+prefetcher itself, and thus PPF is attuned to the {underlying}
 prefetcher's design. Using the statistical methodology outlined in
 Section~\ref{Method-Features}, we pruned the feature set to a minimal
 yet relevant set of features.
@@ -80,7 +83,9 @@ yet relevant set of features.
 %
 % [EB] Tried addressing. Does it look redundant when read after 'Feature Selection'
 % bullet from the previous section?
-
+%
+\newline
+\newline
 \noindent \textbf{Physical Address}: Here we use the lower bits 
 of the physical address of 
 the demand access that triggers the prefetch. This address corresponds 
@@ -91,7 +96,9 @@ to the prefetch outcome.
 %\pg{what do you mean by ``base address'' the full physical
 %  address?  Be specific.  Which bits and why? You should probably also
 %  talk about what you do when the number of bits is unwieldy.}
-
+%
+\newline
+\newline
 \noindent \textbf{Cache Line} and \textbf{Page Address}: These two
 separate features are derived from the base address that triggered the
 prefetch, as follows: $base\_addr >> LOG2\_BLOCK \_SIZE$ and
@@ -103,10 +110,12 @@ more importance to the overlapping bits and lesser importance to most
 and least significance bits.  This approach can also eliminate
 destructive interference that can be caused by directly folding
 the address bits into half.
-
+%
 %
 % djimenez: this is a nice intuition and explanation. 
 % [EB] Thank you!
+\newline
+\newline
 \noindent \textbf{Program Counter XOR Depth}: The PC is for the
 instruction that triggered the prefetch chain.  Depth refers to the
 iteration count of the lookahead stages.  By itself, we find the PC to
@@ -118,7 +127,9 @@ prefetch speculation, giving a more accurate correlation in lookahead
 cases.  This is akin to the concept of Virtual Program
 Counters~\cite{VPC} introduced by Kim \textit{et. al.} for indirect
 branch prediction.
-
+%
+\newline
+\newline
 \noindent \textbf{PC\textsubscript{1} XOR PC\textsubscript{2}>>1 XOR
   PC\textsubscript{3}>>2}: Here $PC_i$ refers to the last $i^{th}$ PC
 before the instruction that triggered the current prefetch.  Hashing
@@ -129,14 +140,16 @@ history before being hashed together. This is done to avoid the
 resultant value of zero when 2 or more PCs are the same. Additionally,
 blurring the information as it gets older allows us to get a wider and
 yet more approximate look into the program's history.
-
+%
+\newline
+\newline
 \noindent \textbf{Program Counter XOR Delta}: This feature tells us if
 a given PC favors particular value(s) of delta.  As noted earlier,
 while the PC alone does not convey useful information, this hash
 resolves the PC into different values based on the tendency of that PC
 to favor a certain delta.  Thus, the dynamic nature of different
 instances of the same memory access instruction is captured here.
-
+%
  % GAC: Seems more predictable than dynamic if its capturing 
  % what is essentially a streaming access pattern. Not quite sure how to rephrase,
  % if I'm correct
@@ -145,6 +158,8 @@ instances of the same memory access instruction is captured here.
  % that despite SPP having low confidence due to speculation, PPF may 
  % reinforce prefetches with lower confidence if SPP has had a tendency to be 
  % correct in the past.
+\newline
+\newline
 \noindent \textbf{Confidence}: The confidence, on a scale of 0 to 100,
 used to throttle lookahead depth in the original SPP design.  While
 the original confidence does not directly make the decision to
@@ -154,13 +169,17 @@ further into speculation, PPF can use the original confidence as
 indicator of not only when prefetches become less confident, but also
 how likely a low confident speculation is correct in the context of
 other features.
-
+%
+\newline
+\newline
 \noindent \textbf{Page Address XOR Confidence}: This feature scores
 the tendency of each page to be prefetch friendly or prefetch averse.
 It helps resolve a page into different entries depending on its
 confidence for prefetching, which can vary during phases of a program
 execution.
-
+%
+\newline
+\newline
 \noindent \textbf{Current Signature XOR Delta}: Recall from the
 discussion of SPP in Section~\ref{Background-SPP} that the new
 signature is generated using the old signature and the current block
@@ -169,7 +188,7 @@ predicted to be accessed based on the delta predicted by SPP. While
 ``Current Signature XOR Delta'' is not the exact formula for
 generating the future signature, it gives an approximate idea of the
 path that the combination of these two values can lead to.
-
+%
 %Gino: Added the sentence below, is this correct?
 %[EB]: It gives the next signature instead of next delta
 %
@@ -190,7 +209,9 @@ path that the combination of these two values can lead to.
 %  into that fact that certain delta-confidence pairs predicted by
 %  SPP might correlate more with the prefetch outcome
 %%%%%%%%%%%%%%%%%%%%%%
-
+%
+\newline
+\newline
 As can be noted above, some composite features are derived from simple
 hashing (XOR) of two primary features. There is always a question of
 usefulness of such composite features and the new information added.
