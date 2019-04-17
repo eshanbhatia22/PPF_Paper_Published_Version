@@ -58,9 +58,9 @@ never prefetch anything, wasting no capacity or bandwidth, and
 achieving 0\% prefetch coverage.
 
 Figure~\ref{Fig:Motivation} illustrates the above scenario.  Here we
-consider a state-of-the-art. lookahead prefetcher -- SPP~\cite{SPP}.
+consider a state-of-the-art lookahead prefetcher -- SPP~\cite{SPP}.
 Lookahead prefetchers such as SPP provide a mechanism to speculate an
-arbitrary number of references ahead of the initial triggering miss.
+arbitrary number of references ahead of the initial triggering access.
 In SPP, a throttling confidence threshold is then used to ensure that
 the lookahead stops when confidence falls too low to ensure that
 prefetches are accurate.  In the figure, we iteratively re-tuned 

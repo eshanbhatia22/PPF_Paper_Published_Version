@@ -3,17 +3,24 @@
 
 This section describes a case study implementation of PPF and the
 range of features that are used to determine the usefulness of
-prefetches.  Here, we have selected SPP as the base engine prefetcher.
+prefetches.  Here, we have selected SPP as the underlying prefetcher.
 
 \subsection{Changes Made to SPP}
 \label{Impl-Changes}
 To modify the SPP design to suit our scheme, the following changes
 were made:
 
+<<<<<<< HEAD
 \noindent \textbf{Exporting Features from SPP:} PPF uses the metadata 
 specific to SPP, to build some of the perceptron features. These include
 the lookahead depth, signature and the confidence counter. These features 
 were made visible to PPF\\
+=======
+\noindent \textbf{Exporting Features from SPP:} PPF uses metadata 
+specific to SPP to build some of the perceptron features. These include
+the lookahead depth, signature, and the confidence counter. These features 
+were made visible to PPF.\\
+>>>>>>> 93685ac10ea772abbd80182a1cb9c2bd9849a834
 %
 \noindent \textbf{Original Thresholds Discarded:} In PPF, the
 perceptron sum is used to decide whether to prefetch or not, and the

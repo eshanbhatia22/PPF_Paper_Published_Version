@@ -339,13 +339,19 @@ incorporate newer information in the form of new features.  Some of
 the features we developed use information derived directly from
 program execution, agnostic to the {\color{red}underlying} prefetcher.  Beyond that,
 the feature set can be expanded to convey any useful information or
-metadata available in the {\color{red}underlying} prefetcher.
+metadata available in the {\color{red}underlying} prefetcher itself.
 
 \noindent \textbf{Using Metadata from the Prefetcher:} Some of the 
 internal counters specific to the underlying prefetcher can be suitable candidates
+<<<<<<< HEAD
 for the perceptron features. To make sure that the perceptron layer sees that, 
 the relevant metadata must be exported from the prefetcher to PPF. This way,
 PPF can be optimized to work tightly-knit with the {\color{red}underlying} prefetcher.
+=======
+for perceptron features. Therefore, all relevant meta-data must be exported from 
+the prefetcher to PPF. In this way, PPF can be optimized to work in a tight-knit fashion
+with the {\color{red}underlying} prefetcher.
+>>>>>>> 93685ac10ea772abbd80182a1cb9c2bd9849a834
 
 % %[EB] This statement fits better in the next section 'Features used by
 % Perceptron' %The methodology explained in %Section~\ref{Method-Features}
