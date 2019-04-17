@@ -101,8 +101,9 @@ As shown in step 2 of Figure~\ref{fig:PPF_Datapath}(a) the prefetches
 that make it through the inference stage are recorded in the
 ``Prefetch Table''. The prefetch table is a 1,024-entry, direct mapped
 structure that contains all metadata required to re-index the
-perceptron entries for training. {\color{red}10 bits of the address are used to index 
-the tables, and another 6 bits to perform tag matching.} 
+perceptron entries for training. {\color{red}Ten bits of the address are 
+used to index into the tables, and another six bits are stored to 
+perform tag matching.} 
 
 In addition to the prefetch table mentioned above, PPF also maintains
 a 1,024-entry direct-mapped ``Reject Table.'' If a prefetch suggestion
@@ -114,11 +115,11 @@ the observed demand accesses to the L2.
 
 \noindent \textbf{Feedback and Data Retrieval}\\
 As depicted in step 3, when there is an eviction or a demand access 
-to the L2, training for both the {\color{red}underlying} prefetcher and our filter 
-mechanism is triggered. The address of the cache block that triggered 
-the training is used to index both the Prefetch and Reject tables. 
-{\color{red}If it is a match, the corresponding
-features are retrieved to index the tables of perceptron weights.}
+to the L2, training for both the {\color{red}underlying} prefetcher 
+and our filter mechanism is triggered. The address of the cache block 
+that triggered the training is used to index both the Prefetch and 
+Reject tables. {\color{red}If it is a match, the corresponding
+features are retrieved to index into the tables of perceptron weights.}
 
 % Which bits? are the tables accesses sequentially?
 
@@ -314,7 +315,7 @@ metadata needs to be retrieved to update the state of the perceptrons.
 In general, PPF can be adapted to a {\color{red}new prefetcher} with only a
 few modifications:
 
-\noindent \textbf{Making {\color{red}Underlying} Prefetcher More Aggressive:} By Tuning 
+\noindent \textbf{Making the {\color{red}Underlying} Prefetcher More Aggressive:} By Tuning 
 down any internal thresholds or throttling mechanisms to increase its
 aggressiveness.
 
@@ -343,7 +344,7 @@ metadata available in the {\color{red}underlying} prefetcher.
 \noindent \textbf{Using Metadata from the Prefetcher:} Some of the 
 internal counters specific to the underlying prefetcher can be suitable candidates
 for the perceptron features. To make sure that the perceptron layer sees that, 
-the relevant meta-data must be exported from the prefetcher to PPF. This way,
+the relevant metadata must be exported from the prefetcher to PPF. This way,
 PPF can be optimized to work tightly-knit with the {\color{red}underlying} prefetcher.
 
 % %[EB] This statement fits better in the next section 'Features used by

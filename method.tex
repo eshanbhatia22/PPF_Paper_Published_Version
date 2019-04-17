@@ -273,7 +273,7 @@ low overall P-value were allocated fewer entries in the feature table.
     \hline
         PC 		& 12 & \\
         Address 	& 24 & \\
-        Curr Signature 	& 10 & \multirow{2}{4.8cm}{Meta-data required for perceptron}\\
+        Curr Signature 	& 10 & \multirow{2}{4.8cm}{Metadata required for perceptron}\\
 	PC$_i$ Hash	& 12 & \multirow{2}{1.1cm}{training}\\
         Delta 		& 7  & \\
         Confidence 	& 7  & \\
@@ -283,7 +283,7 @@ low overall P-value were allocated fewer entries in the feature table.
     \hline
     \end{tabular}
     \end{adjustbox}
-    \caption{Meta-data Stored in Prefetch Table}
+    \caption{Metadata Stored in Prefetch Table}
     \label{tab:PTable_metadata}
 \end{table}
 
@@ -292,8 +292,8 @@ low overall P-value were allocated fewer entries in the feature table.
 \label{Method-Overheads}
 In this section, we analyze the hardware overhead required to
 implement PPF. The Prefetch Table was enhanced to accommodate storing
-of meta-data for perceptron training. Table \ref{tab:PTable_metadata}
-depicts the meta-data stored for each entry in the Prefetch Table.
+of metadata for perceptron training. Table \ref{tab:PTable_metadata}
+depicts the metadata stored for each entry in the Prefetch Table.
 Table \ref{tab:PPF_overhead} shows the total storage overhead of PPF
 implementation. The hardware budget for 2nd Data Prefetching
 championship was 32 KB.  Keeping that in mind the considerable speedup
@@ -348,7 +348,7 @@ decrease features depending on the permitted budget.
         \multirow{2}{1.5cm}{~Trackers}              & 3     & $PC_2$ (12 bits)      & 36 bits   \\
                                                     &       & $PC_3$ (12 bits)      &           \\
     \hline
-        \multicolumn{4}{|c|}{\textbf{Total: 3,222,940 bits = 39.34 KB}}\\
+        \multicolumn{4}{|c|}{\textbf{Total: 322,240 bits = 39.34 KB}}\\
     \hline
     \end{tabular}
     \end{adjustbox}
