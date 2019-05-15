@@ -100,9 +100,11 @@ to the prefetch outcome.
 \newline
 \newline
 \noindent \textbf{Cache Line} and \textbf{Page Address}: These two
-separate features are derived from the base address that triggered the
-prefetch, as follows: $base\_addr >> LOG2\_BLOCK \_SIZE$ and
-$base\_addr >> LOG2\_PAGE\_SIZE$ respectively. The idea behind using
+separate features are derived from shifting the base address that triggered the
+prefetch by the size of the cache blocks or by the size of a page.
+ %as follows: $base\_addr >> LOG2\_BLOCK \_SIZE$ and 
+%$base\_addr >> LOG2\_PAGE\_SIZE$ respectively. 
+The idea behind using
 three different shifted versions of the same feature is that it allows
 the filter to focus its examination in more detail on different
 aspects of the address than with a single version.  It also helps give

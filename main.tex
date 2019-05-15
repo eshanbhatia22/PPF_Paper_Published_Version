@@ -3,15 +3,16 @@
 % The cls file is a modified from  'sig-alternate.cls'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass{sig-alternate} 
+\documentclass[sigconf]{acmart}
+%ig-alternate} 
 %\documentclass{IEEEtran} 
 
 \usepackage{mathptmx} % This is Times font
 
 \newcommand{\ignore}[1]{}
 \usepackage{fancyhdr}
+\usepackage{url}[hyphes]
 \usepackage[normalem]{ulem}
-\usepackage[hyphens]{url}
 \usepackage{microtype}
 \usepackage{fixltx2e}
 \usepackage{array}
@@ -22,12 +23,12 @@
 \usepackage{flushend}
 \usepackage{adjustbox}
 \usepackage{setspace}
-\usepackage{authblk}
+%\usepackage{authblk}
 \graphicspath{ {./graphs/}{./figures/} }
 \newcommand{\pg}[1]{{{\color{blue}PG: {#1}}}}
 
 % Always include hyperref last
-\usepackage[bookmarks=true,breaklinks=true,letterpaper=true,colorlinks,linkcolor=black,citecolor=blue,urlcolor=black]{hyperref}
+\usepackage{hyperref}[bookmarks=true,breaklinks=true,letterpaper=true,colorlinks,linkcolor=black,citecolor=blue,urlcolor=black]
 
 % Ensure letter paper
 \pdfpagewidth=8.5in
@@ -54,21 +55,24 @@
   \fancyfoot[C]{\thepage}
 }
 
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+
+\setcopyright{acmcopyright}
+\copyrightyear{2018}
+\acmYear{2018}
+\acmDOI{10.1145/1122445.1122456}
+
+%% These commands are for a PROCEEDINGS abstract or paper.
+\acmConference[Woodstock '18]{Woodstock '18: ACM Symposium on Neural
+  Gaze Detection}{June 03--05, 2018}{Woodstock, NY}
+\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
+  June 03--05, 2018, Woodstock, NY}
+\acmPrice{15.00}
+\acmISBN{978-1-4503-9999-9/18/06}
+
 %%%%%%%%%%%---SETME-----%%%%%%%%%%%%%
-\title{Perceptron-Based Prefetch Filtering} 
-
-\author[1]{Eshan Bhatia}		%\thanks{eshanbhatia22@tamu.edu}}
-\author[1]{Gino Chacon} 		%\thanks{ginochacon@tamu.edu}}
-\author[2]{Seth Pugsley} 		%\thanks{seth.h.pugsley@intel.com}}
-\author[3]{Elvira Teran} 		%\thanks{elvira.teran@tamiu.edu}}
-\author[1]{Paul V. Gratz} 		%\thanks{pgratz@gratz1.com}}
-\author[1]{Daniel A. Jim\'enez} 	%\thanks{djimenez@acm.org}}
-\affil[1]{Texas A\&M University\\ \{eshanbhatia22, ginochacon, pgratz, djimenez\}@tamu.edu}
-\affil[2]{Intel Labs\\ seth.h.pugsley@intel.com}
-\affil[3]{Texas A\&M International University\\ elvira.teran@tamiu.edu}
-%\affil[4]{Barcelona Supercomputing Center / Texas A\&M University}
-\renewcommand\Authands{ and }
-
 
 %% \author{
 %%     \IEEEauthorblockN{Eshan Bhatia\IEEEauthorrefmark{1}, Gino Chacon\IEEEauthorrefmark{1}, Daniel A. Jim\'enez\IEEEauthorrefmark{2}, Paul V. Gratz\IEEEauthorrefmark{1}, Seth Pugsley\IEEEauthorrefmark{3} and Elvira Teran\IEEEauthorrefmark{4}\\}
@@ -85,12 +89,53 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-\maketitle
+\title{Perceptron-Based Prefetch Filtering} 
+
+\author{Eshan Bhatia}		%\thanks{eshanbhatia22@tamu.edu}}
+\email{eshanbhatia22@tamu.edu}
+\affiliation{Texas A\&M University}
+
+\author{Gino Chacon} 		%\thanks{ginochacon@tamu.edu}}
+\email{ginochacon@tamu.edu}
+\affiliation{Texas A\&M University}
+
+\author{Seth Pugsley} 		%\thanks{seth.h.pugsley@intel.com}}
+\email{seth.h.pugsley@intel.com}
+\affiliation{Intel Labs}
+
+\author{Elvira Teran} 		%\thanks{elvira.teran@tamiu.edu}}
+\email{elvira.teran@tamiu.edu}
+\affiliation{Texas A\&M International University}
+
+\author{Paul V. Gratz} 		%\thanks{pgratz@gratz1.com}}
+\email{pgratz@gratz1.com}
+\affiliation{Texas A\&M University}
+
+\author{Daniel A. Jim\'enez} 	%\thanks{djimenez@acm.org}}
+\email{djimenez@tamu.edu}
+\affiliation{Texas A\&M University}
+
+%\author[1]{Eshan Bhatia}		%\thanks{eshanbhatia22@tamu.edu}}
+%\author[1]{Gino Chacon} 		%\thanks{ginochacon@tamu.edu}}
+%\author[2]{Seth Pugsley} 		%\thanks{seth.h.pugsley@intel.com}}
+%\author[3]{Elvira Teran} 		%\thanks{elvira.teran@tamiu.edu}}
+%\author[1]{Paul V. Gratz} 		%\thanks{pgratz@gratz1.com}}
+%\author[1]{Daniel A. Jim\'enez} 	%\thanks{djimenez@acm.org}}
+%\affil[1]{Texas A\&M University\\ \{eshanbhatia22, ginochacon, pgratz, djimenez\}@tamu.edu}
+%\affil[2]{Intel Labs\\ seth.h.pugsley@intel.com}
+%\affil[3]{Texas A\&M International University\\ elvira.teran@tamiu.edu}
+%\affil[4]{Barcelona Supercomputing Center / Texas A\&M University}
+%\renewcommand\Authands{ and }
+\renewcommand{\shortauthors}{Bhatia, et al.}
+
 \thispagestyle{firstpage}
 \pagestyle{plain}
 
 \begin{spacing}{0.99}
+
+
 \input{abs}
+\maketitle
 \input{intro}
 \input{back}
 \input{design_arch}
