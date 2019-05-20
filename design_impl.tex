@@ -23,46 +23,6 @@ perceptron sum is used to decide whether to prefetch or not, and the
 fill-level in case of prefetch.  Thus, the confidence thresholds used 
 by SPP -- T\textsubscript{f} and T\textsubscript{p} are no longer needed to
 throttle the prefetcher and can be discarded.
-%
-%\pg{Note, however, as we discuss later, we
-%use these confidence thresholds a feature in PPF so the mechanism is
-%retained. -- right?}
-% djimenez: keeping comments on every line here so it doesn't screw up my
-%"roll-your-own" itemized list. don't put in any newlines.
-%
-%
-% EB: Can this point be removed?
-% djimenez: I think this would be necessary to reproduce our results so leave it in. 
-% EB: It's ultimately a check to avoid SPP's internal segfault. Won't have a real impact.
-%
-%\item \textbf{Looking at L2 MSHR Queue while prefetching}\newline The
-%  original SPP does not consider the slots available in the L2 MSHR
-%  queue.  It has the assumption that at no time can the number of
-%  suggested prefetches exceed the capacity of the queue.  While it was
-%  not described in the paper, the internal confidence mechanism makes
-%  sure that the above assumption was maintained.  In PPF, since there
-%  cannot be an assumption on the degree of aggressiveness of the
-%  underlying prefetcher, we explicitly check that at no point should
-%  the number of suggested prefetches exceed the L2 MSHR queue. \pg{is
-%    this a big deal?  Seems like a detail}
-%
-
-%% \pg{since you actually moved this table into PPF, most this discussion
-%%   should actually go in the PPF arch section, I think its generic to
-%%   all PPFs likely anyways.  Instead here I'd talk about how you
-%%   removed the prefetch filter that was part of SPP since its redundant
-%%   with the function of PPF}
-%% \noindent \textbf{Enhanced Prefetch Table:} The prefetch table
-%% introduced in the original SPP keeps track of up to 1024 L2 cache
-%% prefetch suggestions. For PPF, the prefetch table is modified to store
-%% the features used for perceptron indexing.  This metadata is needed to
-%% retrieve the values of the features to train the perceptron at a later
-%% stage in time. The prefetch table mentioned above keeps track of the
-%% prefetches that actually happened in the L2 Cache.  We introduce the
-%% reject table to keep a track of the prefetches that were suggested by
-%% the base SPP engine but were rejected by PPF. In case it is detected
-%% that a future demand fetch could have used this rejected prefetch, the
-%% perceptron weights are updated to reflect that misprediction.
 
 \subsection{Features used by Perceptron}
 \label{Impl-Features}
@@ -77,12 +37,6 @@ prefetcher itself, and thus PPF is attuned to the {underlying}
 prefetcher's design. Using the statistical methodology outlined in
 Section~\ref{Method-Features}, we pruned the feature set to a minimal
 yet relevant set of features.
-% \pg{again you want to get at why
-% these were chosen. Also mention that you searched over a large
-% space of possible features and these were the best.}
-%
-% [EB] Tried addressing. Does it look redundant when read after 'Feature Selection'
-% bullet from the previous section?
 %
 \newline
 \newline
@@ -93,17 +47,11 @@ to a  stream of accesses that SPP and the PPF have seen before.
 Therefore, PPF will correlate the past behavior of this address 
 to the prefetch outcome. 
 %
-%\pg{what do you mean by ``base address'' the full physical
-%  address?  Be specific.  Which bits and why? You should probably also
-%  talk about what you do when the number of bits is unwieldy.}
-%
 \newline
 \newline
 \noindent \textbf{Cache Line} and \textbf{Page Address}: These two
 separate features are derived from shifting the base address that triggered the
 prefetch by the size of the cache blocks or by the size of a page.
- %as follows: $base\_addr >> LOG2\_BLOCK \_SIZE$ and 
-%$base\_addr >> LOG2\_PAGE\_SIZE$ respectively. 
 The idea behind using
 three different shifted versions of the same feature is that it allows
 the filter to focus its examination in more detail on different
@@ -114,8 +62,6 @@ destructive interference that can be caused by directly folding
 the address bits into half.
 %
 %
-% djimenez: this is a nice intuition and explanation. 
-% [EB] Thank you!
 \newline
 \newline
 \noindent \textbf{Program Counter XOR Depth}: The PC is for the
@@ -152,14 +98,6 @@ resolves the PC into different values based on the tendency of that PC
 to favor a certain delta.  Thus, the dynamic nature of different
 instances of the same memory access instruction is captured here.
 %
- % GAC: Seems more predictable than dynamic if its capturing 
- % what is essentially a streaming access pattern. Not quite sure how to rephrase,
- % if I'm correct
-%
- % GAC: Again having trouble phrasing the below point. I was attempting to say
- % that despite SPP having low confidence due to speculation, PPF may 
- % reinforce prefetches with lower confidence if SPP has had a tendency to be 
- % correct in the past.
 \newline
 \newline
 \noindent \textbf{Confidence}: The confidence, on a scale of 0 to 100,
@@ -191,27 +129,6 @@ predicted to be accessed based on the delta predicted by SPP. While
 generating the future signature, it gives an approximate idea of the
 path that the combination of these two values can lead to.
 %
-%Gino: Added the sentence below, is this correct?
-%[EB]: It gives the next signature instead of next delta
-%
-%%%%%%% Below are the features rejected when downsizing 14 -> 9
-% \item \textbf{Current Signature}: The 12-bit signature used by SPP
-%   to index into the Pattern Table
-% \item \textbf{Delta}: The signed version of the difference in the
-%   block address that triggers the prefetch and the block address of
-%   the data being prefetched
-% \item \textbf{PC}: Program Counter of the Load instruction that
-%   triggers that particular prefetch
-% \item \textbf{Base address XOR Delta}: If any particular value(s) of
-%   delta are highly favored by a given address which triggered the
-%   prefetch, this composite feature can capture that information
-% \item \textbf{Cache line XOR Delta}: this feature captures if any
-%   particular delta is highly favored by a given cache line address
-%\item \textbf{Confidence XOR Delta}: This gives a combined insight
-%  into that fact that certain delta-confidence pairs predicted by
-%  SPP might correlate more with the prefetch outcome
-%%%%%%%%%%%%%%%%%%%%%%
-%
 \newline
 \newline
 As can be noted above, some composite features are derived from simple
@@ -221,6 +138,3 @@ We justify the choice of each feature by quantifying the contribution
 made towards predicting prefetch behavior, in Section
 \ref{Method-Features}.  Finally, as noted above, each feature indexes
 into its independent entry of perceptron weights.
-
-% [EB]: Think of more implementation specific details
-% 7 to 12 bits of indexing

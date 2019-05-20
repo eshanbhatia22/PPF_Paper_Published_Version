@@ -15,21 +15,11 @@ multi-core workloads.
 \subsection{Single-core Results}
 \label{Results-Single}
 
-% djimenez: why is this figure described this way? it's not OK to just
-% highlight noticeable improvement. the benchmarks must be selected by
-% some unbiased criteria, e.g. some minimum MPKI under LRU or some
-% minimum speedup under a baseline prefetcher that isn't PPF.
-
 Figure~\ref{Fig:SPEC2017_1core} shows the single core speedup obtained
 by BOP, DA-AMPM, SPP and PPF for each of the individual SPEC CPU 2017
 applications, followed by the geomean of the memory intensive subset
 and finally the geomean across the full suite.  All the results have
 been normalized to the baseline of no prefetching.
-
-% djimenez: you've inconsistently italicized and not italicized benchmark
-% names. i'll help you out here; i like putting them in a typewriter font so
-% i'll do that throughout this section. also, you've inconsistent put and not put
-% the number of the benchmark. i'll fix that too.
 
 PPF yields a geometric mean speedup of \textbf{26.95\%} over the
 baseline.  This is equivalent to \textbf{4.63\%} over DA-AMPM,
@@ -57,13 +47,6 @@ nature fits this workload very well; as opposed to SPPs lookahead
 nature.  As a result, SPP, and hence PPF, underperform on this
 benchmark.
 
-% \pg{is the following text old? doesn't look right:} At its peak, PPF
-% manages a speedup of a factor of over \textbf{3.39x} on one of the
-% {\tt 602.gcc\_s} traces. This also corresponds to speedup gain of
-% \textbf{60\%} over the next best prefetcher for that trace -- BOP. 
-
-% djimenez: is this geometric mean? if so, say so.
-% [EB] Resolved
 On the full SPEC CPU 2017 suite, PPF improves the geometric mean IPC
 of the baseline by \textbf{15.24\%}, which is \textbf{2.27\%} better
 than the next best prefetcher -- SPP. {For PPF, the average 
@@ -77,7 +60,6 @@ prefetcher to speculate 21\% deeper.}
 \label{Fig:Coverage}
 \end{figure}
 %
-% djimenez: this is a weird way to make a header for a section. use \paragraph or \subsection
 
 \noindent \textbf{Coverage:} Prefetcher coverage is defined as the
 ratio of the number of misses avoided through prefetching over the
@@ -94,12 +76,6 @@ This superior coverage of PPF can be attributed to aggressive
 re-tuning of the underlying SPP, enabled by the Perceptron Filter
 making sure the high coverage does not lead to increased cache
 pollution.
-
-%\begin{figure*}[ht]
-%\includegraphics[width=\textwidth]{4Core_SPEC2017}
-%\caption{Normalized Speedup for 4-core SPEC CPU 2017 Workloads}
-%\label{Fig:4Core_SPEC2017}
-%\end{figure*}
 
 \begin{figure}[ht]
 \includegraphics[width=2.75in]{4Core_SPEC2017}
@@ -149,21 +125,8 @@ nature. DA-AMPM is also ahead of SPP in both the mixes. Interestingly,
 in all these cases, PPF consistently outperforms the best performing
 prefetcher.
 
-% djimenez: cut this graph and modified text accordingly
-%\begin{figure}[ht]
-%\begin{adjustwidth}{-1cm}{}
-%  \includegraphics[width=1.2\columnwidth]{AddnConstr}
-%  \caption{IPC speedup for Small LLC and Low BW}
-%  \label{Fig:AddnConstr}
-%\end{adjustwidth}
-%\end{figure}
-
 \subsection{Additional Memory Constraints}
 \label{Results-AdditionalMem}
-
-%Figure~\ref{Fig:AddnConstr}(a) and (b) show the performance of PPF in a
-%followed by the overall performance on the complete benchmark.  
-%For the sake of brevity, we have only shown selected traces 
 
 We also model PPF with reduced LLC and with low bandwidth constraints,
 respectively (not illustrated for space reasons).  Benchmark {\tt
@@ -176,18 +139,6 @@ and {\tt 638.imagick\_s} benchmarks.  Overall, PPF provides a greater
 improvement under small LLC condition and matches the best prefetcher,
 BOP, under low DRAM bandwidth conditions.
 
-%% \begin{figure}[ht]
-%% \includegraphics[width=0.8\columnwidth,height=4cm,keepaspectratio]{SPEC2006}
-%% \caption{SPEC CPU 2006 Single-Core IPC Speedup}
-%% \label{Fig:SPEC2006_1core}
-%% \end{figure}
-%% 
-%% \begin{figure}[ht]
-%% \includegraphics[width=0.9\columnwidth,height=3.5cm,keepaspectratio]{CloudSuite}
-%% \caption{IPC Speedup for CloudSuite Workloads}
-%% \label{Fig:CloudSuite}
-%% \end{figure}
-
 \begin{figure}[ht]
 \begin{adjustwidth}{-0.4cm}{}
 \includegraphics[width=1.1\columnwidth]{CrossVal}
@@ -198,18 +149,6 @@ BOP, under low DRAM bandwidth conditions.
 
 \subsection{Cross Validation}
 \label{Results-CrossVal}
-
-% djimenez: cite cloudsuite here? do we have a reference?
-% [EB]: Resolved. Cited "Clearing the clouds: A study of emerging 
-%        scale-out workloads on modern hardware" in methodology
-%
-% Here we demonstrate the robustness of PPF by testing it on different
-% benchmarks: SPEC CPU 2006 and CloudSuite.
-%
-% djimenez: is the improvement over BOP and DA-AMPM exactly the same 9.86%
-% here? that's weird.
-% [EB] Resolved. Increased precision of values. But yes, BOP / DA-AMPM 
-% have really close numbers for SPEC 2006
 
 Figure~\ref{Fig:CrossVal}(a) shows the performance benefit comparison
 of all the prefetch schemes on 4 different applications in the

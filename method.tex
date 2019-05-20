@@ -40,9 +40,6 @@ are summarized in Table~\ref{tab:Sim_params}.
     \label{tab:Sim_params}
 \end{table}
 
-% djimenez: changing all the "was" to "is." when describing our work, use
-% present tense
-
 The block size is fixed at 64 bytes.  Prefetching is only triggered
 upon L2 cache demand accesses but could be directed to the L2 or
 last-level cache.  No L1 data level prefetching is done. The LRU
@@ -63,12 +60,7 @@ the default configuration.
 
 \subsection{Workloads}
 \label{Method-Workloads}
-% djimenez: don't say this is the first time SPEC CPU 2017 has been used this way.
-% i don't know if that's true, and in any event the value is small.
 
-%This is the first time that SPEC CPU 2017 benchmark suite~\cite{SPEC2017}
-%has been used to characterize and measure the prefetch performance.
-%We use the SPEC CPU 2017 benchmark suite~\cite{SPEC2017}. 
 We use all the 20 workloads available in the SPEC CPU 2017
 suite~\cite{SPEC2017}. Using the SimPoint~\cite{SimPoint} methodology,
 we identified 95 different program segments of 1 Billion
@@ -255,12 +247,6 @@ with higher correlation, \textit{cache line} and \textit{page address}
 were given most importance and allowed full 12-bits of indexing.
 Features like \textit{PC XOR delta} and \textit{PC XOR depth} with a
 low overall P-value were allocated fewer entries in the feature table.
-
-%To conclude, in the above discussion we justify the features for
-%perceptron from a statistical viewpoint.  We also show how this
-%information can also be used for prefetcher tuning.  All this study
-%was made possible only because we used on-line perceptron learning for
-%prefetching and that enabled us to examine the weights in detail.
 
 \begin{table}[ht]
     \centering

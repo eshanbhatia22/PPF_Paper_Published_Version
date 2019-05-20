@@ -3,23 +3,6 @@
 
 \subsection{Perceptrons in Cache Management}
 
-%Perceptron-based prediction mechanisms have proven to yield superior accuracy, 
-%which represents an opportunity for optimizations in cache management. 
-%Khan \textit{et. al.} proposed SDBP~\cite{sdbp}, in this work, a sampler 
-%structure keeps partial tags of sampled sets separate from the cache. 
-%Three tables of two-bit saturating counters are accessed using a technique 
-%similar to a skewed branch predictor~\cite{Piece_Linear}. For each hit to 
-%a block in the sampled set, the program counter (PC) of the relevant memory 
-%instruction is hashed into the three tables and the corresponding counters 
-%are decremented. For each eviction from a sampled set, the counters corresponding 
-%to the PC of the last instruction to access the victim block are incremented. 
-%For an LLC access, the predictor is consulted by hashing the PC of the memory 
-%access instruction into the three tables and taking the sum of the indexed 
-%counters. When the sum exceeds some threshold, the accessed block is 
-%predicted to be dead. Tags in sampled sets are managed with true LRU and 
-%a reduced associativity, but the LLC may be managed by any policy. 
-%The paper applies its predictor to do block replacement and bypass for LLC.
-
 In addition to branch prediction~\cite{PerceptronPredictor},
 perceptron-based learning has been applied to the area of cache
 management.  Teran \textit{et al.} propose using perceptrons to
@@ -35,27 +18,7 @@ the perceptron learning rule. Multiperspective Reuse
 Prediction~\cite{Multiperspective} improves on Perceptron Learning by
 contributing many new features.
 
-%features. Compared to previous work that focuses on one or two features at a
-%time, Multiperspective prediction uses many features, each contributing to the
-%overall prediction. The prediction enables placement, promotion and bypass
-%optimizations that further improves performance.
-
 \subsection{Spatial Prefetchers}
-
-% Two widely used prefetchers are Next-$n$ Lines~\cite{nextn} and
-% Stride~\cite{stride} prefetchers. Both capture regular memory access
-% patterns with low overhead. The Next-$n$ Lines prefetcher queues
-% prefetches for the next $n$ blocks after any given miss, expecting
-% that the principle of spatial locality will hold and those cache
-% blocks after a missed block are likely to be used in the future. The
-% stride prefetcher identifies strided reference patterns in programs
-% based on past behavior of missing loads.  When a load misses, cache
-% blocks ahead of that miss are fetched in the pattern following the
-% previous behavior in the hope of avoiding future misses.  Without
-% further knowledge about temporal locality and application
-% characteristics, these prefetchers cannot do more than detecting and
-% prefetching regular memory access patterns with limited spatial
-% locality.
 
 Spatial prefetchers include such well-understood examples as the
 next-line (or next-$n$-line) prefetcher, and the stream prefetcher,
@@ -80,24 +43,6 @@ suitable for the current program phase.  Michaud proposes the
 Best-Offset Prefetcher~\cite{BOP}, which determines the optimal offset
 to prefetch while considering memory latency and prefetch timeliness.
 
-%Somogyi et al. proposed a practical, low-overhead prefetcher: Spatial Memory
-%Streaming (SMS) prefetcher~\cite{SMS}. SMS leverages code-based correlation to
-%take advantage of spatial locality in the applications over larger regions of
-%memory called spatial regions. It predicts future access pattern within a
-%spatial region around a miss based on a history of access patterns initiated
-%by that missing instruction in the past. SMS is effective, but it indirectly
-%infers future program control-flow when it speculates on the misses in a
-%spatial region. Thus, the state overhead of this predictor can be higher than
-%the others in this class. The idea was further extended by the class of
-%related prefetchers~\cite{STMS,Temporal_Instruction_Fetch}.
-
-%Other work also considers prefetch timeliness. Michaud proposed the
-%Best-Offset prefetcher~\cite{BOP}. A prefetch offset is set automatically and
-%dynamically tries to adapt to the application behavior. A good prefetch
-%offset is determined by looking at two recent access to a particular block
-%that did not happen too recently. The time between both accesses should be
-%greater than the latency for completing a prefetch request.
-
 \subsection{Lookahead Prefetchers}
 
 Unlike spatial prefetchers, lookahead prefetchers take program order
@@ -114,22 +59,7 @@ predict even further down a speculative path of memory acesses. These
 prefetchers can also generalize their learned patterns from one page,
 and use those patterns to make predictions in other pages.
 
-%Previous prefetchers have only limited ability to capture memory delta
-%patterns. Moreover, a good prefetch proves to be useful only if the prefetcher
-%manages to bring the block before its next demand access. Both these issues
-%are overcome by Lookahead Prefetchers that use their own predictions to create
-%the speculative path of the program's memory access pattern. By going down the
-%speculation trail to a certain depth, the prefetcher can bring in cache blocks
-%well before they are demand accessed by the processor. VLDP~\cite{VLDP}
-%prefetches a static depth ahead of the demand fetch, without considering the
-%prefetching confidence. More recent Lookahead Prefetchers include SPP and
-%KPC~\cite{KPC}
-
-%Talk about DA-AMPM
-
 \subsection{Managing Prefetched Data}
-
-%not sure this is where this section was going, I just kidna went with it. 
 
 A low-accuracy aggressive prefetcher can significantly harm
 performance.  To minimize interference from prefetching, Wu \textit{et
