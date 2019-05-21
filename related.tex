@@ -16,7 +16,14 @@ block from one of a few sampled sets~\cite{sdbp} is reused or evicted,
 the corresponding weights are decremented or incremented, according to
 the perceptron learning rule. Multiperspective Reuse
 Prediction~\cite{Multiperspective} improves on Perceptron Learning by
-contributing many new features.
+contributing many new features. 
+A similar work also proposed using perceptrons for filtering useless 
+prefetches~\cite{ArxivPerc}. They implemented a basic Rosenblatt perceptron, using 
+general error-correction learning. While they are able to reduce useless 
+prefetches, they do not explore allowing the base-prefetcher to prefetch
+unrestrained down the speculative path. Their design results in
+increased accuracy but lowered cache coverage with low impact on
+ overall performance.
 
 \subsection{Spatial Prefetchers}
 
