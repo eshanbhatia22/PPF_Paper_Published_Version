@@ -38,7 +38,7 @@ lookahead prefetchers. They try to predict not only what data will be
 used in the future, but also the precise order in which the data will
 be used, within a given page. Predictions made by lookahead
 prefetchers can be fed back into their prediction mechanisms to
-predict even further down a speculative path of memory acesses. These
+predict even further down a speculative path of memory accesses. These
 prefetchers can also generalize their learned patterns from one page,
 and use those patterns to make predictions in other pages.
 
@@ -57,11 +57,11 @@ address prefetcher-caused cache pollution, it also uses a variation of
 EAF~\cite{eaf} to track prefetching accuracy, and inserts only
 accurate prefetches to the higher priority position in the LRU
 stack. Jain \textit{et al.} propose Harmony~\cite{Harmony} to
-accomodate prefetches in their MIN algorithm-inspired Hawkeye cache
+accommodate prefetches in their MIN algorithm-inspired Hawkeye cache
 management system. Ebrahimi \textit{et al.} introduce
 HPAC~\cite{HPAC} which provides a coordinated control between 
 multiple prefetchers present in a CMP by looking at the 
-prefetcher-induced inter-core interferance.
+prefetcher-induced inter-core interference.
 
 \subsection{Machine Learning for Prefetching}
 
@@ -90,7 +90,7 @@ hence has low impact on overall performance.
 In addition to branch prediction~\cite{PerceptronPredictor},
 perceptron-based learning has been applied to the area of cache
 management.  Teran \textit{et al.} propose using perceptrons to
-predict cache line resuse, bypass, and replacement~\cite{Perc_Reuse}.
+predict cache line reuse, bypass, and replacement~\cite{Perc_Reuse}.
 Perceptron Learning trains weights selected by hashes of multiple
 features, including the PC of the memory access instruction, some
 other recent PCs, and two different shifts of the tag of the
