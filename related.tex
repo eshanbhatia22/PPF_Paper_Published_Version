@@ -1,30 +1,6 @@
 \section{Related Work}
 \label{related}
 
-\subsection{Perceptrons in Cache Management}
-
-In addition to branch prediction~\cite{PerceptronPredictor},
-perceptron-based learning has been applied to the area of cache
-management.  Teran \textit{et al.} propose using perceptrons to
-predict cache line resuse, bypass, and replacement~\cite{Perc_Reuse}.
-Perceptron Learning trains weights selected by hashes of multiple
-features, including the PC of the memory access instruction, some
-other recent PCs, and two different shifts of the tag of the
-referenced block. These features are used to index into weight tables,
-and the weights are then thresholded to generate a prediction. When a
-block from one of a few sampled sets~\cite{sdbp} is reused or evicted,
-the corresponding weights are decremented or incremented, according to
-the perceptron learning rule. Multiperspective Reuse
-Prediction~\cite{Multiperspective} improves on Perceptron Learning by
-contributing many new features. 
-A similar work also proposed using perceptrons for filtering useless 
-prefetches~\cite{ArxivPerc}. They implemented a basic Rosenblatt perceptron, using 
-general error-correction learning. While they are able to reduce useless 
-prefetches, they do not explore allowing the base-prefetcher to prefetch
-unrestrained down the speculative path. Their design results in
-increased accuracy but lowered cache coverage with low impact on
- overall performance.
-
 \subsection{Spatial Prefetchers}
 
 Spatial prefetchers include such well-understood examples as the
@@ -96,7 +72,32 @@ prefetcher relies on compiler support to receive features and build
 the context.  Liao \textit{et al.}  focus on prefetching for data
 center applications~\cite{Datacenter}.  They use offline machine
 learning algorithms such as SVMs and logistic regression to do a
-parametric search for an optimal prefetcher configuration. 
-Hasheni \textit{et al.}~\cite{LSTM} categorize 
-prefetching as a regression problem and use LSTM based Deep 
-Learning approach.
+parametric search for an optimal prefetcher configuration.  Hasheni
+\textit{et al.}~\cite{LSTM} categorize prefetching as a regression
+problem and use LSTM based Deep Learning approach.
+
+Wang and Lou propose a similar work where perceptrons filter useless
+prefetches~\cite{ArxivPerc}.  In their design's primary focus was on
+improving the accuracy of an unmodified baseline prefetcher.  Unlike
+the scheme presented here, they implement a basic Rosenblatt
+perceptron, with general error-correction learning.  While they are
+able to increase accuracy, their design results in lower coverage, and
+hence has low impact on overall performance.
+
+
+\subsection{Perceptrons in Cache Management}
+
+In addition to branch prediction~\cite{PerceptronPredictor},
+perceptron-based learning has been applied to the area of cache
+management.  Teran \textit{et al.} propose using perceptrons to
+predict cache line resuse, bypass, and replacement~\cite{Perc_Reuse}.
+Perceptron Learning trains weights selected by hashes of multiple
+features, including the PC of the memory access instruction, some
+other recent PCs, and two different shifts of the tag of the
+referenced block. These features are used to index into weight tables,
+and the weights are then thresholded to generate a prediction. When a
+block from one of a few sampled sets~\cite{sdbp} is reused or evicted,
+the corresponding weights are decremented or incremented, according to
+the perceptron learning rule. Multiperspective Reuse
+Prediction~\cite{Multiperspective} improves on Perceptron Learning by
+contributing many new features. 
